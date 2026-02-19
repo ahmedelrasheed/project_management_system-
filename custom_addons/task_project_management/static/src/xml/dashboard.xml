@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+    <!-- Member Dashboard -->
+    <t t-name="task_project_management.MemberDashboard">
+        <div class="o_action task_dashboard member_dashboard">
+            <div class="container-fluid py-3">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h2 class="dashboard-title">My Dashboard</h2>
+                    </div>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card kpi-card bg-primary text-white">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Total Tasks</h5>
+                                <h2 class="kpi-value" t-esc="state.totalTasks"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card kpi-card bg-warning text-white">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Pending</h5>
+                                <h2 class="kpi-value" t-esc="state.pendingTasks"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card kpi-card bg-success text-white">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Approved</h5>
+                                <h2 class="kpi-value" t-esc="state.approvedTasks"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card kpi-card bg-danger text-white">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Rejected</h5>
+                                <h2 class="kpi-value" t-esc="state.rejectedTasks"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hours Summary -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h6 class="text-muted">Today</h6>
+                                <h3 t-esc="state.hoursToday + ' hrs'"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h6 class="text-muted">This Week</h6>
+                                <h3 t-esc="state.hoursWeek + ' hrs'"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h6 class="text-muted">This Month</h6>
+                                <h3 t-esc="state.hoursMonth + ' hrs'"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Tasks -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Recent Tasks</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <table class="table table-striped mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Project</th>
+                                            <th>Description</th>
+                                            <th>Hours</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="state.recentTasks" t-as="task" t-key="task.id">
+                                            <tr>
+                                                <td t-esc="task.date"/>
+                                                <td t-esc="task.project"/>
+                                                <td t-esc="task.description"/>
+                                                <td t-esc="task.hours"/>
+                                                <td>
+                                                    <span t-attf-class="badge #{task.status === 'approved' ? 'text-bg-success' : task.status === 'rejected' ? 'text-bg-danger' : 'text-bg-warning'}"
+                                                          t-esc="task.status"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- PM Dashboard -->
+    <t t-name="task_project_management.PMDashboard">
+        <div class="o_action task_dashboard pm_dashboard">
+            <div class="container-fluid py-3">
+                <div class="row mb-3">
+                    <div class="col-8">
+                        <h2 class="dashboard-title">Project Manager Dashboard</h2>
+                    </div>
+                    <div class="col-4 text-end">
+                        <button class="btn btn-outline-primary me-2"
+                                t-on-click="onExportCSV">
+                            <i class="fa fa-file-text-o"/> Export CSV
+                        </button>
+                        <button class="btn btn-outline-secondary"
+                                t-on-click="onExportImage">
+                            <i class="fa fa-image"/> Export Image
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Project Progress Cards -->
+                <t t-foreach="state.projects" t-as="project" t-key="project.id">
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between">
+                            <h5 t-esc="project.name"/>
+                            <span t-attf-class="badge #{project.status === 'active' ? 'text-bg-success' : 'text-bg-warning'}"
+                                  t-esc="project.status"/>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-8">
+                                    <div class="progress" style="height: 25px;">
+                                        <div class="progress-bar bg-primary"
+                                             role="progressbar"
+                                             t-attf-style="width: #{project.progress}%"
+                                             t-att-aria-valuenow="project.progress"
+                                             aria-valuemin="0" aria-valuemax="100">
+                                            <t t-esc="project.logged_hours"/> /
+                                            <t t-esc="project.expected_hours"/> hrs
+                                            (<t t-esc="project.progress"/>%)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <span class="text-muted">
+                                        Pending: <strong t-esc="project.pending_tasks"/>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Member Activity Table -->
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Member</th>
+                                        <th>Tasks</th>
+                                        <th>Hours</th>
+                                        <th>Approval Rate</th>
+                                        <th>Late Entries</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="project.members" t-as="member" t-key="member.id">
+                                        <tr>
+                                            <td t-esc="member.name"/>
+                                            <td t-esc="member.task_count"/>
+                                            <td t-esc="member.hours"/>
+                                            <td>
+                                                <span t-attf-class="#{member.approval_rate >= 80 ? 'text-success' : 'text-warning'}"
+                                                      t-esc="member.approval_rate + '%'"/>
+                                            </td>
+                                            <td>
+                                                <span t-if="member.late_entries > 0"
+                                                      class="text-danger"
+                                                      t-esc="member.late_entries"/>
+                                                <span t-else="">0</span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+    <!-- Admin Dashboard -->
+    <t t-name="task_project_management.AdminDashboard">
+        <div class="o_action task_dashboard admin_dashboard">
+            <div class="container-fluid py-3">
+                <div class="row mb-3">
+                    <div class="col-8">
+                        <h2 class="dashboard-title">Administration Dashboard</h2>
+                    </div>
+                    <div class="col-4 text-end">
+                        <button class="btn btn-outline-primary me-2"
+                                t-on-click="onExportCSV">
+                            <i class="fa fa-file-text-o"/> Export CSV
+                        </button>
+                        <button class="btn btn-outline-secondary"
+                                t-on-click="onExportImage">
+                            <i class="fa fa-image"/> Export Image
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Organization KPIs -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card kpi-card border-primary">
+                            <div class="card-body text-center">
+                                <h6 class="text-muted">Total Projects</h6>
+                                <h2 class="text-primary" t-esc="state.totalProjects"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card kpi-card border-success">
+                            <div class="card-body text-center">
+                                <h6 class="text-muted">Total Members</h6>
+                                <h2 class="text-success" t-esc="state.totalMembers"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card kpi-card border-info">
+                            <div class="card-body text-center">
+                                <h6 class="text-muted">Total Hours</h6>
+                                <h2 class="text-info" t-esc="state.totalHours"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card kpi-card border-danger">
+                            <div class="card-body text-center">
+                                <h6 class="text-muted">Late Entries</h6>
+                                <h2 class="text-danger" t-esc="state.totalLateEntries"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- All Projects Summary -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>All Projects</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <table class="table table-striped mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Project</th>
+                                            <th>Status</th>
+                                            <th>Progress</th>
+                                            <th>Tasks</th>
+                                            <th>Pending</th>
+                                            <th>Members</th>
+                                            <th>Late Entries</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="state.projects" t-as="project" t-key="project.id">
+                                            <tr>
+                                                <td t-esc="project.name"/>
+                                                <td>
+                                                    <span t-attf-class="badge #{project.status === 'active' ? 'text-bg-success' : project.status === 'on_hold' ? 'text-bg-warning' : project.status === 'completed' ? 'text-bg-info' : 'text-bg-secondary'}"
+                                                          t-esc="project.status"/>
+                                                </td>
+                                                <td>
+                                                    <div class="progress" style="height: 20px; min-width: 100px;">
+                                                        <div class="progress-bar"
+                                                             t-attf-style="width: #{project.progress}%">
+                                                            <t t-esc="project.progress"/>%
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td t-esc="project.task_count"/>
+                                                <td t-esc="project.pending_tasks"/>
+                                                <td t-esc="project.member_count"/>
+                                                <td>
+                                                    <span t-if="project.late_entries > 0"
+                                                          class="text-danger fw-bold"
+                                                          t-esc="project.late_entries"/>
+                                                    <span t-else="">0</span>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

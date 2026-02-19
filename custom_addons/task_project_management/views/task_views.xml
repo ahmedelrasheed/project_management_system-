@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Task Form View -->
+    <record id="view_task_form" model="ir.ui.view">
+        <field name="name">task.management.task.form</field>
+        <field name="model">task.management.task</field>
+        <field name="arch" type="xml">
+            <form string="Task" delete="0">
+                <header>
+                    <button name="action_approve" string="Approve"
+                            type="object" class="btn-primary"
+                            invisible="approval_status != 'pending'"
+                            groups="task_project_management.group_project_manager"/>
+                    <button name="action_reject" string="Reject"
+                            type="object" class="btn-danger"
+                            invisible="approval_status != 'pending'"
+                            groups="task_project_management.group_project_manager"/>
+                    <field name="approval_status" widget="statusbar"
+                           statusbar_visible="pending,approved,rejected"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" icon="fa-flag"
+                                invisible="not is_late_entry">
+                            <field name="is_late_entry" widget="boolean"
+                                   string="Late Entry"/>
+                            <span invisible="not is_late_entry">
+                                (<field name="late_days"/> days)
+                            </span>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date"
+                                   readonly="approval_status == 'approved'"/>
+                            <field name="project_id"
+                                   readonly="approval_status == 'approved'"
+                                   options="{'no_create': True}"/>
+                            <field name="member_id"
+                                   readonly="approval_status == 'approved'"
+                                   groups="task_project_management.group_project_manager"/>
+                        </group>
+                        <group>
+                            <field name="time_from" widget="float_time"
+                                   readonly="approval_status == 'approved'"/>
+                            <field name="time_to" widget="float_time"
+                                   readonly="approval_status == 'approved'"/>
+                            <field name="duration_hours" widget="float_time"
+                                   readonly="1"/>
+                            <field name="entry_timestamp" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"
+                               readonly="approval_status == 'approved'"
+                               placeholder="Describe the task..."/>
+                    </group>
+                    <group>
+                        <field name="attachment_ids" widget="many2many_binary"
+                               readonly="approval_status == 'approved'"
+                               string="Attachments"/>
+                    </group>
+                    <group string="Manager Review"
+                           groups="task_project_management.group_project_manager">
+                        <field name="manager_comment"
+                               placeholder="Add your comment..."/>
+                    </group>
+                    <group string="Manager Comment"
+                           groups="!task_project_management.group_project_manager">
+                        <field name="manager_comment" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Audit Trail" name="audit_trail">
+                            <field name="audit_ids" readonly="1">
+                                <tree>
+                                    <field name="changed_at"/>
+                                    <field name="old_status" widget="badge"/>
+                                    <field name="new_status" widget="badge"
+                                           decoration-warning="new_status == 'pending'"
+                                           decoration-success="new_status == 'approved'"
+                                           decoration-danger="new_status == 'rejected'"/>
+                                    <field name="changed_by"/>
+                                    <field name="comment"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                    <field name="activity_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Task Tree View -->
+    <record id="view_task_tree" model="ir.ui.view">
+        <field name="name">task.management.task.tree</field>
+        <field name="model">task.management.task</field>
+        <field name="arch" type="xml">
+            <tree string="Tasks" delete="0"
+                  decoration-warning="approval_status == 'pending'"
+                  decoration-success="approval_status == 'approved'"
+                  decoration-danger="approval_status == 'rejected'">
+                <field name="date"/>
+                <field name="project_id"/>
+                <field name="member_id" optional="show"/>
+                <field name="description"/>
+                <field name="time_from" widget="float_time"/>
+                <field name="time_to" widget="float_time"/>
+                <field name="duration_hours" widget="float_time" sum="Total Hours"/>
+                <field name="approval_status" widget="badge"
+                       decoration-warning="approval_status == 'pending'"
+                       decoration-success="approval_status == 'approved'"
+                       decoration-danger="approval_status == 'rejected'"/>
+                <field name="is_late_entry" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Task Search View -->
+    <record id="view_task_search" model="ir.ui.view">
+        <field name="name">task.management.task.search</field>
+        <field name="model">task.management.task</field>
+        <field name="arch" type="xml">
+            <search string="Search Tasks">
+                <field name="description"/>
+                <field name="project_id"/>
+                <field name="member_id"/>
+                <separator/>
+                <filter string="Pending" name="filter_pending"
+                        domain="[('approval_status', '=', 'pending')]"/>
+                <filter string="Approved" name="filter_approved"
+                        domain="[('approval_status', '=', 'approved')]"/>
+                <filter string="Rejected" name="filter_rejected"
+                        domain="[('approval_status', '=', 'rejected')]"/>
+                <separator/>
+                <filter string="Today" name="filter_today"
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="This Week" name="filter_this_week"
+                        domain="[
+                            ('date', '>=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')),
+                            ('date', '&lt;=', (context_today() + datetime.timedelta(days=6-context_today().weekday())).strftime('%Y-%m-%d'))
+                        ]"/>
+                <filter string="This Month" name="filter_this_month"
+                        domain="[
+                            ('date', '>=', context_today().strftime('%Y-%m-01')),
+                            ('date', '&lt;=', context_today().strftime('%Y-%m-%d'))
+                        ]"/>
+                <separator/>
+                <filter string="Late Entries" name="filter_late"
+                        domain="[('is_late_entry', '=', True)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Project" name="group_project"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter string="Date" name="group_date"
+                            context="{'group_by': 'date'}"/>
+                    <filter string="Status" name="group_status"
+                            context="{'group_by': 'approval_status'}"/>
+                    <filter string="Member" name="group_member"
+                            context="{'group_by': 'member_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- My Tasks Action (Member) -->
+    <record id="action_my_tasks" model="ir.actions.act_window">
+        <field name="name">My Tasks</field>
+        <field name="res_model">task.management.task</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{
+            'search_default_filter_pending': 0,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a new task entry
+            </p>
+        </field>
+    </record>
+
+    <!-- Tasks to Review Action (PM) -->
+    <record id="action_tasks_to_review" model="ir.actions.act_window">
+        <field name="name">Tasks to Review</field>
+        <field name="res_model">task.management.task</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('approval_status', '=', 'pending')]</field>
+        <field name="context">{'search_default_group_project': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No pending tasks to review
+            </p>
+        </field>
+    </record>
+
+</odoo>

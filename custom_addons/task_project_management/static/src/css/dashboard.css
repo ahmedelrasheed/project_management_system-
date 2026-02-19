@@ -1,0 +1,72 @@
+/* Task Management Dashboards */
+.task_dashboard {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.task_dashboard .dashboard-title {
+    color: #714B67;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.task_dashboard .kpi-card {
+    border-radius: 10px;
+    transition: transform 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task_dashboard .kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.task_dashboard .kpi-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.task_dashboard .card {
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    border: none;
+}
+
+.task_dashboard .card-header {
+    background-color: #fff;
+    border-bottom: 2px solid #714B67;
+    font-weight: 600;
+}
+
+.task_dashboard .progress {
+    border-radius: 10px;
+    background-color: #e9ecef;
+}
+
+.task_dashboard .progress-bar {
+    border-radius: 10px;
+    background-color: #714B67;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.task_dashboard .table th {
+    border-top: none;
+    color: #714B67;
+    font-weight: 600;
+}
+
+.task_dashboard .badge {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+}
+
+/* RTL support */
+html[dir="rtl"] .task_dashboard .text-end {
+    text-align: left !important;
+}
+
+html[dir="rtl"] .task_dashboard .me-2 {
+    margin-left: 0.5rem !important;
+    margin-right: 0 !important;
+}

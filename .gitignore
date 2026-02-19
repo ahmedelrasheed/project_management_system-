@@ -1,0 +1,31 @@
+# Virtual environment
+abdo_env/
+
+# Odoo source (not part of our module)
+odoo17/
+
+# Odoo config and logs
+odoo17.conf
+odoo17.log
+
+# Claude Code internal
+.claude/
+
+# Project memory (internal notes)
+memory/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
