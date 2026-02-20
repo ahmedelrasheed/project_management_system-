@@ -323,8 +323,9 @@ class TaskManagementTask(models.Model):
             'task_project_management.group_admin_manager')
         if is_admin:
             return
+        current_user = self.env.user
         member = self.env['task.management.member'].sudo(
-            )._get_member_for_user()
+            )._get_member_for_user(current_user)
         for task in self:
             if member and member == task.member_id:
                 raise UserError(
@@ -357,40 +358,46 @@ class TaskManagementTask(models.Model):
 
     def _notify_pm_on_submit(self):
         """Notify project managers when a member submits a task."""
-        pm_partners = self.sudo().project_id.project_manager_ids.mapped(
-            'user_id.partner_id')
-        if pm_partners:
-            self.message_post(
-                body=_('New task submitted by %(member)s for project '
-                       '"%(project)s" on %(date)s.',
-                       member=self.member_id.name,
-                       project=self.project_id.name,
-                       date=self.date),
-                partner_ids=pm_partners.ids,
-                message_type='notification',
-                subtype_xmlid='mail.mt_comment',
-            )
+        try:
+            pm_partners = self.sudo().project_id.project_manager_ids.mapped(
+                'user_id.partner_id')
+            if pm_partners:
+                self.sudo().message_post(
+                    body=_('New task submitted by %(member)s for project '
+                           '"%(project)s" on %(date)s.',
+                           member=self.member_id.name,
+                           project=self.project_id.name,
+                           date=self.date),
+                    partner_ids=pm_partners.ids,
+                    message_type='notification',
+                    subtype_xmlid='mail.mt_note',
+                )
+        except Exception:
+            pass
 
     def _notify_member_status_change(self, new_status):
         """Notify the member when their task status changes."""
-        member_partner = self.sudo().member_id.user_id.partner_id
-        if member_partner:
-            status_labels = {
-                'approved': _('Approved'),
-                'rejected': _('Rejected'),
-                'pending': _('Pending'),
-            }
-            body = _('Your task "%(desc)s" has been %(status)s.',
-                     desc=(self.description or '')[:50],
-                     status=status_labels.get(new_status, new_status))
-            if self.manager_comment:
-                body += _('\nComment: %s', self.manager_comment)
-            self.message_post(
-                body=body,
-                partner_ids=[member_partner.id],
-                message_type='notification',
-                subtype_xmlid='mail.mt_comment',
-            )
+        try:
+            member_partner = self.sudo().member_id.user_id.partner_id
+            if member_partner:
+                status_labels = {
+                    'approved': _('Approved'),
+                    'rejected': _('Rejected'),
+                    'pending': _('Pending'),
+                }
+                body = _('Your task "%(desc)s" has been %(status)s.',
+                         desc=(self.description or '')[:50],
+                         status=status_labels.get(new_status, new_status))
+                if self.manager_comment:
+                    body += _('\nComment: %s', self.manager_comment)
+                self.sudo().message_post(
+                    body=body,
+                    partner_ids=[member_partner.id],
+                    message_type='notification',
+                    subtype_xmlid='mail.mt_note',
+                )
+        except Exception:
+            pass
 
     # --- Dashboard Data Methods ---
 
