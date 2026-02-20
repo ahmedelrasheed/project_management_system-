@@ -21,6 +21,17 @@
     </record>
 
     <!-- ============================================================ -->
+    <!-- Hide Discuss and Apps menus                                   -->
+    <!-- ============================================================ -->
+    <record id="mail.menu_root_discuss" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+
+    <record id="base.menu_management" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- ============================================================ -->
     <!-- Root Menu                                                     -->
     <!-- ============================================================ -->
     <menuitem id="menu_task_management_root"
@@ -34,7 +45,8 @@
     <menuitem id="menu_my_tasks_parent"
               name="My Tasks"
               parent="menu_task_management_root"
-              sequence="10"/>
+              sequence="10"
+              groups="task_project_management.group_member"/>
 
     <menuitem id="menu_my_tasks"
               name="My Tasks"
@@ -58,7 +70,7 @@
               groups="task_project_management.group_project_manager"/>
 
     <menuitem id="menu_all_projects"
-              name="All Projects"
+              name="Projects"
               parent="menu_projects_parent"
               action="action_project"
               sequence="10"/>
@@ -85,7 +97,7 @@
               groups="task_project_management.group_project_manager"/>
 
     <menuitem id="menu_all_members"
-              name="All Members"
+              name="Members"
               parent="menu_members_parent"
               action="action_member"
               sequence="10"/>

@@ -1,6 +1,6 @@
 {
     'name': 'Task & Project Management',
-    'version': '17.0.1.0.0',
+    'version': '17.0.1.1.0',
     'category': 'Project',
     'summary': 'Task & Project Management with approval workflow',
     'description': """
@@ -47,6 +47,7 @@
             'task_project_management/static/src/css/dashboard.css',
             'task_project_management/static/src/xml/dashboard.xml',
             'task_project_management/static/src/js/dashboard.js',
+            'task_project_management/static/src/js/user_menu.js',
         ],
     },
     'installable': True,

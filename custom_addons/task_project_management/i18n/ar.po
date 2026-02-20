@@ -1,0 +1,1522 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* task_project_management
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-02-19 22:24+0000\n"
+"PO-Revision-Date: 2026-02-20 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Arabic\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#. module: task_project_management
+#: model:mail.template,body_html:task_project_management.mail_template_task_submitted
+msgid ""
+"\n"
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"    <p>Dear Project Manager,</p>\n"
+"    <p>A new task has been submitted for your review:</p>\n"
+"    <ul>\n"
+"        <li><strong>Project:</strong> {{ object.project_id.name }}</li>\n"
+"        <li><strong>Member:</strong> {{ object.member_id.name }}</li>\n"
+"        <li><strong>Date:</strong> {{ object.date }}</li>\n"
+"        <li><strong>Description:</strong> {{ object.description[:100] }}</li>\n"
+"        <li><strong>Time:</strong> {{ '%02d:%02d'|format(object.time_from|int, ((object.time_from - object.time_from|int) * 60)|int) }} - {{ '%02d:%02d'|format(object.time_to|int, ((object.time_to - object.time_to|int) * 60)|int) }}</li>\n"
+"    </ul>\n"
+"    <p>Please review and approve or reject this task.</p>\n"
+"</div>\n"
+msgstr ""
+"\n"
+"<div style=\"margin: 0px; padding: 0px;\" dir=\"rtl\">\n"
+"    <p>عزيزي مدير المشروع،</p>\n"
+"    <p>تم تقديم مهمة جديدة لمراجعتك:</p>\n"
+"    <ul>\n"
+"        <li><strong>المشروع:</strong> {{ object.project_id.name }}</li>\n"
+"        <li><strong>العضو:</strong> {{ object.member_id.name }}</li>\n"
+"        <li><strong>التاريخ:</strong> {{ object.date }}</li>\n"
+"        <li><strong>الوصف:</strong> {{ object.description[:100] }}</li>\n"
+"        <li><strong>الوقت:</strong> {{ '%02d:%02d'|format(object.time_from|int, ((object.time_from - object.time_from|int) * 60)|int) }} - {{ '%02d:%02d'|format(object.time_to|int, ((object.time_to - object.time_to|int) * 60)|int) }}</li>\n"
+"    </ul>\n"
+"    <p>يرجى المراجعة والموافقة أو الرفض على هذه المهمة.</p>\n"
+"</div>\n"
+
+#. module: task_project_management
+#: model:mail.template,body_html:task_project_management.mail_template_task_status_changed
+msgid ""
+"\n"
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"    <p>Dear {{ object.member_id.name }},</p>\n"
+"    <p>Your task status has been updated:</p>\n"
+"    <ul>\n"
+"        <li><strong>Project:</strong> {{ object.project_id.name }}</li>\n"
+"        <li><strong>Date:</strong> {{ object.date }}</li>\n"
+"        <li><strong>Description:</strong> {{ object.description[:100] }}</li>\n"
+"        <li><strong>Status:</strong> {{ object.approval_status }}</li>\n"
+"        {% if object.manager_comment %}\n"
+"        <li><strong>Manager Comment:</strong> {{ object.manager_comment }}</li>\n"
+"        {% endif %}\n"
+"    </ul>\n"
+"</div>\n"
+msgstr ""
+"\n"
+"<div style=\"margin: 0px; padding: 0px;\" dir=\"rtl\">\n"
+"    <p>عزيزي {{ object.member_id.name }}،</p>\n"
+"    <p>تم تحديث حالة مهمتك:</p>\n"
+"    <ul>\n"
+"        <li><strong>المشروع:</strong> {{ object.project_id.name }}</li>\n"
+"        <li><strong>التاريخ:</strong> {{ object.date }}</li>\n"
+"        <li><strong>الوصف:</strong> {{ object.description[:100] }}</li>\n"
+"        <li><strong>الحالة:</strong> {{ object.approval_status }}</li>\n"
+"        {% if object.manager_comment %}\n"
+"        <li><strong>تعليق المدير:</strong> {{ object.manager_comment }}</li>\n"
+"        {% endif %}\n"
+"    </ul>\n"
+"</div>\n"
+
+#. module: task_project_management
+#: model:mail.template,body_html:task_project_management.mail_template_project_deadline
+msgid ""
+"\n"
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"    <p>Warning: Project deadline reached!</p>\n"
+"    <ul>\n"
+"        <li><strong>Project:</strong> {{ object.name }}</li>\n"
+"        <li><strong>Expected End Date:</strong> {{ object.expected_end_date }}</li>\n"
+"        <li><strong>Pending Tasks:</strong> {{ object.pending_task_count }}</li>\n"
+"        <li><strong>Progress:</strong> {{ '%.1f'|format(object.progress_percentage) }}%</li>\n"
+"    </ul>\n"
+"    <p>Please review and take appropriate action.</p>\n"
+"</div>\n"
+msgstr ""
+"\n"
+"<div style=\"margin: 0px; padding: 0px;\" dir=\"rtl\">\n"
+"    <p>تحذير: تم الوصول إلى الموعد النهائي للمشروع!</p>\n"
+"    <ul>\n"
+"        <li><strong>المشروع:</strong> {{ object.name }}</li>\n"
+"        <li><strong>تاريخ الانتهاء المتوقع:</strong> {{ object.expected_end_date }}</li>\n"
+"        <li><strong>المهام المعلقة:</strong> {{ object.pending_task_count }}</li>\n"
+"        <li><strong>التقدم:</strong> {{ '%.1f'|format(object.progress_percentage) }}%</li>\n"
+"    </ul>\n"
+"    <p>يرجى المراجعة واتخاذ الإجراء المناسب.</p>\n"
+"</div>\n"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid ""
+"\n"
+"Comment: %s"
+msgstr ""
+"\n"
+"تعليق: %s"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_res_config_settings_form
+msgid "<span class=\"ms-1\">MB</span>"
+msgstr "<span class=\"ms-1\">MB</span>"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_res_config_settings_form
+msgid "<span class=\"ms-1\">days</span>"
+msgstr "<span class=\"ms-1\">أيام</span>"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/project.py:0
+#, python-format
+msgid "A Project Manager cannot also be a member of the same project: %s"
+msgstr "لا يمكن لمدير المشروع أن يكون عضواً في نفس المشروع: %s"
+
+#. module: task_project_management
+#: model:ir.model.constraint,message:task_project_management.constraint_task_management_member_email_unique
+msgid "A member with this email already exists."
+msgstr "يوجد عضو بهذا البريد الإلكتروني بالفعل."
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/project.py:0
+#, python-format
+msgid "A project must have at least one Project Manager."
+msgstr "يجب أن يحتوي المشروع على مدير مشروع واحد على الأقل."
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__message_needaction
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__message_needaction
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__message_needaction
+msgid "Action Needed"
+msgstr "إجراء مطلوب"
+
+#. module: task_project_management
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_project__status__active
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_search
+msgid "Active"
+msgstr "نشط"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__activity_ids
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__activity_ids
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__activity_ids
+msgid "Activities"
+msgstr "الأنشطة"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__activity_exception_decoration
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__activity_exception_decoration
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "تزيين استثناء النشاط"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__activity_state
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__activity_state
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__activity_state
+msgid "Activity State"
+msgstr "حالة النشاط"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__activity_type_icon
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__activity_type_icon
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "أيقونة نوع النشاط"
+
+#. module: task_project_management
+#: model_terms:ir.actions.act_window,help:task_project_management.action_my_tasks
+msgid "Add a new task entry"
+msgstr "إضافة إدخال مهمة جديد"
+
+#. module: task_project_management
+#: model_terms:ir.actions.act_window,help:task_project_management.action_my_archive
+msgid "Add a project to your portfolio"
+msgstr "إضافة مشروع إلى معرض أعمالك"
+
+#. module: task_project_management
+#: model_terms:ir.actions.act_window,help:task_project_management.action_member
+msgid "Add an organization member"
+msgstr "إضافة عضو في المؤسسة"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_form
+msgid "Add your comment..."
+msgstr "أضف تعليقك..."
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__address
+msgid "Address"
+msgstr "العنوان"
+
+#. module: task_project_management
+#: model:ir.actions.client,name:task_project_management.action_admin_dashboard
+#: model:ir.ui.menu,name:task_project_management.menu_admin_dashboard
+msgid "Admin Dashboard"
+msgstr "لوحة تحكم المسؤول"
+
+#. module: task_project_management
+#: model:res.groups,name:task_project_management.group_admin_manager
+msgid "Admin Manager"
+msgstr "مدير النظام"
+
+#. module: task_project_management
+#: model:ir.ui.menu,name:task_project_management.menu_admin_parent
+msgid "Administration"
+msgstr "الإدارة"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Administration Dashboard"
+msgstr "لوحة تحكم الإدارة"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_res_config_settings_form
+msgid "After-Midnight Tasks"
+msgstr "المهام بعد منتصف الليل"
+
+#. module: task_project_management
+#: model:ir.ui.menu,name:task_project_management.menu_all_members
+msgid "All Members"
+msgstr "جميع الأعضاء"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model:ir.actions.act_window,name:task_project_management.action_project
+#: model:ir.ui.menu,name:task_project_management.menu_all_projects
+#, python-format
+msgid "All Projects"
+msgstr "جميع المشاريع"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_res_config_settings__task_allow_after_midnight
+msgid "Allow After-Midnight Tasks"
+msgstr "السماح بالمهام بعد منتصف الليل"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_res_config_settings_form
+msgid "Allow members to log tasks that span past midnight"
+msgstr "السماح للأعضاء بتسجيل المهام التي تمتد بعد منتصف الليل"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Approval Rate"
+msgstr "معدل الموافقة"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__approval_status
+msgid "Approval Status"
+msgstr "حالة الموافقة"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_form
+msgid "Approve"
+msgstr "موافقة"
+
+#. module: task_project_management
+#. odoo-javascript
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_task__approval_status__approved
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_task_audit__new_status__approved
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_task_audit__old_status__approved
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_audit_search
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_search
+#, python-format
+msgid "Approved"
+msgstr "معتمد"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_archive_tree
+msgid "Archive"
+msgstr "الأرشيف"
+
+#. module: task_project_management
+#: model:ir.ui.menu,name:task_project_management.menu_archive_parent
+msgid "Archive / Portfolio"
+msgstr "الأرشيف / معرض الأعمال"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__archive_ids
+msgid "Archive Entries"
+msgstr "إدخالات الأرشيف"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_archive_form
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_archive_form_readonly
+msgid "Archive Entry"
+msgstr "إدخال أرشيف"
+
+#. module: task_project_management
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_project__status__archived
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_search
+msgid "Archived"
+msgstr "مؤرشف"
+
+#. module: task_project_management
+#: model:ir.actions.act_window,name:task_project_management.action_project_archived
+#: model:ir.ui.menu,name:task_project_management.menu_archived_projects
+msgid "Archived Projects"
+msgstr "المشاريع المؤرشفة"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__message_attachment_count
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__message_attachment_count
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__message_attachment_count
+msgid "Attachment Count"
+msgstr "عدد المرفقات"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_archive__attachment_ids
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__attachment_ids
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_archive_form
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_archive_form_readonly
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_form
+msgid "Attachments"
+msgstr "المرفقات"
+
+#. module: task_project_management
+#: model:ir.actions.act_window,name:task_project_management.action_task_audit
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__audit_ids
+#: model:ir.ui.menu,name:task_project_management.menu_audit_trail
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_audit_tree
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_form
+msgid "Audit Trail"
+msgstr "سجل المراجعة"
+
+#. module: task_project_management
+#: model:ir.actions.act_window,name:task_project_management.action_public_archives
+#: model:ir.ui.menu,name:task_project_management.menu_public_archives
+msgid "Browse Public Archives"
+msgstr "تصفح الأرشيفات العامة"
+
+#. module: task_project_management
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_export_report_wizard__export_type__csv
+msgid "CSV"
+msgstr "CSV"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_export_report_wizard_form
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "Cannot edit an approved task."
+msgstr "لا يمكن تعديل مهمة معتمدة."
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task_audit__changed_at
+msgid "Changed At"
+msgstr "تاريخ التغيير"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task_audit__changed_by
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_audit_search
+msgid "Changed By"
+msgstr "تم التغيير بواسطة"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task_audit__comment
+msgid "Comment"
+msgstr "تعليق"
+
+#. module: task_project_management
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_project__status__completed
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_search
+msgid "Completed"
+msgstr "مكتمل"
+
+#. module: task_project_management
+#: model:ir.model,name:task_project_management.model_res_config_settings
+msgid "Config Settings"
+msgstr "إعدادات التكوين"
+
+#. module: task_project_management
+#: model:ir.ui.menu,name:task_project_management.menu_config_parent
+msgid "Configuration"
+msgstr "الإعدادات"
+
+#. module: task_project_management
+#: model_terms:ir.actions.act_window,help:task_project_management.action_project
+msgid "Create a new project"
+msgstr "إنشاء مشروع جديد"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_archive__create_uid
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_export_report_wizard__create_uid
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__create_uid
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__create_uid
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__create_uid
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task_audit__create_uid
+msgid "Created by"
+msgstr "أنشئ بواسطة"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_archive__create_date
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_export_report_wizard__create_date
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__create_date
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__create_date
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__create_date
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task_audit__create_date
+msgid "Created on"
+msgstr "أنشئ في"
+
+#. module: task_project_management
+#: model:ir.model,name:task_project_management.model_task_management_task
+msgid "Daily Task Entry"
+msgstr "إدخال المهام اليومية"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__date
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_search
+#, python-format
+msgid "Date"
+msgstr "التاريخ"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_export_report_wizard__date_from
+msgid "Date From"
+msgstr "من تاريخ"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_export_report_wizard__date_to
+msgid "Date To"
+msgstr "إلى تاريخ"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__late_days
+msgid "Days Late"
+msgstr "أيام التأخير"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_form
+msgid "Describe the task..."
+msgstr "وصف المهمة..."
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_archive_form
+msgid "Describe your work on this project..."
+msgstr "صف عملك في هذا المشروع..."
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_archive__description
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__description
+#, python-format
+msgid "Description"
+msgstr "الوصف"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_archive__display_name
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_export_report_wizard__display_name
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__display_name
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__display_name
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__display_name
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task_audit__display_name
+msgid "Display Name"
+msgstr "الاسم المعروض"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__duration_hours
+msgid "Duration (Hours)"
+msgstr "المدة (ساعات)"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__email
+msgid "Email"
+msgstr "البريد الإلكتروني"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_archive__end_date
+msgid "End Date"
+msgstr "تاريخ الانتهاء"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__entry_timestamp
+msgid "Entry Timestamp"
+msgstr "وقت الإدخال"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__expected_end_date
+msgid "Expected End Date"
+msgstr "تاريخ الانتهاء المتوقع"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__expected_hours
+msgid "Expected Hours"
+msgstr "الساعات المتوقعة"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_export_report_wizard_form
+msgid "Export"
+msgstr "تصدير"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Export CSV"
+msgstr "تصدير CSV"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Export Image"
+msgstr "تصدير صورة"
+
+#. module: task_project_management
+#: model:ir.actions.act_window,name:task_project_management.action_export_report_wizard
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_export_report_wizard_form
+msgid "Export Report"
+msgstr "تصدير التقرير"
+
+#. module: task_project_management
+#: model:ir.model,name:task_project_management.model_task_management_export_report_wizard
+msgid "Export Report Wizard"
+msgstr "معالج تصدير التقرير"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_export_report_wizard__export_type
+msgid "Export Type"
+msgstr "نوع التصدير"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/wizard/export_report_wizard.py:0
+#, python-format
+msgid "Failed to generate image: %s"
+msgstr "فشل في إنشاء الصورة: %s"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "File \"%(name)s\" exceeds maximum size of %(size)s MB."
+msgstr "الملف \"%(name)s\" يتجاوز الحجم الأقصى المسموح به وهو %(size)s MB."
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_export_report_wizard__report_filename
+msgid "Filename"
+msgstr "اسم الملف"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__message_follower_ids
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__message_follower_ids
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__message_follower_ids
+msgid "Followers"
+msgstr "المتابعون"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__message_partner_ids
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__message_partner_ids
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "المتابعون (الشركاء)"
+
+#. module: task_project_management
+#: model:ir.model.fields,help:task_project_management.field_task_management_member__activity_type_icon
+#: model:ir.model.fields,help:task_project_management.field_task_management_project__activity_type_icon
+#: model:ir.model.fields,help:task_project_management.field_task_management_task__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "أيقونة Font Awesome مثل fa-tasks"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_archive_search
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_member_search
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_search
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_audit_search
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_search
+msgid "Group By"
+msgstr "تجميع حسب"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__has_message
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__has_message
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__has_message
+msgid "Has Message"
+msgstr "يحتوي على رسالة"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Hours"
+msgstr "ساعات"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_archive__id
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_export_report_wizard__id
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__id
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__id
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__id
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task_audit__id
+msgid "ID"
+msgstr "المعرّف"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__activity_exception_icon
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__activity_exception_icon
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__activity_exception_icon
+msgid "Icon"
+msgstr "أيقونة"
+
+#. module: task_project_management
+#: model:ir.model.fields,help:task_project_management.field_task_management_member__activity_exception_icon
+#: model:ir.model.fields,help:task_project_management.field_task_management_project__activity_exception_icon
+#: model:ir.model.fields,help:task_project_management.field_task_management_task__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "أيقونة للإشارة إلى نشاط استثنائي."
+
+#. module: task_project_management
+#: model:ir.model.fields,help:task_project_management.field_task_management_member__message_needaction
+#: model:ir.model.fields,help:task_project_management.field_task_management_project__message_needaction
+#: model:ir.model.fields,help:task_project_management.field_task_management_task__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "إذا تم التحديد، فإن الرسائل الجديدة تتطلب انتباهك."
+
+#. module: task_project_management
+#: model:ir.model.fields,help:task_project_management.field_task_management_member__message_has_error
+#: model:ir.model.fields,help:task_project_management.field_task_management_project__message_has_error
+#: model:ir.model.fields,help:task_project_management.field_task_management_task__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr "إذا تم التحديد، فإن بعض الرسائل بها خطأ في التسليم."
+
+#. module: task_project_management
+#: model:ir.model.fields,help:task_project_management.field_res_config_settings__task_allow_after_midnight
+msgid ""
+"If enabled, members can log tasks that span past midnight (e.g., 23:00 to "
+"01:00)."
+msgstr ""
+"إذا تم التفعيل، يمكن للأعضاء تسجيل المهام التي تمتد بعد منتصف الليل (مثال: "
+"23:00 إلى 01:00)."
+
+#. module: task_project_management
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_export_report_wizard__export_type__image
+msgid "Image (PNG)"
+msgstr "صورة (PNG)"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/wizard/export_report_wizard.py:0
+#, python-format
+msgid "Image generation timed out."
+msgstr "انتهت مهلة إنشاء الصورة."
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__message_is_follower
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__message_is_follower
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__message_is_follower
+msgid "Is Follower"
+msgstr "متابع"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__job_title
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_member_search
+msgid "Job Title"
+msgstr "المسمى الوظيفي"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_archive__write_uid
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_export_report_wizard__write_uid
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__write_uid
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__write_uid
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__write_uid
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task_audit__write_uid
+msgid "Last Updated by"
+msgstr "آخر تحديث بواسطة"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_archive__write_date
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_export_report_wizard__write_date
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__write_date
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__write_date
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__write_date
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task_audit__write_date
+msgid "Last Updated on"
+msgstr "آخر تحديث في"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_search
+#, python-format
+msgid "Late Entries"
+msgstr "إدخالات متأخرة"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__is_late_entry
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_form
+msgid "Late Entry"
+msgstr "إدخال متأخر"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__managed_project_ids
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_member_form
+msgid "Managed Projects"
+msgstr "المشاريع المُدارة"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__manager_comment
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_form
+msgid "Manager Comment"
+msgstr "تعليق المدير"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_form
+msgid "Manager Review"
+msgstr "مراجعة المدير"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_res_config_settings_form
+msgid "Max Attachment Size"
+msgstr "الحجم الأقصى للمرفقات"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_res_config_settings__task_max_attachment_size
+msgid "Max Attachment Size (MB)"
+msgstr "الحجم الأقصى للمرفقات (MB)"
+
+#. module: task_project_management
+#: model:ir.model.fields,help:task_project_management.field_res_config_settings__task_max_attachment_size
+msgid "Maximum allowed file size for task attachments in megabytes."
+msgstr "الحجم الأقصى المسموح به لمرفقات المهام بالميغابايت."
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_res_config_settings_form
+msgid "Maximum file size for task attachments"
+msgstr "الحجم الأقصى لمرفقات المهام"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_archive__member_id
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_export_report_wizard__member_id
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__member_id
+#: model:res.groups,name:task_project_management.group_member
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_archive_search
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_member_form
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_search
+#, python-format
+msgid "Member"
+msgstr "عضو"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "Member \"%(member)s\" is not assigned to project \"%(project)s\"."
+msgstr "العضو \"%(member)s\" غير مُعيّن في المشروع \"%(project)s\"."
+
+#. module: task_project_management
+#: model:ir.model,name:task_project_management.model_task_management_archive
+msgid "Member Project Archive / Portfolio"
+msgstr "أرشيف مشاريع العضو / معرض الأعمال"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__member_project_ids
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_member_form
+msgid "Member Projects"
+msgstr "مشاريع العضو"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model:ir.actions.act_window,name:task_project_management.action_member
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__member_ids
+#: model:ir.ui.menu,name:task_project_management.menu_members_parent
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_member_tree
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_form
+#, python-format
+msgid "Members"
+msgstr "الأعضاء"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__message_has_error
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__message_has_error
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__message_has_error
+msgid "Message Delivery error"
+msgstr "خطأ في تسليم الرسالة"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__message_ids
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__message_ids
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__message_ids
+msgid "Messages"
+msgstr "الرسائل"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__my_activity_date_deadline
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__my_activity_date_deadline
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "الموعد النهائي لنشاطي"
+
+#. module: task_project_management
+#: model:ir.actions.act_window,name:task_project_management.action_my_archive
+#: model:ir.ui.menu,name:task_project_management.menu_my_archive
+msgid "My Archive"
+msgstr "أرشيفي"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model:ir.actions.client,name:task_project_management.action_member_dashboard
+#: model:ir.ui.menu,name:task_project_management.menu_my_dashboard
+#, python-format
+msgid "My Dashboard"
+msgstr "لوحة التحكم الخاصة بي"
+
+#. module: task_project_management
+#: model:ir.actions.act_window,name:task_project_management.action_my_tasks
+#: model:ir.ui.menu,name:task_project_management.menu_my_tasks
+#: model:ir.ui.menu,name:task_project_management.menu_my_tasks_parent
+msgid "My Tasks"
+msgstr "مهامي"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__name
+msgid "Name"
+msgstr "الاسم"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task_audit__new_status
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_audit_search
+msgid "New Status"
+msgstr "الحالة الجديدة"
+
+#. module: task_project_management
+#: model:mail.template,subject:task_project_management.mail_template_task_submitted
+msgid "New Task Submitted: {{ object.project_id.name }}"
+msgstr "مهمة جديدة مقدّمة: {{ object.project_id.name }}"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "New task submitted by %(member)s for project \"%(project)s\" on %(date)s."
+msgstr "تم تقديم مهمة جديدة بواسطة %(member)s للمشروع \"%(project)s\" بتاريخ %(date)s."
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__activity_date_deadline
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__activity_date_deadline
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "الموعد النهائي للنشاط التالي"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__activity_summary
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__activity_summary
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__activity_summary
+msgid "Next Activity Summary"
+msgstr "ملخص النشاط التالي"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__activity_type_id
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__activity_type_id
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__activity_type_id
+msgid "Next Activity Type"
+msgstr "نوع النشاط التالي"
+
+#. module: task_project_management
+#: model_terms:ir.actions.act_window,help:task_project_management.action_tasks_to_review
+msgid "No pending tasks to review"
+msgstr "لا توجد مهام معلقة للمراجعة"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__message_needaction_counter
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__message_needaction_counter
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__message_needaction_counter
+msgid "Number of Actions"
+msgstr "عدد الإجراءات"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_res_config_settings_form
+msgid "Number of days in the past a member can enter tasks"
+msgstr "عدد الأيام الماضية التي يمكن للعضو إدخال مهام فيها"
+
+#. module: task_project_management
+#: model:ir.model.fields,help:task_project_management.field_res_config_settings__task_past_date_limit
+msgid ""
+"Number of days in the past a member can enter tasks. Beyond this limit, only"
+" PM or Admin can enter tasks."
+msgstr ""
+"عدد الأيام الماضية التي يمكن للعضو إدخال مهام فيها. بعد تجاوز هذا الحد، يمكن"
+" فقط لمدير المشروع أو المسؤول إدخال المهام."
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__message_has_error_counter
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__message_has_error_counter
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__message_has_error_counter
+msgid "Number of errors"
+msgstr "عدد الأخطاء"
+
+#. module: task_project_management
+#: model:ir.model.fields,help:task_project_management.field_task_management_member__message_needaction_counter
+#: model:ir.model.fields,help:task_project_management.field_task_management_project__message_needaction_counter
+#: model:ir.model.fields,help:task_project_management.field_task_management_task__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "عدد الرسائل التي تتطلب إجراءً"
+
+#. module: task_project_management
+#: model:ir.model.fields,help:task_project_management.field_task_management_member__message_has_error_counter
+#: model:ir.model.fields,help:task_project_management.field_task_management_project__message_has_error_counter
+#: model:ir.model.fields,help:task_project_management.field_task_management_task__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "عدد الرسائل التي بها خطأ في التسليم"
+
+#. module: task_project_management
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_project__status__on_hold
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_search
+msgid "On Hold"
+msgstr "معلّق"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "Only Project Managers of this project or Admins can approve tasks."
+msgstr "يمكن فقط لمديري هذا المشروع أو المسؤولين الموافقة على المهام."
+
+#. module: task_project_management
+#: model:ir.model,name:task_project_management.model_task_management_member
+msgid "Organization Member"
+msgstr "عضو المؤسسة"
+
+#. module: task_project_management
+#: model:ir.actions.client,name:task_project_management.action_pm_dashboard
+#: model:ir.ui.menu,name:task_project_management.menu_pm_dashboard
+msgid "PM Dashboard"
+msgstr "لوحة تحكم مدير المشروع"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_res_config_settings__task_past_date_limit
+msgid "Past Date Entry Limit (Days)"
+msgstr "حد إدخال التاريخ الماضي (أيام)"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_res_config_settings_form
+msgid "Past Date Limit"
+msgstr "حد التاريخ الماضي"
+
+#. module: task_project_management
+#. odoo-javascript
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_task__approval_status__pending
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_task_audit__new_status__pending
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_task_audit__old_status__pending
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_search
+#, python-format
+msgid "Pending"
+msgstr "قيد الانتظار"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__pending_task_count
+msgid "Pending Tasks"
+msgstr "المهام المعلقة"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Pending:"
+msgstr "قيد الانتظار:"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__phone
+msgid "Phone"
+msgstr "الهاتف"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task_audit__old_status
+msgid "Previous Status"
+msgstr "الحالة السابقة"
+
+#. module: task_project_management
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_archive__visibility__private
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_archive_search
+msgid "Private"
+msgstr "خاص"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Progress"
+msgstr "التقدم"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__progress_percentage
+msgid "Progress (%)"
+msgstr "التقدم (%)"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model:ir.model,name:task_project_management.model_task_management_project
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_export_report_wizard__project_id
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__project_id
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_form
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_search
+#, python-format
+msgid "Project"
+msgstr "المشروع"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/project.py:0
+#, python-format
+msgid ""
+"Project \"%(name)s\" has reached its expected end date (%(date)s) with "
+"%(count)s pending task(s)."
+msgstr ""
+"المشروع \"%(name)s\" وصل إلى تاريخ انتهائه المتوقع (%(date)s) مع وجود "
+"%(count)s مهمة (مهام) معلقة."
+
+#. module: task_project_management
+#: model:mail.template,subject:task_project_management.mail_template_project_deadline
+msgid "Project Deadline: {{ object.name }}"
+msgstr "الموعد النهائي للمشروع: {{ object.name }}"
+
+#. module: task_project_management
+#: model:res.groups,name:task_project_management.group_project_manager
+msgid "Project Manager"
+msgstr "مدير المشروع"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Project Manager Dashboard"
+msgstr "لوحة تحكم مدير المشروع"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__project_manager_ids
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_form
+msgid "Project Managers"
+msgstr "مديرو المشاريع"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_archive__project_name
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__name
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_form
+msgid "Project Name"
+msgstr "اسم المشروع"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_form
+msgid "Project description..."
+msgstr "وصف المشروع..."
+
+#. module: task_project_management
+#: model:ir.ui.menu,name:task_project_management.menu_projects_parent
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_tree
+msgid "Projects"
+msgstr "المشاريع"
+
+#. module: task_project_management
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_archive__visibility__public
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_archive_search
+msgid "Public"
+msgstr "عام"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Recent Tasks"
+msgstr "المهام الأخيرة"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_form
+msgid "Reject"
+msgstr "رفض"
+
+#. module: task_project_management
+#. odoo-javascript
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_task__approval_status__rejected
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_task_audit__new_status__rejected
+#: model:ir.model.fields.selection,name:task_project_management.selection__task_management_task_audit__old_status__rejected
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_audit_search
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_search
+#, python-format
+msgid "Rejected"
+msgstr "مرفوض"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__user_id
+msgid "Related User"
+msgstr "المستخدم المرتبط"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__removed_member_ids
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_form
+msgid "Removed Members"
+msgstr "الأعضاء المحذوفون"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_export_report_wizard__report_file
+msgid "Report File"
+msgstr "ملف التقرير"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__activity_user_id
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__activity_user_id
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__activity_user_id
+msgid "Responsible User"
+msgstr "المستخدم المسؤول"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_archive__role_played
+msgid "Role Played"
+msgstr "الدور المؤدّى"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_archive_search
+msgid "Search Archive"
+msgstr "بحث في الأرشيف"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_audit_search
+msgid "Search Audit Trail"
+msgstr "بحث في سجل المراجعة"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_member_search
+msgid "Search Members"
+msgstr "بحث في الأعضاء"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_search
+msgid "Search Projects"
+msgstr "بحث في المشاريع"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_search
+msgid "Search Tasks"
+msgstr "بحث في المهام"
+
+#. module: task_project_management
+#: model:ir.actions.act_window,name:task_project_management.action_task_management_config
+#: model:ir.ui.menu,name:task_project_management.menu_settings
+msgid "Settings"
+msgstr "الإعدادات"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_archive__start_date
+msgid "Start Date"
+msgstr "تاريخ البدء"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__status
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_search
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_search
+#, python-format
+msgid "Status"
+msgstr "الحالة"
+
+#. module: task_project_management
+#: model:ir.model.fields,help:task_project_management.field_task_management_member__activity_state
+#: model:ir.model.fields,help:task_project_management.field_task_management_project__activity_state
+#: model:ir.model.fields,help:task_project_management.field_task_management_task__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"الحالة بناءً على الأنشطة\n"
+"متأخر: تم تجاوز تاريخ الاستحقاق\n"
+"اليوم: تاريخ النشاط هو اليوم\n"
+"مخطط: أنشطة مستقبلية."
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task_audit__task_id
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_audit_search
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_form
+msgid "Task"
+msgstr "المهمة"
+
+#. module: task_project_management
+#: model:ir.model,name:task_project_management.model_task_management_task_audit
+msgid "Task Approval Audit Trail"
+msgstr "سجل مراجعة الموافقة على المهام"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__task_count
+msgid "Task Count"
+msgstr "عدد المهام"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__description
+msgid "Task Description"
+msgstr "وصف المهمة"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_res_config_settings_form
+msgid "Task Entry Settings"
+msgstr "إعدادات إدخال المهام"
+
+#. module: task_project_management
+#: model:ir.module.category,name:task_project_management.module_category_task_management
+#: model:ir.ui.menu,name:task_project_management.menu_task_management_root
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_res_config_settings_form
+msgid "Task Management"
+msgstr "إدارة المهام"
+
+#. module: task_project_management
+#: model:ir.actions.server,name:task_project_management.cron_check_project_deadlines_ir_actions_server
+msgid "Task Management: Check Project Deadlines"
+msgstr "إدارة المهام: التحقق من المواعيد النهائية للمشاريع"
+
+#. module: task_project_management
+#: model:mail.template,name:task_project_management.mail_template_project_deadline
+msgid "Task Management: Project Deadline Warning"
+msgstr "إدارة المهام: تحذير الموعد النهائي للمشروع"
+
+#. module: task_project_management
+#: model:mail.template,name:task_project_management.mail_template_task_status_changed
+msgid "Task Management: Task Status Changed"
+msgstr "إدارة المهام: تغيير حالة المهمة"
+
+#. module: task_project_management
+#: model:mail.template,name:task_project_management.mail_template_task_submitted
+msgid "Task Management: Task Submitted"
+msgstr "إدارة المهام: تم تقديم المهمة"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "Task created"
+msgstr "تم إنشاء المهمة"
+
+#. module: task_project_management
+#: model:mail.template,subject:task_project_management.mail_template_task_status_changed
+msgid "Task {{ object.approval_status }}: {{ object.project_id.name }}"
+msgstr "المهمة {{ object.approval_status }}: {{ object.project_id.name }}"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_member__task_ids
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__task_ids
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_member_form
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_form
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_tree
+#, python-format
+msgid "Tasks"
+msgstr "المهام"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "Tasks cannot be deleted. You can only edit them."
+msgstr "لا يمكن حذف المهام. يمكنك فقط تعديلها."
+
+#. module: task_project_management
+#: model:ir.actions.act_window,name:task_project_management.action_tasks_to_review
+#: model:ir.ui.menu,name:task_project_management.menu_tasks_to_review
+msgid "Tasks to Review"
+msgstr "مهام للمراجعة"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_search
+#, python-format
+msgid "This Month"
+msgstr "هذا الشهر"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_search
+#, python-format
+msgid "This Week"
+msgstr "هذا الأسبوع"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "This project is archived. No tasks can be submitted."
+msgstr "هذا المشروع مؤرشف. لا يمكن تقديم مهام."
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "This project is completed. Only Admin can submit tasks."
+msgstr "هذا المشروع مكتمل. يمكن فقط للمسؤول تقديم المهام."
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "This project is currently on hold. You cannot submit new tasks."
+msgstr "هذا المشروع معلّق حالياً. لا يمكنك تقديم مهام جديدة."
+
+#. module: task_project_management
+#: model:ir.model.constraint,message:task_project_management.constraint_task_management_member_user_id_unique
+msgid "This user is already linked to another member."
+msgstr "هذا المستخدم مرتبط بالفعل بعضو آخر."
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__time_from
+msgid "Time From"
+msgstr "وقت البدء"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "Time From and Time To cannot be the same."
+msgstr "لا يمكن أن يكون وقت البدء ووقت الانتهاء متطابقين."
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_task__time_to
+msgid "Time To"
+msgstr "وقت الانتهاء"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "Time To must be after Time From. After-midnight tasks are disabled."
+msgstr "يجب أن يكون وقت الانتهاء بعد وقت البدء. المهام بعد منتصف الليل معطّلة."
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid ""
+"Time overlap detected! You already have a task from %(from)s to %(to)s on "
+"%(date)s."
+msgstr ""
+"تم اكتشاف تداخل في الوقت! لديك بالفعل مهمة من %(from)s إلى %(to)s بتاريخ "
+"%(date)s."
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "Time values cannot be negative."
+msgstr "لا يمكن أن تكون قيم الوقت سالبة."
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "Time values must be less than 24:00."
+msgstr "يجب أن تكون قيم الوقت أقل من 24:00."
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_search
+#, python-format
+msgid "Today"
+msgstr "اليوم"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_tree
+#, python-format
+msgid "Total Hours"
+msgstr "إجمالي الساعات"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__total_logged_hours
+msgid "Total Logged Hours"
+msgstr "إجمالي الساعات المسجّلة"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Total Members"
+msgstr "إجمالي الأعضاء"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Total Projects"
+msgstr "إجمالي المشاريع"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Total Tasks"
+msgstr "إجمالي المهام"
+
+#. module: task_project_management
+#: model:ir.model.fields,help:task_project_management.field_task_management_member__activity_exception_decoration
+#: model:ir.model.fields,help:task_project_management.field_task_management_project__activity_exception_decoration
+#: model:ir.model.fields,help:task_project_management.field_task_management_task__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "نوع نشاط الاستثناء في السجل."
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_archive__visibility
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_archive_search
+msgid "Visibility"
+msgstr "الظهور"
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid ""
+"You can only enter tasks up to %(days)s days in the past. Contact your PM or"
+" Admin."
+msgstr ""
+"يمكنك فقط إدخال مهام حتى %(days)s أيام في الماضي. تواصل مع مدير المشروع أو"
+" المسؤول."
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/archive.py:0
+#, python-format
+msgid "You can only modify your own archive entries."
+msgstr "يمكنك فقط تعديل إدخالات الأرشيف الخاصة بك."
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "You cannot approve or reject your own tasks."
+msgstr "لا يمكنك الموافقة على أو رفض مهامك الخاصة."
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "You cannot enter tasks for future dates."
+msgstr "لا يمكنك إدخال مهام لتواريخ مستقبلية."
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/models/task.py:0
+#, python-format
+msgid "Your task \"%(desc)s\" has been %(status)s."
+msgstr "مهمتك \"%(desc)s\" تم %(status)s."
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_form
+msgid "days)"
+msgstr "أيام)"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid ""
+"hrs\n"
+"                                            ("
+msgstr ""
+"ساعة\n"
+"                                            ("
+
+#. module: task_project_management
+#. odoo-python
+#: code:addons/task_project_management/wizard/export_report_wizard.py:0
+#, python-format
+msgid "wkhtmltoimage is not installed. Please install wkhtmltopdf package."
+msgstr "wkhtmltoimage غير مثبّت. يرجى تثبيت حزمة wkhtmltopdf."

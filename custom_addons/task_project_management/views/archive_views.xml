@@ -10,7 +10,9 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="member_id" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                            <field name="member_id" readonly="1"
+                                   invisible="not member_id"/>
                             <field name="project_name"/>
                             <field name="role_played"/>
                         </group>
@@ -42,7 +44,8 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="member_id"/>
+                            <field name="user_id"/>
+                            <field name="member_id" invisible="not member_id"/>
                             <field name="project_name"/>
                             <field name="role_played"/>
                         </group>
@@ -70,7 +73,8 @@
         <field name="model">task.management.archive</field>
         <field name="arch" type="xml">
             <tree string="Archive">
-                <field name="member_id"/>
+                <field name="user_id"/>
+                <field name="member_id" optional="hide"/>
                 <field name="project_name"/>
                 <field name="role_played"/>
                 <field name="start_date"/>
@@ -112,7 +116,7 @@
         <field name="name">My Archive</field>
         <field name="res_model">task.management.archive</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('member_id.user_id', '=', uid)]</field>
+        <field name="domain">[('user_id', '=', uid)]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Add a project to your portfolio

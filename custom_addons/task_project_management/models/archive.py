@@ -9,8 +9,12 @@ class TaskManagementArchive(models.Model):
 
     member_id = fields.Many2one(
         'task.management.member', string='Member',
-        required=True, ondelete='cascade', index=True,
+        required=False, ondelete='set null', index=True,
         default=lambda self: self.env['task.management.member']._get_member_for_user(),
+    )
+    user_id = fields.Many2one(
+        'res.users', string='User', required=True,
+        default=lambda self: self.env.uid, index=True,
     )
     project_name = fields.Char(string='Project Name', required=True)
     description = fields.Text(string='Description')
@@ -29,11 +33,10 @@ class TaskManagementArchive(models.Model):
 
     def _check_owner(self):
         """Check that the current user is the owner of this archive entry."""
-        member = self.env['task.management.member']._get_member_for_user()
         is_admin = self.env.user.has_group(
             'task_project_management.group_admin_manager')
         for rec in self:
-            if not is_admin and rec.member_id != member:
+            if not is_admin and rec.user_id.id != self.env.uid:
                 raise AccessError(
                     _('You can only modify your own archive entries.'))
 

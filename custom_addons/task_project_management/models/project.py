@@ -146,16 +146,19 @@ class TaskManagementProject(models.Model):
                 admin_partners = admin_group.users.mapped('partner_id')
                 all_partners = pm_partners | admin_partners
                 if all_partners:
-                    project.message_post(
-                        body=_(
-                            'Project "%(name)s" has reached its expected '
-                            'end date (%(date)s) with %(count)s pending '
-                            'task(s).',
-                            name=project.name,
-                            date=project.expected_end_date,
-                            count=pending_count,
-                        ),
-                        partner_ids=all_partners.ids,
-                        message_type='notification',
-                        subtype_xmlid='mail.mt_comment',
-                    )
+                    try:
+                        project.sudo().message_post(
+                            body=_(
+                                'Project "%(name)s" has reached its expected '
+                                'end date (%(date)s) with %(count)s pending '
+                                'task(s).',
+                                name=project.name,
+                                date=project.expected_end_date,
+                                count=pending_count,
+                            ),
+                            partner_ids=all_partners.ids,
+                            message_type='notification',
+                            subtype_xmlid='mail.mt_note',
+                        )
+                    except Exception:
+                        pass

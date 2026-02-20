@@ -67,11 +67,6 @@
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="message_ids"/>
-                    <field name="activity_ids"/>
-                </div>
             </form>
         </field>
     </record>
@@ -124,7 +119,7 @@
 
     <!-- Project Actions -->
     <record id="action_project" model="ir.actions.act_window">
-        <field name="name">All Projects</field>
+        <field name="name">Projects</field>
         <field name="res_model">task.management.project</field>
         <field name="view_mode">tree,form</field>
         <field name="context">{'search_default_filter_active': 1}</field>
