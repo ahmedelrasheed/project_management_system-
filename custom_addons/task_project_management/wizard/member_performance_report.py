@@ -100,7 +100,7 @@ class MemberPerformanceReport(models.TransientModel):
                 continue
 
             d_from, d_to = report._get_date_range()
-            tasks = self.env['task.management.task'].sudo().search([
+            tasks = self.env['task.management.task'].search([
                 ('member_id', '=', report.member_id.id),
                 ('date', '>=', d_from),
                 ('date', '<=', d_to),
@@ -179,7 +179,7 @@ class MemberPerformanceReport(models.TransientModel):
         if not self.member_id:
             return
         d_from, d_to = self._get_date_range()
-        tasks = self.env['task.management.task'].sudo().search([
+        tasks = self.env['task.management.task'].search([
             ('member_id', '=', self.member_id.id),
             ('date', '>=', d_from),
             ('date', '<=', d_to),

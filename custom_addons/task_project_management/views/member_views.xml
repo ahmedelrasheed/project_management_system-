@@ -11,14 +11,14 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name" readonly="not is_current_user_admin"/>
-                            <field name="email" readonly="not is_current_user_admin"/>
-                            <field name="phone" readonly="not is_current_user_admin"/>
+                            <field name="name" readonly="not is_current_user_admin and id"/>
+                            <field name="email" readonly="not is_current_user_admin and id"/>
+                            <field name="phone" readonly="not is_current_user_admin and id"/>
                         </group>
                         <group>
-                            <field name="job_title" readonly="not is_current_user_admin"/>
-                            <field name="role" readonly="not is_current_user_admin"/>
-                            <field name="address" readonly="not is_current_user_admin"/>
+                            <field name="job_title" readonly="not is_current_user_admin and id"/>
+                            <field name="role" readonly="not is_current_user_admin and id"/>
+                            <field name="address" readonly="not is_current_user_admin and id"/>
                         </group>
                     </group>
                     <notebook>

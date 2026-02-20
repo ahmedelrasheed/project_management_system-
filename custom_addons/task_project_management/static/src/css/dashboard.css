@@ -70,3 +70,8 @@ html[dir="rtl"] .task_dashboard .me-2 {
     margin-left: 0.5rem !important;
     margin-right: 0 !important;
 }
+
+/* Hide SMS button from phone fields */
+.o_field_phone_sms {
+    display: none !important;
+}

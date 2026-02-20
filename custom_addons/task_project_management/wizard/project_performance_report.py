@@ -91,7 +91,7 @@ class ProjectPerformanceReport(models.TransientModel):
             domain.append(('date', '>=', d_from))
         if d_to:
             domain.append(('date', '<=', d_to))
-        return self.env['task.management.task'].sudo().search(
+        return self.env['task.management.task'].search(
             domain, order='date desc, member_id, id desc')
 
     @api.depends('project_id', 'period', 'date_from', 'date_to')

@@ -8,7 +8,8 @@
             <form string="Export Report">
                 <group>
                     <group>
-                        <field name="project_id"/>
+                        <field name="project_id"
+                               options="{'no_create': True}"/>
                         <field name="member_id"/>
                     </group>
                     <group>
