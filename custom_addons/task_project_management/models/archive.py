@@ -40,9 +40,26 @@ class TaskManagementArchive(models.Model):
                 raise AccessError(
                     _('You can only modify your own archive entries.'))
 
+    def _sync_attachment_visibility(self):
+        """Set attachment public flag based on archive visibility."""
+        for rec in self:
+            if rec.attachment_ids:
+                rec.attachment_ids.sudo().write({
+                    'public': rec.visibility == 'public',
+                })
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._sync_attachment_visibility()
+        return records
+
     def write(self, vals):
         self._check_owner()
-        return super().write(vals)
+        result = super().write(vals)
+        if 'visibility' in vals or 'attachment_ids' in vals:
+            self._sync_attachment_visibility()
+        return result
 
     def unlink(self):
         self._check_owner()
