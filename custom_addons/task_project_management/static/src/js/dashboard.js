@@ -29,12 +29,16 @@ export class MemberDashboard extends Component {
     }
 
     async loadData() {
-        const result = await this.orm.call(
-            "task.management.task",
-            "get_member_dashboard_data",
-            []
-        );
-        Object.assign(this.state, result);
+        try {
+            const result = await this.orm.call(
+                "task.management.task",
+                "get_member_dashboard_data",
+                []
+            );
+            Object.assign(this.state, result);
+        } catch (e) {
+            console.error("Failed to load member dashboard data:", e);
+        }
     }
 }
 
@@ -56,12 +60,16 @@ export class PMDashboard extends Component {
     }
 
     async loadData() {
-        const result = await this.orm.call(
-            "task.management.task",
-            "get_pm_dashboard_data",
-            []
-        );
-        Object.assign(this.state, result);
+        try {
+            const result = await this.orm.call(
+                "task.management.task",
+                "get_pm_dashboard_data",
+                []
+            );
+            Object.assign(this.state, result);
+        } catch (e) {
+            console.error("Failed to load PM dashboard data:", e);
+        }
     }
 
     onExportCSV() {
@@ -99,12 +107,16 @@ export class AdminDashboard extends Component {
     }
 
     async loadData() {
-        const result = await this.orm.call(
-            "task.management.task",
-            "get_admin_dashboard_data",
-            []
-        );
-        Object.assign(this.state, result);
+        try {
+            const result = await this.orm.call(
+                "task.management.task",
+                "get_admin_dashboard_data",
+                []
+            );
+            Object.assign(this.state, result);
+        } catch (e) {
+            console.error("Failed to load admin dashboard data:", e);
+        }
     }
 
     onExportCSV() {

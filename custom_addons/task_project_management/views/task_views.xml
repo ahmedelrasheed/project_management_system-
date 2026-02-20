@@ -8,14 +8,13 @@
         <field name="arch" type="xml">
             <form string="Task" delete="0">
                 <header>
+                    <field name="is_current_user_pm" invisible="1"/>
                     <button name="action_approve" string="Approve"
                             type="object" class="btn-primary"
-                            invisible="approval_status != 'pending'"
-                            groups="task_project_management.group_project_manager"/>
+                            invisible="approval_status != 'pending' or not is_current_user_pm"/>
                     <button name="action_reject" string="Reject"
                             type="object" class="btn-danger"
-                            invisible="approval_status != 'pending'"
-                            groups="task_project_management.group_project_manager"/>
+                            invisible="approval_status != 'pending' or not is_current_user_pm"/>
                     <field name="approval_status" widget="statusbar"
                            statusbar_visible="pending,approved,rejected"/>
                 </header>
@@ -161,11 +160,37 @@
         </field>
     </record>
 
-    <!-- My Tasks Action (Member) -->
+    <!-- Task Tree View (with Member column visible) for PM/Admin -->
+    <record id="view_task_tree_with_member" model="ir.ui.view">
+        <field name="name">task.management.task.tree.withmember</field>
+        <field name="model">task.management.task</field>
+        <field name="arch" type="xml">
+            <tree string="Tasks" delete="0"
+                  decoration-warning="approval_status == 'pending'"
+                  decoration-success="approval_status == 'approved'"
+                  decoration-danger="approval_status == 'rejected'">
+                <field name="date"/>
+                <field name="project_id"/>
+                <field name="member_id"/>
+                <field name="description"/>
+                <field name="time_from" widget="float_time"/>
+                <field name="time_to" widget="float_time"/>
+                <field name="duration_hours" widget="float_time" sum="Total Hours"/>
+                <field name="approval_status" widget="badge"
+                       decoration-warning="approval_status == 'pending'"
+                       decoration-success="approval_status == 'approved'"
+                       decoration-danger="approval_status == 'rejected'"/>
+                <field name="is_late_entry" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- My Tasks Action (own submitted tasks only) -->
     <record id="action_my_tasks" model="ir.actions.act_window">
         <field name="name">My Tasks</field>
         <field name="res_model">task.management.task</field>
         <field name="view_mode">tree,form</field>
+        <field name="domain">[('member_id.user_id', '=', uid)]</field>
         <field name="context">{
             'search_default_filter_pending': 0,
         }</field>
@@ -176,11 +201,45 @@
         </field>
     </record>
 
+    <!-- Team Tasks Action (PM: tasks from supervised projects) -->
+    <record id="action_team_tasks" model="ir.actions.act_window">
+        <field name="name">Team Tasks</field>
+        <field name="res_model">task.management.task</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('project_id.project_manager_ids.user_id', '=', uid)]</field>
+        <field name="view_id" ref="view_task_tree_with_member"/>
+        <field name="context">{
+            'search_default_group_project': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No tasks from your team yet
+            </p>
+        </field>
+    </record>
+
+    <!-- All Tasks Action (Admin: everything) -->
+    <record id="action_all_tasks" model="ir.actions.act_window">
+        <field name="name">All Tasks</field>
+        <field name="res_model">task.management.task</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_task_tree_with_member"/>
+        <field name="context">{
+            'search_default_group_project': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No tasks in the system yet
+            </p>
+        </field>
+    </record>
+
     <!-- Tasks to Review Action (PM) -->
     <record id="action_tasks_to_review" model="ir.actions.act_window">
         <field name="name">Tasks to Review</field>
         <field name="res_model">task.management.task</field>
         <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_task_tree_with_member"/>
         <field name="context">{
             'search_default_filter_pending': 1,
             'search_default_group_project': 1,

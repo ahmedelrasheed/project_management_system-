@@ -22,6 +22,16 @@ class TaskManagementMember(models.Model):
         'res.users', string='Related User',
         ondelete='restrict', tracking=True,
     )
+    is_current_user_admin = fields.Boolean(
+        compute='_compute_is_current_user_admin',
+    )
+
+    @api.depends_context('uid')
+    def _compute_is_current_user_admin(self):
+        is_admin = self.env.user.has_group(
+            'task_project_management.group_admin_manager')
+        for rec in self:
+            rec.is_current_user_admin = is_admin
 
     # Relational fields
     managed_project_ids = fields.Many2many(

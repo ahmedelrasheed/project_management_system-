@@ -40,10 +40,10 @@
               web_icon="task_project_management,static/description/icon.png"/>
 
     <!-- ============================================================ -->
-    <!-- My Tasks Section (All roles)                                  -->
+    <!-- Tasks Section (All roles)                                     -->
     <!-- ============================================================ -->
     <menuitem id="menu_my_tasks_parent"
-              name="My Tasks"
+              name="Tasks"
               parent="menu_task_management_root"
               sequence="10"
               groups="task_project_management.group_member"/>
@@ -53,6 +53,20 @@
               parent="menu_my_tasks_parent"
               action="action_my_tasks"
               sequence="10"/>
+
+    <menuitem id="menu_team_tasks"
+              name="Team Tasks"
+              parent="menu_my_tasks_parent"
+              action="action_team_tasks"
+              sequence="15"
+              groups="task_project_management.group_project_manager"/>
+
+    <menuitem id="menu_all_tasks"
+              name="All Tasks"
+              parent="menu_my_tasks_parent"
+              action="action_all_tasks"
+              sequence="18"
+              groups="task_project_management.group_admin_manager"/>
 
     <menuitem id="menu_my_dashboard"
               name="My Dashboard"
@@ -80,6 +94,12 @@
               parent="menu_projects_parent"
               action="action_tasks_to_review"
               sequence="20"/>
+
+    <menuitem id="menu_export_report"
+              name="Export Report"
+              parent="menu_projects_parent"
+              action="action_export_report_wizard"
+              sequence="25"/>
 
     <menuitem id="menu_pm_dashboard"
               name="PM Dashboard"

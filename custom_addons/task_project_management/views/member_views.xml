@@ -7,17 +7,18 @@
         <field name="model">task.management.member</field>
         <field name="arch" type="xml">
             <form string="Member">
+                <field name="is_current_user_admin" invisible="1"/>
                 <sheet>
                     <group>
                         <group>
-                            <field name="name"/>
-                            <field name="email"/>
-                            <field name="phone"/>
+                            <field name="name" readonly="not is_current_user_admin"/>
+                            <field name="email" readonly="not is_current_user_admin"/>
+                            <field name="phone" readonly="not is_current_user_admin"/>
                         </group>
                         <group>
-                            <field name="job_title"/>
-                            <field name="role"/>
-                            <field name="address"/>
+                            <field name="job_title" readonly="not is_current_user_admin"/>
+                            <field name="role" readonly="not is_current_user_admin"/>
+                            <field name="address" readonly="not is_current_user_admin"/>
                         </group>
                     </group>
                     <notebook>

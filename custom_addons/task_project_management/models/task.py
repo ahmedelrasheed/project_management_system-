@@ -1,5 +1,6 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
+from markupsafe import Markup
 from datetime import timedelta, date
 
 
@@ -63,6 +64,16 @@ class TaskManagementTask(models.Model):
         'task.management.task.audit', 'task_id',
         string='Audit Trail',
     )
+    is_current_user_pm = fields.Boolean(
+        compute='_compute_is_current_user_pm',
+    )
+
+    @api.depends_context('uid')
+    def _compute_is_current_user_pm(self):
+        is_pm = self.env.user.has_group(
+            'task_project_management.group_project_manager')
+        for task in self:
+            task.is_current_user_pm = is_pm
 
     @api.depends('time_from', 'time_to')
     def _compute_duration_hours(self):
@@ -362,12 +373,16 @@ class TaskManagementTask(models.Model):
             pm_partners = self.sudo().project_id.project_manager_ids.mapped(
                 'user_id.partner_id')
             if pm_partners:
+                body = Markup(
+                    '<p>New task submitted by <strong>%s</strong> '
+                    'for project <strong>%s</strong> on %s.</p>'
+                ) % (
+                    self.member_id.name or '',
+                    self.project_id.name or '',
+                    self.date or '',
+                )
                 self.sudo().message_post(
-                    body=_('New task submitted by %(member)s for project '
-                           '"%(project)s" on %(date)s.',
-                           member=self.member_id.name,
-                           project=self.project_id.name,
-                           date=self.date),
+                    body=body,
                     partner_ids=pm_partners.ids,
                     message_type='notification',
                     subtype_xmlid='mail.mt_note',
@@ -381,15 +396,20 @@ class TaskManagementTask(models.Model):
             member_partner = self.sudo().member_id.user_id.partner_id
             if member_partner:
                 status_labels = {
-                    'approved': _('Approved'),
-                    'rejected': _('Rejected'),
-                    'pending': _('Pending'),
+                    'approved': 'Approved',
+                    'rejected': 'Rejected',
+                    'pending': 'Pending',
                 }
-                body = _('Your task "%(desc)s" has been %(status)s.',
-                         desc=(self.description or '')[:50],
-                         status=status_labels.get(new_status, new_status))
+                status_text = status_labels.get(new_status, new_status)
+                desc = (self.description or '')[:50]
+                body = Markup(
+                    '<p>Your task <strong>"%s"</strong> has been '
+                    '<strong>%s</strong>.</p>'
+                ) % (desc, status_text)
                 if self.manager_comment:
-                    body += _('\nComment: %s', self.manager_comment)
+                    body += Markup(
+                        '<p>Comment: %s</p>'
+                    ) % self.manager_comment
                 self.sudo().message_post(
                     body=body,
                     partner_ids=[member_partner.id],
@@ -404,7 +424,8 @@ class TaskManagementTask(models.Model):
     @api.model
     def get_member_dashboard_data(self):
         """Return dashboard data for the current member."""
-        member = self.env['task.management.member']._get_member_for_user()
+        member = self.env['task.management.member'].sudo().search(
+            [('user_id', '=', self.env.uid)], limit=1)
         if not member:
             return {
                 'totalTasks': 0, 'pendingTasks': 0,
@@ -412,7 +433,7 @@ class TaskManagementTask(models.Model):
                 'hoursToday': '0.00', 'hoursWeek': '0.00',
                 'hoursMonth': '0.00', 'recentTasks': [],
             }
-        tasks = self.search([('member_id', '=', member.id)])
+        tasks = self.sudo().search([('member_id', '=', member.id)])
         today = fields.Date.context_today(self)
         week_start = today - timedelta(days=today.weekday())
         month_start = today.replace(day=1)
@@ -451,21 +472,32 @@ class TaskManagementTask(models.Model):
     @api.model
     def get_pm_dashboard_data(self):
         """Return dashboard data for PM's managed projects."""
-        member = self.env['task.management.member']._get_member_for_user()
-        Project = self.env['task.management.project']
-        if not member:
+        Project = self.env['task.management.project'].sudo()
+        member = self.env['task.management.member'].sudo().search(
+            [('user_id', '=', self.env.uid)], limit=1)
+
+        # Admin sees all non-archived projects even if not a PM
+        is_admin = self.env.user.has_group(
+            'task_project_management.group_admin_manager')
+
+        if is_admin:
+            projects = Project.search([
+                ('status', '!=', 'archived'),
+            ])
+        elif member:
+            projects = Project.search([
+                ('project_manager_ids', 'in', [member.id]),
+                ('status', '!=', 'archived'),
+            ])
+        else:
             return {'projects': []}
 
-        projects = Project.search([
-            ('project_manager_ids', 'in', [member.id]),
-            ('status', '!=', 'archived'),
-        ])
         result = []
         for proj in projects:
             members_data = []
             for m in proj.member_ids:
                 m_tasks = proj.task_ids.filtered(
-                    lambda t: t.member_id == m)
+                    lambda t, member=m: t.member_id == member)
                 approved = len(m_tasks.filtered(
                     lambda t: t.approval_status == 'approved'))
                 total = len(m_tasks)
@@ -494,11 +526,11 @@ class TaskManagementTask(models.Model):
     @api.model
     def get_admin_dashboard_data(self):
         """Return organization-wide dashboard data for Admin."""
-        Project = self.env['task.management.project']
-        Member = self.env['task.management.member']
+        Project = self.env['task.management.project'].sudo()
+        Member = self.env['task.management.member'].sudo()
 
         projects = Project.search([])
-        all_tasks = self.search([])
+        all_tasks = self.sudo().search([])
 
         projects_data = []
         total_late = 0

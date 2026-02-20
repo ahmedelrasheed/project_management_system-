@@ -1,5 +1,6 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+from markupsafe import Markup
 
 
 class TaskManagementProject(models.Model):
@@ -147,15 +148,17 @@ class TaskManagementProject(models.Model):
                 all_partners = pm_partners | admin_partners
                 if all_partners:
                     try:
+                        body = Markup(
+                            '<p>Project <strong>"%s"</strong> has reached '
+                            'its expected end date (%s) with %s pending '
+                            'task(s).</p>'
+                        ) % (
+                            project.name or '',
+                            project.expected_end_date or '',
+                            pending_count,
+                        )
                         project.sudo().message_post(
-                            body=_(
-                                'Project "%(name)s" has reached its expected '
-                                'end date (%(date)s) with %(count)s pending '
-                                'task(s).',
-                                name=project.name,
-                                date=project.expected_end_date,
-                                count=pending_count,
-                            ),
+                            body=body,
                             partner_ids=all_partners.ids,
                             message_type='notification',
                             subtype_xmlid='mail.mt_note',

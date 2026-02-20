@@ -9,7 +9,8 @@
             <form string="Project">
                 <header>
                     <field name="status" widget="statusbar"
-                           statusbar_visible="active,on_hold,completed,archived"/>
+                           statusbar_visible="active,on_hold,completed,archived"
+                           options="{'clickable': True}"/>
                 </header>
                 <sheet>
                     <div class="oe_title">

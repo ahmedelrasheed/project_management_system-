@@ -136,6 +136,17 @@
                     </div>
                 </div>
 
+                <!-- No projects message -->
+                <t t-if="!state.projects.length">
+                    <div class="card mb-3">
+                        <div class="card-body text-center text-muted py-5">
+                            <i class="fa fa-folder-open-o fa-3x mb-3 d-block"/>
+                            <h5>No projects found</h5>
+                            <p>Projects you manage will appear here.</p>
+                        </div>
+                    </div>
+                </t>
+
                 <!-- Project Progress Cards -->
                 <t t-foreach="state.projects" t-as="project" t-key="project.id">
                     <div class="card mb-3">
@@ -281,6 +292,13 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <t t-if="!state.projects.length">
+                                            <tr>
+                                                <td colspan="7" class="text-center text-muted py-4">
+                                                    No projects found. Create a project to see data here.
+                                                </td>
+                                            </tr>
+                                        </t>
                                         <t t-foreach="state.projects" t-as="project" t-key="project.id">
                                             <tr>
                                                 <td t-esc="project.name"/>

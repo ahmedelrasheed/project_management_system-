@@ -41,6 +41,7 @@
         'views/menu_views.xml',
         # Wizard
         'wizard/export_report_wizard_views.xml',
+        'wizard/member_performance_report_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
