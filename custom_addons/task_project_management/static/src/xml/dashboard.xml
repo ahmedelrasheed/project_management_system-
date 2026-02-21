@@ -19,7 +19,7 @@
 
                 <!-- KPI Cards -->
                 <div class="row mb-4">
-                    <div class="col-md-3">
+                    <div class="col">
                         <div class="card kpi-card bg-primary text-white">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Total Tasks</h5>
@@ -27,7 +27,15 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col" t-if="state.assignedTasks > 0">
+                        <div class="card kpi-card bg-info text-white">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Assigned</h5>
+                                <h2 class="kpi-value" t-esc="state.assignedTasks"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
                         <div class="card kpi-card bg-warning text-white">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Pending</h5>
@@ -35,7 +43,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col">
                         <div class="card kpi-card bg-success text-white">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Approved</h5>
@@ -43,7 +51,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col">
                         <div class="card kpi-card bg-danger text-white">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Rejected</h5>
@@ -224,6 +232,9 @@
                                     </div>
                                 </div>
                                 <div class="col-md-4 text-end">
+                                    <span class="text-muted me-3" t-if="project.assigned_tasks">
+                                        Assigned: <strong class="text-info" t-esc="project.assigned_tasks"/>
+                                    </span>
                                     <span class="text-muted">
                                         Pending: <strong t-esc="project.pending_tasks"/>
                                     </span>

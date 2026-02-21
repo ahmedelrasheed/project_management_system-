@@ -9,6 +9,10 @@
             <form string="Task" delete="0">
                 <header>
                     <field name="is_current_user_pm" invisible="1"/>
+                    <field name="assigned_by_id" invisible="1"/>
+                    <button name="action_submit_work" string="Submit Work"
+                            type="object" class="btn-success"
+                            invisible="approval_status != 'assigned' or is_current_user_pm"/>
                     <button name="action_approve" string="Approve"
                             type="object" class="btn-primary"
                             invisible="approval_status != 'pending' or not is_current_user_pm"/>
@@ -16,7 +20,7 @@
                             type="object" class="btn-danger"
                             invisible="approval_status != 'pending' or not is_current_user_pm"/>
                     <field name="approval_status" widget="statusbar"
-                           statusbar_visible="pending,approved,rejected"/>
+                           statusbar_visible="assigned,pending,approved,rejected"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -29,14 +33,48 @@
                             </span>
                         </button>
                     </div>
+
+                    <!-- Assignment Details (visible when task is assigned) -->
+                    <div class="alert alert-info" role="alert"
+                         invisible="not assigned_by_id">
+                        <h5 class="alert-heading mb-2">
+                            <i class="fa fa-tasks me-1"/>
+                            Assignment Details
+                        </h5>
+                        <group>
+                            <group>
+                                <field name="assignment_name" string="Task Name"
+                                       readonly="not is_current_user_pm or approval_status != 'assigned'"/>
+                                <field name="due_date"
+                                       readonly="not is_current_user_pm or approval_status != 'assigned'"/>
+                            </group>
+                            <group>
+                                <field name="assigned_by_id" string="Assigned By" readonly="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="assignment_description"
+                                   string="Instructions"
+                                   readonly="not is_current_user_pm or approval_status != 'assigned'"/>
+                        </group>
+                        <group>
+                            <field name="assignment_attachment_ids"
+                                   widget="many2many_binary"
+                                   string="Reference Files"
+                                   readonly="not is_current_user_pm or approval_status != 'assigned'"/>
+                        </group>
+                    </div>
+
                     <group>
                         <group>
                             <field name="date"
                                    readonly="approval_status == 'approved'"/>
-                            <field name="member_id" invisible="1"/>
+                            <field name="member_id"
+                                   invisible="approval_status != 'assigned' or not is_current_user_pm"
+                                   readonly="approval_status != 'assigned'"/>
                             <field name="project_id"
                                    readonly="approval_status == 'approved'"
-                                   domain="[('status', '=', 'active')]"
+                                   domain="[('status', 'in', ['waiting', 'active'])]"
                                    context="{'restrict_to_member_projects': True}"
                                    options="{'no_create': True}"/>
                         </group>
@@ -53,7 +91,7 @@
                     <group>
                         <field name="description"
                                readonly="approval_status == 'approved'"
-                               placeholder="Describe the task..."/>
+                               placeholder="Describe the work done..."/>
                     </group>
                     <group>
                         <field name="attachment_ids" widget="many2many_binary"
@@ -78,7 +116,8 @@
                                     <field name="new_status" widget="badge"
                                            decoration-warning="new_status == 'pending'"
                                            decoration-success="new_status == 'approved'"
-                                           decoration-danger="new_status == 'rejected'"/>
+                                           decoration-danger="new_status == 'rejected'"
+                                           decoration-info="new_status == 'assigned'"/>
                                     <field name="changed_by"/>
                                     <field name="comment"/>
                                 </tree>
@@ -98,18 +137,22 @@
             <tree string="Tasks" delete="0"
                   decoration-warning="approval_status == 'pending'"
                   decoration-success="approval_status == 'approved'"
-                  decoration-danger="approval_status == 'rejected'">
+                  decoration-danger="approval_status == 'rejected'"
+                  decoration-info="approval_status == 'assigned'">
                 <field name="date"/>
                 <field name="project_id"/>
                 <field name="member_id" optional="hide"/>
+                <field name="assignment_name" string="Task Name" optional="show"/>
                 <field name="description"/>
                 <field name="time_from" widget="float_time"/>
                 <field name="time_to" widget="float_time"/>
                 <field name="duration_hours" widget="float_time" sum="Total Hours"/>
+                <field name="due_date" optional="show"/>
                 <field name="approval_status" widget="badge"
                        decoration-warning="approval_status == 'pending'"
                        decoration-success="approval_status == 'approved'"
-                       decoration-danger="approval_status == 'rejected'"/>
+                       decoration-danger="approval_status == 'rejected'"
+                       decoration-info="approval_status == 'assigned'"/>
                 <field name="is_late_entry" optional="show"/>
             </tree>
         </field>
@@ -124,7 +167,10 @@
                 <field name="description"/>
                 <field name="project_id"/>
                 <field name="member_id"/>
+                <field name="assignment_name"/>
                 <separator/>
+                <filter string="Assigned" name="filter_assigned"
+                        domain="[('approval_status', '=', 'assigned')]"/>
                 <filter string="Pending" name="filter_pending"
                         domain="[('approval_status', '=', 'pending')]"/>
                 <filter string="Approved" name="filter_approved"
@@ -170,18 +216,22 @@
             <tree string="Tasks" delete="0"
                   decoration-warning="approval_status == 'pending'"
                   decoration-success="approval_status == 'approved'"
-                  decoration-danger="approval_status == 'rejected'">
+                  decoration-danger="approval_status == 'rejected'"
+                  decoration-info="approval_status == 'assigned'">
                 <field name="date"/>
                 <field name="project_id"/>
                 <field name="member_id"/>
+                <field name="assignment_name" string="Task Name" optional="show"/>
                 <field name="description"/>
                 <field name="time_from" widget="float_time"/>
                 <field name="time_to" widget="float_time"/>
                 <field name="duration_hours" widget="float_time" sum="Total Hours"/>
+                <field name="due_date" optional="show"/>
                 <field name="approval_status" widget="badge"
                        decoration-warning="approval_status == 'pending'"
                        decoration-success="approval_status == 'approved'"
-                       decoration-danger="approval_status == 'rejected'"/>
+                       decoration-danger="approval_status == 'rejected'"
+                       decoration-info="approval_status == 'assigned'"/>
                 <field name="is_late_entry" optional="show"/>
             </tree>
         </field>
@@ -249,6 +299,49 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No pending tasks to review
+            </p>
+        </field>
+    </record>
+
+    <!-- Assign Task Action (PM creates assignment) -->
+    <record id="action_assign_task" model="ir.actions.act_window">
+        <field name="name">Assign Task</field>
+        <field name="res_model">task.management.task</field>
+        <field name="view_mode">form</field>
+        <field name="context">{
+            'default_approval_status': 'assigned',
+            'form_view_initial_mode': 'edit',
+        }</field>
+        <field name="target">current</field>
+    </record>
+
+    <!-- My Assignments Action (member sees assigned tasks) -->
+    <record id="action_my_assignments" model="ir.actions.act_window">
+        <field name="name">My Assignments</field>
+        <field name="res_model">task.management.task</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('member_id.user_id', '=', uid), ('assigned_by_id', '!=', False)]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No tasks have been assigned to you yet
+            </p>
+        </field>
+    </record>
+
+    <!-- Assigned Tasks Action (PM sees tasks they assigned) -->
+    <record id="action_assigned_tasks" model="ir.actions.act_window">
+        <field name="name">Assigned Tasks</field>
+        <field name="res_model">task.management.task</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_task_tree_with_member"/>
+        <field name="domain">[('assigned_by_id.user_id', '=', uid)]</field>
+        <field name="context">{
+            'search_default_group_project': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                You haven't assigned any tasks yet
             </p>
         </field>
     </record>

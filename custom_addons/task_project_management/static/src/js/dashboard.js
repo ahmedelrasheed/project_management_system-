@@ -16,6 +16,7 @@ export class MemberDashboard extends Component {
         this.state = useState({
             companyName: "",
             totalTasks: 0,
+            assignedTasks: 0,
             pendingTasks: 0,
             approvedTasks: 0,
             rejectedTasks: 0,

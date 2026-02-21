@@ -11,10 +11,10 @@ class TaskManagementTask(models.Model):
     _order = 'date desc, id desc'
 
     date = fields.Date(
-        string='Date', required=True,
+        string='Date',
         default=fields.Date.context_today, tracking=True,
     )
-    description = fields.Text(string='Task Description', required=True)
+    description = fields.Text(string='Task Description')
     project_id = fields.Many2one(
         'task.management.project', string='Project',
         required=True, ondelete='restrict',
@@ -27,14 +27,15 @@ class TaskManagementTask(models.Model):
         default=lambda self: self.env['task.management.member'].sudo()._get_member_for_user(),
         tracking=True,
     )
-    time_from = fields.Float(string='Time From', required=True)
-    time_to = fields.Float(string='Time To', required=True)
+    time_from = fields.Float(string='Time From')
+    time_to = fields.Float(string='Time To')
     duration_hours = fields.Float(
         string='Duration (Hours)',
         compute='_compute_duration_hours',
         store=True,
     )
     approval_status = fields.Selection([
+        ('assigned', 'Assigned'),
         ('pending', 'Pending'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
@@ -46,6 +47,20 @@ class TaskManagementTask(models.Model):
         'ir.attachment', 'task_attachment_rel',
         'task_id', 'attachment_id',
         string='Attachments',
+    )
+
+    # --- Assignment Fields ---
+    assignment_name = fields.Char(string='Task Name', tracking=True)
+    due_date = fields.Date(string='Due Date', tracking=True)
+    assigned_by_id = fields.Many2one(
+        'task.management.member', string='Assigned By',
+        readonly=True, ondelete='set null',
+    )
+    assignment_description = fields.Text(string='Assignment Instructions')
+    assignment_attachment_ids = fields.Many2many(
+        'ir.attachment', 'task_assignment_attachment_rel',
+        'task_id', 'attachment_id',
+        string='Reference Files',
     )
     entry_timestamp = fields.Datetime(
         string='Entry Timestamp',
@@ -125,12 +140,30 @@ class TaskManagementTask(models.Model):
 
     # --- Constraints ---
 
+    @api.constrains('approval_status', 'date', 'time_from', 'time_to', 'description')
+    def _check_required_for_submission(self):
+        """Ensure date, time, description are filled for non-assigned tasks."""
+        for task in self:
+            if task.approval_status in ('pending', 'approved', 'rejected'):
+                if not task.date:
+                    raise ValidationError(
+                        _('Date is required.'))
+                if not task.time_from and not task.time_to:
+                    raise ValidationError(
+                        _('Time From and Time To are required.'))
+                if not task.description:
+                    raise ValidationError(
+                        _('Task Description is required.'))
+
     @api.constrains('time_from', 'time_to')
     def _check_time_validity(self):
         allow_after_midnight = self.env[
             'ir.config_parameter'].sudo().get_param(
             'task_project_management.allow_after_midnight', 'False')
         for task in self:
+            # Skip validation for assigned tasks (member hasn't filled time yet)
+            if task.approval_status == 'assigned':
+                continue
             if task.time_from < 0 or task.time_to < 0:
                 raise ValidationError(
                     _('Time values cannot be negative.'))
@@ -156,6 +189,8 @@ class TaskManagementTask(models.Model):
             'ir.config_parameter'].sudo().get_param(
             'task_project_management.allow_after_midnight', 'False')
         for task in self:
+            if task.approval_status == 'assigned':
+                continue
             domain = [
                 ('member_id', '=', task.member_id.id),
                 ('date', '=', task.date),
@@ -219,6 +254,8 @@ class TaskManagementTask(models.Model):
         today = fields.Date.context_today(self)
         min_date = today - timedelta(days=limit_days)
         for task in self:
+            if task.approval_status == 'assigned':
+                continue
             if task.date < min_date:
                 raise ValidationError(
                     _('You can only enter tasks up to %(days)s days '
@@ -320,17 +357,34 @@ class TaskManagementTask(models.Model):
                     vals['member_id'] = member.id
             # Set entry timestamp
             vals['entry_timestamp'] = fields.Datetime.now()
+            # For assigned tasks: auto-set assigned_by from current user
+            if vals.get('approval_status') == 'assigned':
+                if not vals.get('assigned_by_id'):
+                    pm_member = self.env[
+                        'task.management.member'].sudo()._get_member_for_user()
+                    if pm_member:
+                        vals['assigned_by_id'] = pm_member.id
+                # Ensure date defaults don't cause constraint issues
+                if not vals.get('date'):
+                    vals['date'] = False
         records = super().create(vals_list)
         for record in records:
+            is_assignment = record.approval_status == 'assigned'
             # Auto-activate project on first task submission
-            if record.project_id.status == 'waiting':
+            if not is_assignment and record.project_id.status == 'waiting':
                 record.project_id.sudo().write({'status': 'active'})
             # Create initial audit entry
-            record._create_audit_entry(False, 'pending', _('Task created'))
+            initial_status = 'assigned' if is_assignment else 'pending'
+            comment = _('Task assigned') if is_assignment else _('Task created')
+            record._create_audit_entry(False, initial_status, comment)
             # Validate attachments
             record._validate_attachment_size()
-            # Notify PM
-            record._notify_pm_on_submit()
+            if is_assignment:
+                # Notify the member about the assignment
+                record._notify_member_on_assign()
+            else:
+                # Notify PM about submission
+                record._notify_pm_on_submit()
         return records
 
     def write(self, vals):
@@ -358,6 +412,14 @@ class TaskManagementTask(models.Model):
                     if non_status_fields:
                         vals = dict(vals, approval_status='pending')
 
+            # If member edits an assigned task, submit it (assigned → pending)
+            if task.approval_status == 'assigned':
+                if 'approval_status' not in vals:
+                    submit_fields = {'date', 'time_from', 'time_to',
+                                     'description', 'attachment_ids'}
+                    if set(vals.keys()) & submit_fields:
+                        vals = dict(vals, approval_status='pending')
+
         result = super().write(vals)
 
         # Handle approval status changes
@@ -371,6 +433,9 @@ class TaskManagementTask(models.Model):
                     task._notify_member_status_change(new_status)
                 elif new_status == 'pending' and old_status == 'rejected':
                     # Resubmission after rejection: notify PM
+                    task._notify_pm_on_submit()
+                elif new_status == 'pending' and old_status == 'assigned':
+                    # Member submitted assigned task: notify PM
                     task._notify_pm_on_submit()
 
         # Validate attachment sizes if attachments changed
@@ -396,6 +461,22 @@ class TaskManagementTask(models.Model):
         self.write({
             'approval_status': 'rejected',
         })
+
+    def action_submit_work(self):
+        """Member submits work for an assigned task."""
+        self.ensure_one()
+        if self.approval_status != 'assigned':
+            raise UserError(_('This task is not in assigned status.'))
+        # Validate required fields before submission
+        if not self.date:
+            raise UserError(_('Please fill in the Date before submitting.'))
+        if not self.time_from and not self.time_to:
+            raise UserError(
+                _('Please fill in Time From and Time To before submitting.'))
+        if not self.description:
+            raise UserError(
+                _('Please fill in the Task Description before submitting.'))
+        self.write({'approval_status': 'pending'})
 
     def _check_can_approve(self):
         """Check that the current user can approve/reject tasks."""
@@ -453,6 +534,32 @@ class TaskManagementTask(models.Model):
                 self.sudo().message_post(
                     body=body,
                     partner_ids=pm_partners.ids,
+                    message_type='notification',
+                    subtype_xmlid='mail.mt_note',
+                )
+        except Exception:
+            pass
+
+    def _notify_member_on_assign(self):
+        """Notify member when a task is assigned to them by a PM."""
+        try:
+            member_partner = self.sudo().member_id.user_id.partner_id
+            if member_partner:
+                body = Markup(
+                    '<p>You have been assigned a new task: '
+                    '<strong>%s</strong> in project '
+                    '<strong>%s</strong>.</p>'
+                ) % (
+                    self.assignment_name or '',
+                    self.project_id.name or '',
+                )
+                if self.due_date:
+                    body += Markup(
+                        '<p>Due date: <strong>%s</strong></p>'
+                    ) % self.due_date
+                self.sudo().message_post(
+                    body=body,
+                    partner_ids=[member_partner.id],
                     message_type='notification',
                     subtype_xmlid='mail.mt_note',
                 )
@@ -554,6 +661,8 @@ class TaskManagementTask(models.Model):
 
         return {
             'totalTasks': len(tasks),
+            'assignedTasks': len(tasks.filtered(
+                lambda t: t.approval_status == 'assigned')),
             'pendingTasks': len(tasks.filtered(
                 lambda t: t.approval_status == 'pending')),
             'approvedTasks': len(tasks.filtered(
@@ -622,6 +731,8 @@ class TaskManagementTask(models.Model):
                 'effective_progress': round(phase.effective_progress, 1),
             } for phase in proj.phase_ids]
 
+            assigned_count = len(proj.task_ids.filtered(
+                lambda t: t.approval_status == 'assigned'))
             result.append({
                 'id': proj.id,
                 'name': proj.name,
@@ -629,6 +740,7 @@ class TaskManagementTask(models.Model):
                 'logged_hours': f'{proj.total_logged_hours:.2f}',
                 'progress': round(proj.progress_percentage, 1),
                 'pending_tasks': proj.pending_task_count,
+                'assigned_tasks': assigned_count,
                 'members': members_data,
                 'phases': phases_data,
             })

@@ -1,6 +1,6 @@
 {
     'name': 'Task & Project Management',
-    'version': '17.0.2.0.0',
+    'version': '17.0.2.1.0',
     'category': 'Project',
     'summary': 'Task & Project Management with approval workflow',
     'description': """
@@ -39,6 +39,7 @@
         'views/archive_views.xml',
         'views/res_config_settings_views.xml',
         'views/menu_views.xml',
+        'views/login_templates.xml',
         # Wizard
         'wizard/export_report_wizard_views.xml',
         'wizard/member_performance_report_views.xml',

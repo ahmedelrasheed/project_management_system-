@@ -55,6 +55,13 @@
               sequence="10"
               groups="task_project_management.group_member,task_project_management.group_project_manager"/>
 
+    <menuitem id="menu_my_assignments"
+              name="My Assignments"
+              parent="menu_my_tasks_parent"
+              action="action_my_assignments"
+              sequence="12"
+              groups="task_project_management.group_member,task_project_management.group_project_manager"/>
+
     <menuitem id="menu_team_tasks"
               name="Team Tasks"
               parent="menu_my_tasks_parent"
@@ -96,6 +103,18 @@
               parent="menu_projects_parent"
               action="action_tasks_to_review"
               sequence="20"/>
+
+    <menuitem id="menu_assign_task"
+              name="Assign Task"
+              parent="menu_projects_parent"
+              action="action_assign_task"
+              sequence="25"/>
+
+    <menuitem id="menu_assigned_tasks"
+              name="Assigned Tasks"
+              parent="menu_projects_parent"
+              action="action_assigned_tasks"
+              sequence="27"/>
 
     <menuitem id="menu_pm_dashboard"
               name="PM Dashboard"
