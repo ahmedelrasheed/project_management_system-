@@ -6,7 +6,7 @@
         <field name="name">task.management.member.form</field>
         <field name="model">task.management.member</field>
         <field name="arch" type="xml">
-            <form string="Member">
+            <form string="Company Staff">
                 <field name="is_current_user_admin" invisible="1"/>
                 <sheet>
                     <group>
@@ -76,7 +76,7 @@
         <field name="name">task.management.member.tree</field>
         <field name="model">task.management.member</field>
         <field name="arch" type="xml">
-            <tree string="Members">
+            <tree string="Company Staff">
                 <field name="name"/>
                 <field name="email"/>
                 <field name="phone"/>
@@ -94,7 +94,7 @@
         <field name="name">task.management.member.search</field>
         <field name="model">task.management.member</field>
         <field name="arch" type="xml">
-            <search string="Search Members">
+            <search string="Search Company Staff">
                 <field name="name"/>
                 <field name="email"/>
                 <field name="job_title"/>
@@ -108,12 +108,12 @@
 
     <!-- Member Action -->
     <record id="action_member" model="ir.actions.act_window">
-        <field name="name">Members</field>
+        <field name="name">Company Staff</field>
         <field name="res_model">task.management.member</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Add an organization member
+                Add a company staff member
             </p>
         </field>
     </record>

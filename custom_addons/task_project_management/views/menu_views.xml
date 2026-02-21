@@ -107,13 +107,13 @@
     <!-- Members Section (PM + Admin)                                  -->
     <!-- ============================================================ -->
     <menuitem id="menu_members_parent"
-              name="Members"
+              name="Company Staff"
               parent="menu_task_management_root"
               sequence="30"
               groups="task_project_management.group_project_manager,task_project_management.group_admin_manager"/>
 
     <menuitem id="menu_all_members"
-              name="Members"
+              name="Company Staff"
               parent="menu_members_parent"
               action="action_member"
               sequence="10"/>

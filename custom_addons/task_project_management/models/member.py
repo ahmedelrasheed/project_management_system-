@@ -4,7 +4,7 @@ from odoo.exceptions import ValidationError
 
 class TaskManagementMember(models.Model):
     _name = 'task.management.member'
-    _description = 'Organization Member'
+    _description = 'Company Staff'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'name'
 
