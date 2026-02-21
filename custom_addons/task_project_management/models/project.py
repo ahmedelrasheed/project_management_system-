@@ -28,6 +28,10 @@ class TaskManagementProject(models.Model):
         'project_manager_rel',
         'project_id', 'member_id',
         string='Project Managers',
+        domain=lambda self: [
+            ('user_id.groups_id', 'in',
+             [self.env.ref('task_project_management.group_project_manager').id])
+        ],
     )
     member_ids = fields.Many2many(
         'task.management.member',
