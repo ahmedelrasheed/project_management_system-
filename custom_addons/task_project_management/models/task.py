@@ -383,11 +383,14 @@ class TaskManagementTask(models.Model):
             vals['entry_timestamp'] = fields.Datetime.now()
 
             if vals.get('approval_status') == 'assigned':
-                # Only PMs can assign tasks to members
-                if not self.env.user.has_group(
-                        'task_project_management.group_project_manager'):
+                # Only PMs and Admins can assign tasks to members
+                is_pm = self.env.user.has_group(
+                    'task_project_management.group_project_manager')
+                is_admin = self.env.user.has_group(
+                    'task_project_management.group_admin_manager')
+                if not is_pm and not is_admin:
                     raise UserError(
-                        _('Only Project Managers can assign tasks to members.'))
+                        _('Only Project Managers or Admins can assign tasks to members.'))
                 # Prevent self-assignment
                 pm_member = self.env[
                     'task.management.member'].sudo()._get_member_for_user()
