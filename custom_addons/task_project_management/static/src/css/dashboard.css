@@ -14,14 +14,14 @@
 
 /* Navbar menu items */
 .o_main_navbar .o_menu_sections .o_nav_entry,
-.o_main_navbar .o_menu_sections > .dropdown > .dropdown-toggle {
-    color: rgba(255,255,255,0.9) !important;
+.o_main_navbar .o_menu_sections > .dropdown > .dropdown-toggle,
+.o_main_navbar .o_menu_sections .dropdown-item {
+    color: #fff !important;
     font-weight: 500 !important;
 }
 
 .o_main_navbar .o_menu_sections .o_nav_entry:hover,
 .o_main_navbar .o_menu_sections > .dropdown > .dropdown-toggle:hover {
-    color: #fff !important;
     background: rgba(255,255,255,0.12) !important;
     border-radius: 6px;
 }
