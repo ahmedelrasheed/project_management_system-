@@ -73,36 +73,25 @@ html[dir="rtl"] .task_dashboard .me-2 {
 
 /* Enlarge Save manually & Discard buttons */
 .o_form_status_indicator .o_form_button_save {
-    font-size: 1.4rem !important;
-    padding: 6px 14px !important;
+    font-size: 1rem !important;
     background-color: #714B67 !important;
+    border-color: #714B67 !important;
     color: #fff !important;
     border-radius: 6px !important;
-    border: none !important;
-    margin-right: 6px;
-    transition: background-color 0.2s ease;
 }
 
 .o_form_status_indicator .o_form_button_save:hover {
     background-color: #5a3a52 !important;
+    border-color: #5a3a52 !important;
 }
 
 .o_form_status_indicator .o_form_button_cancel {
-    font-size: 1.4rem !important;
-    padding: 6px 14px !important;
-    background-color: #dc3545 !important;
-    color: #fff !important;
+    font-size: 1rem !important;
     border-radius: 6px !important;
-    border: none !important;
-    transition: background-color 0.2s ease;
-}
-
-.o_form_status_indicator .o_form_button_cancel:hover {
-    background-color: #b02a37 !important;
 }
 
 .o_form_status_indicator .o_form_status_indicator_buttons {
-    gap: 4px;
+    gap: 6px;
 }
 
 /* Hide SMS button from phone fields */
