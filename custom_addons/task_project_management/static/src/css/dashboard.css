@@ -18,22 +18,9 @@
     z-index: 1030 !important;
 }
 
-/* --- 1b. Apps (hamburger) button --- */
-.o_main_navbar .o_navbar_apps_menu .dropdown-toggle {
-    color: #fff !important;
-    font-size: 1.25rem !important;
-    padding: 0 14px !important;
-    height: 48px !important;
-    display: flex !important;
-    align-items: center !important;
-    background: transparent !important;
-    border: none !important;
-    transition: opacity 0.2s ease !important;
-}
-.o_main_navbar .o_navbar_apps_menu .dropdown-toggle:hover,
-.o_main_navbar .o_navbar_apps_menu .dropdown-toggle:focus {
-    background: transparent !important;
-    opacity: 0.8 !important;
+/* --- 1b. Apps (hamburger) button — hidden --- */
+.o_main_navbar .o_navbar_apps_menu {
+    display: none !important;
 }
 
 /* --- 1c. Brand (current app name) --- */
