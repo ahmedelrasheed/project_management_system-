@@ -52,6 +52,10 @@ class MemberPerformanceReport(models.TransientModel):
         string='Daily Performance (%)', compute='_compute_stats')
     weekly_performance = fields.Float(
         string='Weekly Performance (%)', compute='_compute_stats')
+    monthly_target = fields.Float(
+        string='Monthly Target', compute='_compute_stats')
+    monthly_performance = fields.Float(
+        string='Monthly Performance (%)', compute='_compute_stats')
     project_count = fields.Integer(
         string='Projects Worked On', compute='_compute_stats')
 
@@ -109,6 +113,8 @@ class MemberPerformanceReport(models.TransientModel):
                 report.weekly_target = 0.0
                 report.daily_performance = 0.0
                 report.weekly_performance = 0.0
+                report.monthly_target = 0.0
+                report.monthly_performance = 0.0
                 report.project_count = 0
                 report.task_line_ids = TaskLine
                 report.project_line_ids = ProjectLine
@@ -160,6 +166,27 @@ class MemberPerformanceReport(models.TransientModel):
                 (actual_daily_avg / daily_tgt * 100) if daily_tgt else 0, 1)
             report.weekly_performance = round(
                 (actual_weekly_avg / weekly_tgt * 100) if weekly_tgt else 0, 1)
+
+            # Monthly target and performance
+            import calendar
+            today = fields.Date.context_today(self)
+            cal = calendar.Calendar()
+            working_days = sum(
+                1 for d in cal.itermonthdays2(today.year, today.month)
+                if d[0] != 0 and d[1] < 5
+            )
+            monthly_tgt = daily_tgt * working_days
+            report.monthly_target = monthly_tgt
+            # Monthly hours = hours in current month
+            month_start = today.replace(day=1)
+            month_tasks = self.env['task.management.task'].search([
+                ('member_id', '=', report.member_id.id),
+                ('date', '>=', month_start),
+                ('date', '<=', today),
+            ])
+            hours_month = sum(month_tasks.mapped('duration_hours'))
+            report.monthly_performance = round(
+                (hours_month / monthly_tgt * 100) if monthly_tgt else 0, 1)
 
             # Projects worked on
             projects = tasks.mapped('project_id')
@@ -241,6 +268,8 @@ class MemberPerformanceReport(models.TransientModel):
         writer.writerow(['Weekly Target', f'{self.weekly_target:.2f}'])
         writer.writerow(['Daily Performance', f'{self.daily_performance:.1f}%'])
         writer.writerow(['Weekly Performance', f'{self.weekly_performance:.1f}%'])
+        writer.writerow(['Monthly Target', f'{self.monthly_target:.2f}'])
+        writer.writerow(['Monthly Performance', f'{self.monthly_performance:.1f}%'])
         writer.writerow([])
 
         # Project breakdown
@@ -405,6 +434,10 @@ class MemberPerformanceReport(models.TransientModel):
             <div class="kpi-label">Daily Performance</div></div>
         <div class="kpi"><div class="kpi-value" style="color:{'#5cb85c' if self.weekly_performance >= 100 else '#f0ad4e' if self.weekly_performance >= 75 else '#d9534f'}">{self.weekly_performance:.1f}%</div>
             <div class="kpi-label">Weekly Performance</div></div>
+        <div class="kpi"><div class="kpi-value">{self.monthly_target:.0f}</div>
+            <div class="kpi-label">Monthly Target (hrs)</div></div>
+        <div class="kpi"><div class="kpi-value" style="color:{'#5cb85c' if self.monthly_performance >= 100 else '#f0ad4e' if self.monthly_performance >= 75 else '#d9534f'}">{self.monthly_performance:.1f}%</div>
+            <div class="kpi-label">Monthly Performance</div></div>
     </div>
 
     <h2>Project Breakdown</h2>

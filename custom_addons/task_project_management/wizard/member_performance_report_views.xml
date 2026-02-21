@@ -116,28 +116,40 @@
                     </div>
 
                     <div class="row mb-3">
-                        <div class="col-md-3 text-center">
+                        <div class="col-md-2 text-center">
                             <div class="border rounded p-2 bg-light">
                                 <small class="text-muted">Daily Target</small>
                                 <h4><field name="daily_target" class="d-inline"/> hrs</h4>
                             </div>
                         </div>
-                        <div class="col-md-3 text-center">
+                        <div class="col-md-2 text-center">
                             <div class="border rounded p-2 bg-light">
                                 <small class="text-muted">Weekly Target</small>
                                 <h4><field name="weekly_target" class="d-inline"/> hrs</h4>
                             </div>
                         </div>
-                        <div class="col-md-3 text-center">
+                        <div class="col-md-2 text-center">
                             <div class="border rounded p-2 bg-light">
-                                <small class="text-muted">Daily Performance</small>
+                                <small class="text-muted">Monthly Target</small>
+                                <h4><field name="monthly_target" class="d-inline"/> hrs</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="border rounded p-2 bg-light">
+                                <small class="text-muted">Daily Perf.</small>
                                 <h4><field name="daily_performance" class="d-inline"/>%</h4>
                             </div>
                         </div>
-                        <div class="col-md-3 text-center">
+                        <div class="col-md-2 text-center">
                             <div class="border rounded p-2 bg-light">
-                                <small class="text-muted">Weekly Performance</small>
+                                <small class="text-muted">Weekly Perf.</small>
                                 <h4><field name="weekly_performance" class="d-inline"/>%</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="border rounded p-2 bg-light">
+                                <small class="text-muted">Monthly Perf.</small>
+                                <h4><field name="monthly_performance" class="d-inline"/>%</h4>
                             </div>
                         </div>
                     </div>
