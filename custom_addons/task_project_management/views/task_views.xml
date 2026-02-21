@@ -36,7 +36,8 @@
                             <field name="member_id" invisible="1"/>
                             <field name="project_id"
                                    readonly="approval_status == 'approved'"
-                                   domain="[('status', '=', 'active'), ('member_ids.user_id', '=', uid)]"
+                                   domain="[('status', '=', 'active')]"
+                                   context="{'restrict_to_member_projects': True}"
                                    options="{'no_create': True}"/>
                         </group>
                         <group>

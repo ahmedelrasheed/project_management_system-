@@ -127,6 +127,35 @@ class TaskManagementProject(models.Model):
         return super().write(vals)
 
     @api.model
+    def _name_search(self, name='', domain=None, operator='ilike',
+                     limit=100, order=None):
+        """Restrict project dropdown in task form: PMs and members only
+        see projects where they are a regular member."""
+        domain = domain or []
+        if self.env.context.get('restrict_to_member_projects'):
+            is_admin = self.env.user.has_group(
+                'task_project_management.group_admin_manager')
+            if not is_admin:
+                domain = domain + [
+                    ('member_ids.user_id', '=', self.env.uid)]
+        return super()._name_search(
+            name, domain, operator, limit, order)
+
+    @api.model
+    def web_search_read(self, domain, specification, offset=0, limit=None,
+                        order=None, count_limit=None):
+        """Also restrict the dropdown list/search dialog."""
+        if self.env.context.get('restrict_to_member_projects'):
+            is_admin = self.env.user.has_group(
+                'task_project_management.group_admin_manager')
+            if not is_admin:
+                domain = domain + [
+                    ('member_ids.user_id', '=', self.env.uid)]
+        return super().web_search_read(
+            domain, specification, offset=offset, limit=limit,
+            order=order, count_limit=count_limit)
+
+    @api.model
     def _cron_check_project_deadlines(self):
         """Check for projects that have reached their expected end date
         with pending tasks. Notify PM and Admin."""

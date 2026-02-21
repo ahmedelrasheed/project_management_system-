@@ -18,7 +18,7 @@ class TaskManagementTask(models.Model):
     project_id = fields.Many2one(
         'task.management.project', string='Project',
         required=True, ondelete='restrict',
-        domain="[('status', '=', 'active'), ('member_ids.user_id', '=', uid)]",
+        domain="[('status', '=', 'active')]",
         tracking=True,
     )
     member_id = fields.Many2one(
