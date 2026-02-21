@@ -42,7 +42,7 @@
                                     <field name="sequence" widget="handle"/>
                                     <field name="name"/>
                                     <field name="percentage"/>
-                                    <field name="completion_rate" widget="progressbar"/>
+                                    <field name="completion_rate"/>
                                     <field name="effective_progress"/>
                                 </tree>
                             </field>
