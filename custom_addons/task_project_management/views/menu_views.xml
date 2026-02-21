@@ -46,7 +46,7 @@
               name="Tasks"
               parent="menu_task_management_root"
               sequence="10"
-              groups="task_project_management.group_member"/>
+              groups="task_project_management.group_member,task_project_management.group_project_manager,task_project_management.group_admin_manager"/>
 
     <menuitem id="menu_my_tasks"
               name="My Tasks"
@@ -59,7 +59,7 @@
               parent="menu_my_tasks_parent"
               action="action_team_tasks"
               sequence="15"
-              groups="task_project_management.group_project_manager"/>
+              groups="task_project_management.group_project_manager,task_project_management.group_admin_manager"/>
 
     <menuitem id="menu_all_tasks"
               name="All Tasks"
@@ -81,7 +81,7 @@
               name="Projects"
               parent="menu_task_management_root"
               sequence="20"
-              groups="task_project_management.group_project_manager"/>
+              groups="task_project_management.group_project_manager,task_project_management.group_admin_manager"/>
 
     <menuitem id="menu_all_projects"
               name="Projects"
@@ -108,7 +108,7 @@
               name="Members"
               parent="menu_task_management_root"
               sequence="30"
-              groups="task_project_management.group_project_manager"/>
+              groups="task_project_management.group_project_manager,task_project_management.group_admin_manager"/>
 
     <menuitem id="menu_all_members"
               name="Members"

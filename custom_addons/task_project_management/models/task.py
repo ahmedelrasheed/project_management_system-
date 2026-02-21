@@ -18,12 +18,13 @@ class TaskManagementTask(models.Model):
     project_id = fields.Many2one(
         'task.management.project', string='Project',
         required=True, ondelete='restrict',
-        domain="[('status', '=', 'active')]",
+        domain="[('status', '=', 'active'), ('member_ids.user_id', '=', uid)]",
         tracking=True,
     )
     member_id = fields.Many2one(
         'task.management.member', string='Member',
         required=True, ondelete='restrict',
+        default=lambda self: self.env['task.management.member'].sudo()._get_member_for_user(),
         tracking=True,
     )
     time_from = fields.Float(string='Time From', required=True)
@@ -71,9 +72,29 @@ class TaskManagementTask(models.Model):
     @api.depends_context('uid')
     def _compute_is_current_user_pm(self):
         is_pm = self.env.user.has_group(
-            'task_project_management.group_project_manager')
+            'task_project_management.group_project_manager') or \
+            self.env.user.has_group(
+            'task_project_management.group_admin_manager')
         for task in self:
             task.is_current_user_pm = is_pm
+
+    @api.onchange('member_id')
+    def _onchange_member_id_project_domain(self):
+        """Restrict project dropdown: admins see all active projects,
+        PMs and members see only projects they are a member of."""
+        is_admin = self.env.user.has_group(
+            'task_project_management.group_admin_manager')
+        if is_admin:
+            return {'domain': {'project_id': [('status', '=', 'active')]}}
+        if self.member_id:
+            return {'domain': {'project_id': [
+                ('status', '=', 'active'),
+                ('member_ids', '=', self.member_id.id),
+            ]}}
+        return {'domain': {'project_id': [
+            ('status', '=', 'active'),
+            ('member_ids.user_id', '=', self.env.uid),
+        ]}}
 
     @api.depends('time_from', 'time_to')
     def _compute_duration_hours(self):
@@ -188,7 +209,9 @@ class TaskManagementTask(models.Model):
         """Members can only enter tasks within the configured past date
         limit. PMs and Admins can enter for any past date."""
         is_pm_or_admin = self.env.user.has_group(
-            'task_project_management.group_project_manager')
+            'task_project_management.group_project_manager') or \
+            self.env.user.has_group(
+            'task_project_management.group_admin_manager')
         if is_pm_or_admin:
             return
         limit_days = int(self.env['ir.config_parameter'].sudo().get_param(
@@ -207,19 +230,62 @@ class TaskManagementTask(models.Model):
 
     @api.constrains('member_id', 'project_id')
     def _check_member_in_project(self):
-        """Ensure the member is assigned to the project."""
+        """Ensure the member is assigned to the project.
+        PMs can only add tasks for themselves in projects where they
+        are a regular member (not PM). PMs can add tasks on behalf of
+        members in their managed projects.
+        Admins can enter tasks for any member in any project."""
         for task in self:
-            project = task.project_id
-            if task.member_id not in project.member_ids:
-                # Check if user is PM or admin (they might enter on behalf)
-                is_pm_or_admin = self.env.user.has_group(
-                    'task_project_management.group_project_manager')
-                if not is_pm_or_admin:
+            project = task.sudo().project_id
+            # Admin can always bypass
+            is_admin = self.env.user.has_group(
+                'task_project_management.group_admin_manager')
+            if is_admin:
+                continue
+            is_pm = self.env.user.has_group(
+                'task_project_management.group_project_manager')
+            if is_pm:
+                current_member = self.env[
+                    'task.management.member'].sudo()._get_member_for_user()
+                is_manager_of_project = (
+                    current_member in project.project_manager_ids)
+                # PM adding task for themselves
+                if task.member_id == current_member:
+                    if is_manager_of_project:
+                        raise ValidationError(
+                            _('As a Project Manager of "%(project)s", '
+                              'you cannot add tasks for yourself here. '
+                              'Add tasks in projects where you are a '
+                              'regular member.',
+                              project=project.name))
+                    # PM is a regular member of this project
+                    if task.member_id in project.member_ids:
+                        continue
+                    raise ValidationError(
+                        _('You are not assigned as a member of '
+                          'project "%(project)s".',
+                          project=project.name))
+                # PM adding task on behalf of another member
+                if is_manager_of_project:
+                    if task.member_id in project.member_ids:
+                        continue
                     raise ValidationError(
                         _('Member "%(member)s" is not assigned to '
                           'project "%(project)s".',
                           member=task.member_id.name,
                           project=project.name))
+                # PM is not manager of this project
+                raise ValidationError(
+                    _('You can only add tasks on behalf of members '
+                      'in projects you manage.'))
+            # Regular member: must be in project
+            if task.member_id in project.member_ids:
+                continue
+            raise ValidationError(
+                _('Member "%(member)s" is not assigned to '
+                  'project "%(project)s".',
+                  member=task.member_id.name,
+                  project=project.name))
 
     @api.constrains('project_id')
     def _check_project_status(self):
