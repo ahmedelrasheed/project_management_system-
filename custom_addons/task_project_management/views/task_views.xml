@@ -9,10 +9,12 @@
             <form string="Task" delete="0">
                 <header>
                     <field name="is_current_user_pm" invisible="1"/>
+                    <field name="can_assign" invisible="1"/>
+                    <field name="is_current_user_member" invisible="1"/>
                     <field name="assigned_by_id" invisible="1"/>
                     <button name="action_submit_work" string="Submit Work"
                             type="object" class="btn-success"
-                            invisible="approval_status != 'assigned' or is_current_user_pm"/>
+                            invisible="approval_status != 'assigned' or not is_current_user_member"/>
                     <button name="action_approve" string="Approve"
                             type="object" class="btn-primary"
                             invisible="approval_status != 'pending' or not is_current_user_pm"/>
@@ -34,9 +36,9 @@
                         </button>
                     </div>
 
-                    <!-- Assignment Details (visible when task is assigned) -->
-                    <div class="alert alert-info" role="alert"
-                         invisible="not assigned_by_id">
+                    <!-- Assignment Details (visible when creating or viewing an assignment) -->
+                    <div class="alert alert-info" role="status"
+                         invisible="not assigned_by_id and approval_status != 'assigned'">
                         <h5 class="alert-heading mb-2">
                             <i class="fa fa-tasks me-1"/>
                             Assignment Details
@@ -44,41 +46,45 @@
                         <group>
                             <group>
                                 <field name="assignment_name" string="Task Name"
-                                       readonly="not is_current_user_pm or approval_status != 'assigned'"/>
+                                       readonly="not can_assign or approval_status != 'assigned'"
+                                       required="approval_status == 'assigned'"/>
                                 <field name="due_date"
-                                       readonly="not is_current_user_pm or approval_status != 'assigned'"/>
+                                       readonly="not can_assign or approval_status != 'assigned'"/>
                             </group>
                             <group>
-                                <field name="assigned_by_id" string="Assigned By" readonly="1"/>
+                                <field name="assigned_by_id" string="Assigned By"
+                                       readonly="1"
+                                       invisible="not assigned_by_id"/>
                             </group>
                         </group>
                         <group>
                             <field name="assignment_description"
                                    string="Instructions"
-                                   readonly="not is_current_user_pm or approval_status != 'assigned'"/>
+                                   readonly="not can_assign or approval_status != 'assigned'"/>
                         </group>
                         <group>
                             <field name="assignment_attachment_ids"
                                    widget="many2many_binary"
                                    string="Reference Files"
-                                   readonly="not is_current_user_pm or approval_status != 'assigned'"/>
+                                   readonly="not can_assign or approval_status != 'assigned'"/>
                         </group>
                     </div>
 
                     <group>
                         <group>
-                            <field name="date"
-                                   readonly="approval_status == 'approved'"/>
                             <field name="member_id"
-                                   invisible="approval_status != 'assigned' or not is_current_user_pm"
-                                   readonly="approval_status != 'assigned'"/>
+                                   invisible="not is_current_user_pm"
+                                   readonly="not can_assign or approval_status != 'assigned'"/>
                             <field name="project_id"
                                    readonly="approval_status == 'approved'"
                                    domain="[('status', 'in', ['waiting', 'active'])]"
                                    context="{'restrict_to_member_projects': True}"
                                    options="{'no_create': True}"/>
                         </group>
-                        <group>
+                        <!-- Work fields: hidden when PM/Admin views an assigned task (no work data yet) -->
+                        <group invisible="approval_status == 'assigned' and not is_current_user_member">
+                            <field name="date"
+                                   readonly="approval_status == 'approved'"/>
                             <field name="time_from" widget="float_time"
                                    readonly="approval_status == 'approved'"/>
                             <field name="time_to" widget="float_time"
@@ -88,12 +94,12 @@
                             <field name="entry_timestamp" readonly="1"/>
                         </group>
                     </group>
-                    <group>
+                    <group invisible="approval_status == 'assigned' and not is_current_user_member">
                         <field name="description"
                                readonly="approval_status == 'approved'"
                                placeholder="Describe the work done..."/>
                     </group>
-                    <group>
+                    <group invisible="approval_status == 'assigned' and not is_current_user_member">
                         <field name="attachment_ids" widget="many2many_binary"
                                readonly="approval_status == 'approved'"
                                string="Attachments"/>
@@ -310,6 +316,7 @@
         <field name="view_mode">form</field>
         <field name="context">{
             'default_approval_status': 'assigned',
+            'default_member_id': False,
             'form_view_initial_mode': 'edit',
         }</field>
         <field name="target">current</field>

@@ -108,13 +108,15 @@
               name="Assign Task"
               parent="menu_projects_parent"
               action="action_assign_task"
-              sequence="25"/>
+              sequence="25"
+              groups="task_project_management.group_project_manager"/>
 
     <menuitem id="menu_assigned_tasks"
               name="Assigned Tasks"
               parent="menu_projects_parent"
               action="action_assigned_tasks"
-              sequence="27"/>
+              sequence="27"
+              groups="task_project_management.group_project_manager"/>
 
     <menuitem id="menu_pm_dashboard"
               name="PM Dashboard"

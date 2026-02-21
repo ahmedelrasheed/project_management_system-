@@ -83,6 +83,12 @@ class TaskManagementTask(models.Model):
     is_current_user_pm = fields.Boolean(
         compute='_compute_is_current_user_pm',
     )
+    can_assign = fields.Boolean(
+        compute='_compute_can_assign',
+    )
+    is_current_user_member = fields.Boolean(
+        compute='_compute_is_current_user_member',
+    )
 
     @api.depends_context('uid')
     def _compute_is_current_user_pm(self):
@@ -92,6 +98,22 @@ class TaskManagementTask(models.Model):
             'task_project_management.group_admin_manager')
         for task in self:
             task.is_current_user_pm = is_pm
+
+    @api.depends_context('uid')
+    def _compute_can_assign(self):
+        """Only PMs can assign tasks (not Admin, not Member)."""
+        is_pm = self.env.user.has_group(
+            'task_project_management.group_project_manager')
+        for task in self:
+            task.can_assign = is_pm
+
+    @api.depends('member_id')
+    @api.depends_context('uid')
+    def _compute_is_current_user_member(self):
+        for task in self:
+            task.is_current_user_member = (
+                task.member_id and task.member_id.user_id.id == self.env.uid
+            )
 
     @api.onchange('member_id')
     def _onchange_member_id_project_domain(self):
@@ -350,23 +372,33 @@ class TaskManagementTask(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            # Auto-set member from current user if not provided
-            if not vals.get('member_id'):
-                member = self.env['task.management.member']._get_member_for_user()
-                if member:
-                    vals['member_id'] = member.id
-            # Set entry timestamp
             vals['entry_timestamp'] = fields.Datetime.now()
-            # For assigned tasks: auto-set assigned_by from current user
+
             if vals.get('approval_status') == 'assigned':
-                if not vals.get('assigned_by_id'):
-                    pm_member = self.env[
-                        'task.management.member'].sudo()._get_member_for_user()
-                    if pm_member:
-                        vals['assigned_by_id'] = pm_member.id
-                # Ensure date defaults don't cause constraint issues
+                # Only PMs can assign tasks to members
+                if not self.env.user.has_group(
+                        'task_project_management.group_project_manager'):
+                    raise UserError(
+                        _('Only Project Managers can assign tasks to members.'))
+                # Prevent self-assignment
+                pm_member = self.env[
+                    'task.management.member'].sudo()._get_member_for_user()
+                if pm_member and vals.get('member_id') == pm_member.id:
+                    raise UserError(
+                        _('You cannot assign a task to yourself.'))
+                # Auto-set assigned_by from current PM
+                if not vals.get('assigned_by_id') and pm_member:
+                    vals['assigned_by_id'] = pm_member.id
+                # Clear date default to avoid constraint issues
                 if not vals.get('date'):
                     vals['date'] = False
+            else:
+                # Auto-set member from current user for regular tasks
+                if not vals.get('member_id'):
+                    member = self.env[
+                        'task.management.member']._get_member_for_user()
+                    if member:
+                        vals['member_id'] = member.id
         records = super().create(vals_list)
         for record in records:
             is_assignment = record.approval_status == 'assigned'
