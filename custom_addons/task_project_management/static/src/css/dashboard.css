@@ -844,7 +844,21 @@ html[dir="rtl"] .task_dashboard .dashboard-header {
 }
 
 /* ============================================================
-   13. MISC
+   13. HIDE UNWANTED SYSTRAY ICONS
+   ============================================================ */
+
+/* Hide Activity Menu (clock icon) */
+.o-mail-ActivityMenu {
+    display: none !important;
+}
+
+/* Hide Switch Company Menu (building icon) */
+.o_switch_company_menu {
+    display: none !important;
+}
+
+/* ============================================================
+   14. MISC
    ============================================================ */
 
 /* Hide SMS button from phone fields */
