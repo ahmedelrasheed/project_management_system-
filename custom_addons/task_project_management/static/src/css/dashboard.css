@@ -18,10 +18,7 @@
     z-index: 1030 !important;
 }
 
-/* --- 1b. Apps (hamburger) button — hidden --- */
-.o_main_navbar .o_navbar_apps_menu {
-    display: none !important;
-}
+/* --- 1b. Apps (hamburger) button — hidden via JS (navbar_cleanup.js) --- */
 
 /* --- 1c. Brand (current app name) --- */
 .o_main_navbar .o_menu_brand {

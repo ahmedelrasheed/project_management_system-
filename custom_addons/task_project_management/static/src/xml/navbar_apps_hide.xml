@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <!-- Hide the Apps Menu (hamburger/grid icon) from navbar -->
+    <t t-name="web.NavBar.AppsMenu" t-inherit="web.NavBar.AppsMenu" t-inherit-mode="extension">
+        <xpath expr="//Dropdown" position="replace">
+            <!-- Apps menu removed -->
+        </xpath>
+    </t>
+
+</templates>
