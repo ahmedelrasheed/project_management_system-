@@ -15,11 +15,12 @@ class TaskManagementProject(models.Model):
     expected_end_date = fields.Date(
         string='Expected End Date', tracking=True)
     status = fields.Selection([
+        ('waiting', 'Waiting'),
         ('active', 'Active'),
         ('on_hold', 'On Hold'),
         ('completed', 'Completed'),
         ('archived', 'Archived'),
-    ], string='Status', default='active', required=True, tracking=True)
+    ], string='Status', default='waiting', required=True, tracking=True)
 
     # Relations
     project_manager_ids = fields.Many2many(

@@ -10,8 +10,9 @@
                 <field name="is_admin_user" invisible="1"/>
                 <header>
                     <field name="status" widget="statusbar"
-                           statusbar_visible="active,on_hold,completed,archived"
-                           options="{'clickable': True}"/>
+                           statusbar_visible="waiting,active,on_hold,completed,archived"
+                           options="{'clickable': True}"
+                           readonly="not is_admin_user"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -95,6 +96,7 @@
             <tree string="Projects">
                 <field name="name"/>
                 <field name="status" widget="badge"
+                       decoration-danger="status == 'waiting'"
                        decoration-success="status == 'active'"
                        decoration-warning="status == 'on_hold'"
                        decoration-info="status == 'completed'"
@@ -115,6 +117,8 @@
             <search string="Search Projects">
                 <field name="name"/>
                 <separator/>
+                <filter string="Waiting" name="filter_waiting"
+                        domain="[('status', '=', 'waiting')]"/>
                 <filter string="Active" name="filter_active"
                         domain="[('status', '=', 'active')]"/>
                 <filter string="On Hold" name="filter_on_hold"

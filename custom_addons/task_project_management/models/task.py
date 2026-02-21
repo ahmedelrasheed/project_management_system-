@@ -18,7 +18,7 @@ class TaskManagementTask(models.Model):
     project_id = fields.Many2one(
         'task.management.project', string='Project',
         required=True, ondelete='restrict',
-        domain="[('status', '=', 'active')]",
+        domain="[('status', 'in', ['waiting', 'active'])]",
         tracking=True,
     )
     member_id = fields.Many2one(
@@ -85,7 +85,7 @@ class TaskManagementTask(models.Model):
         is_admin = self.env.user.has_group(
             'task_project_management.group_admin_manager')
         if is_admin:
-            return {'domain': {'project_id': [('status', '=', 'active')]}}
+            return {'domain': {'project_id': [('status', 'in', ['waiting', 'active'])]}}
         if self.member_id:
             return {'domain': {'project_id': [
                 ('status', '=', 'active'),
@@ -322,6 +322,9 @@ class TaskManagementTask(models.Model):
             vals['entry_timestamp'] = fields.Datetime.now()
         records = super().create(vals_list)
         for record in records:
+            # Auto-activate project on first task submission
+            if record.project_id.status == 'waiting':
+                record.project_id.sudo().write({'status': 'active'})
             # Create initial audit entry
             record._create_audit_entry(False, 'pending', _('Task created'))
             # Validate attachments
