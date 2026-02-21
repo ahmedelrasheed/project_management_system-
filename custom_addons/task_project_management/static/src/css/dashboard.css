@@ -858,6 +858,37 @@ html[dir="rtl"] .task_dashboard .dashboard-header {
     display: none !important;
 }
 
+/* Time Spinner Buttons */
+.o_float_time_spinner .o_time_btn {
+    width: 30px !important;
+    height: 30px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-color: #714B67 !important;
+    color: #714B67 !important;
+    border-radius: 6px !important;
+    font-size: 0.7rem !important;
+    transition: all 0.15s ease !important;
+    flex-shrink: 0 !important;
+}
+.o_float_time_spinner .o_time_btn:hover {
+    background: #714B67 !important;
+    color: #fff !important;
+}
+.o_float_time_spinner .o_time_btn:active {
+    background: #5a3a52 !important;
+    color: #fff !important;
+    transform: scale(0.95) !important;
+}
+.o_float_time_spinner .o_input {
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    border-color: #e8dce5 !important;
+    border-radius: 6px !important;
+}
+
 /* Selection highlight */
 ::selection {
     background: #d4b8cc;

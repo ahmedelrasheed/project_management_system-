@@ -55,6 +55,7 @@
             'task_project_management/static/src/js/dashboard.js',
             'task_project_management/static/src/js/user_menu.js',
             'task_project_management/static/src/js/systray_cleanup.js',
+            'task_project_management/static/src/js/float_time_spinner.js',
         ],
     },
     'installable': True,

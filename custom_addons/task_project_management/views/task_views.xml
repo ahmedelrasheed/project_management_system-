@@ -85,9 +85,9 @@
                         <group invisible="approval_status == 'assigned' and not is_current_user_member">
                             <field name="date"
                                    readonly="approval_status == 'approved'"/>
-                            <field name="time_from" widget="float_time"
+                            <field name="time_from" widget="float_time_spinner"
                                    readonly="approval_status == 'approved'"/>
-                            <field name="time_to" widget="float_time"
+                            <field name="time_to" widget="float_time_spinner"
                                    readonly="approval_status == 'approved'"/>
                             <field name="duration_hours" widget="float_time"
                                    readonly="1"/>
