@@ -18,7 +18,53 @@
     z-index: 1030 !important;
 }
 
-/* --- 1b. Apps (hamburger) button — hidden via JS (navbar_cleanup.js) --- */
+/* --- 1b. Apps (hamburger/grid) button — styled to match navbar --- */
+.o_navbar_apps_menu,
+.o_main_navbar .o_navbar_apps_menu {
+    margin-right: 4px !important;
+}
+.o_navbar_apps_menu > .dropdown-toggle,
+.o_main_navbar .o_navbar_apps_menu > .dropdown-toggle {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 8px !important;
+    width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    transition: all 0.2s ease !important;
+    color: #fff !important;
+}
+.o_navbar_apps_menu > .dropdown-toggle:hover,
+.o_main_navbar .o_navbar_apps_menu > .dropdown-toggle:hover {
+    background: rgba(255, 255, 255, 0.22) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    transform: scale(1.05) !important;
+}
+.o_navbar_apps_menu > .dropdown-toggle:active,
+.o_navbar_apps_menu > .dropdown-toggle:focus,
+.o_navbar_apps_menu.show > .dropdown-toggle {
+    background: rgba(255, 255, 255, 0.28) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15) !important;
+}
+.o_navbar_apps_menu > .dropdown-toggle .oi-apps {
+    font-size: 1.1rem !important;
+    color: #fff !important;
+}
+/* Mobile burger toggle — styled to match */
+.o_mobile_menu_toggle {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 8px !important;
+    color: #fff !important;
+    transition: all 0.2s ease !important;
+}
+.o_mobile_menu_toggle:hover {
+    background: rgba(255, 255, 255, 0.22) !important;
+}
 
 /* --- 1c. Brand (current app name) --- */
 .o_main_navbar .o_menu_brand {
