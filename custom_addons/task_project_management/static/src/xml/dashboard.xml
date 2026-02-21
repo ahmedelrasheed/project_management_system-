@@ -5,9 +5,15 @@
     <t t-name="task_project_management.MemberDashboard">
         <div class="o_action task_dashboard member_dashboard">
             <div class="container-fluid py-3">
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <h2 class="dashboard-title">My Dashboard</h2>
+
+                <!-- Header with Logo -->
+                <div class="dashboard-header">
+                    <div class="header-left">
+                        <img class="company-logo" src="/web/binary/company_logo" alt="Logo"/>
+                        <div>
+                            <h2 class="dashboard-title">My Dashboard</h2>
+                            <p class="company-name" t-esc="state.companyName"/>
+                        </div>
                     </div>
                 </div>
 
@@ -78,7 +84,7 @@
                 <!-- Performance Metrics -->
                 <div class="row mb-4">
                     <div class="col-md-4">
-                        <div class="card">
+                        <div class="card perf-card">
                             <div class="card-body text-center">
                                 <h6 class="text-muted">Daily Performance</h6>
                                 <h3 t-attf-class="#{state.dailyPerformance >= 100 ? 'text-success' : state.dailyPerformance >= 75 ? 'text-warning' : 'text-danger'}">
@@ -91,7 +97,7 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card">
+                        <div class="card perf-card">
                             <div class="card-body text-center">
                                 <h6 class="text-muted">Weekly Performance</h6>
                                 <h3 t-attf-class="#{state.weeklyPerformance >= 100 ? 'text-success' : state.weeklyPerformance >= 75 ? 'text-warning' : 'text-danger'}">
@@ -104,7 +110,7 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card">
+                        <div class="card perf-card">
                             <div class="card-body text-center">
                                 <h6 class="text-muted">Monthly Performance</h6>
                                 <h3 t-attf-class="#{state.monthlyPerformance >= 100 ? 'text-success' : state.monthlyPerformance >= 75 ? 'text-warning' : 'text-danger'}">
@@ -163,16 +169,22 @@
     <t t-name="task_project_management.PMDashboard">
         <div class="o_action task_dashboard pm_dashboard">
             <div class="container-fluid py-3">
-                <div class="row mb-3">
-                    <div class="col-8">
-                        <h2 class="dashboard-title">Project Manager Dashboard</h2>
+
+                <!-- Header with Logo -->
+                <div class="dashboard-header">
+                    <div class="header-left">
+                        <img class="company-logo" src="/web/binary/company_logo" alt="Logo"/>
+                        <div>
+                            <h2 class="dashboard-title">Project Manager Dashboard</h2>
+                            <p class="company-name" t-esc="state.companyName"/>
+                        </div>
                     </div>
-                    <div class="col-4 text-end">
-                        <button class="btn btn-outline-primary me-2"
+                    <div class="header-actions">
+                        <button class="btn btn-outline-light me-2"
                                 t-on-click="onExportCSV">
                             <i class="fa fa-file-text-o"/> Export CSV
                         </button>
-                        <button class="btn btn-outline-secondary"
+                        <button class="btn btn-outline-light"
                                 t-on-click="onExportImage">
                             <i class="fa fa-image"/> Export Image
                         </button>
@@ -192,17 +204,17 @@
 
                 <!-- Project Progress Cards -->
                 <t t-foreach="state.projects" t-as="project" t-key="project.id">
-                    <div class="card mb-3">
-                        <div class="card-header d-flex justify-content-between">
-                            <h5 t-esc="project.name"/>
-                            <span t-attf-class="badge #{project.status === 'active' ? 'text-bg-success' : 'text-bg-warning'}"
+                    <div class="card project-card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0" t-esc="project.name"/>
+                            <span t-attf-class="badge #{project.status === 'active' ? 'text-bg-success' : project.status === 'waiting' ? 'text-bg-danger' : 'text-bg-warning'}"
                                   t-esc="project.status"/>
                         </div>
                         <div class="card-body">
                             <div class="row mb-3">
                                 <div class="col-md-8">
                                     <div class="progress" style="height: 25px;">
-                                        <div class="progress-bar bg-primary"
+                                        <div class="progress-bar"
                                              role="progressbar"
                                              t-attf-style="width: #{project.progress}%"
                                              t-att-aria-valuenow="project.progress"
@@ -220,7 +232,7 @@
 
                             <!-- Phase Breakdown -->
                             <t t-if="project.phases and project.phases.length">
-                                <h6 class="mt-3 mb-2" style="color: #714B67;">Phases</h6>
+                                <h6 class="section-title mt-3">Phases</h6>
                                 <table class="table table-sm table-bordered mb-3">
                                     <thead>
                                         <tr>
@@ -251,6 +263,7 @@
                             </t>
 
                             <!-- Member Activity Table -->
+                            <h6 class="section-title mt-3">Team Members</h6>
                             <table class="table table-sm">
                                 <thead>
                                     <tr>
@@ -273,7 +286,7 @@
                                             </td>
                                             <td>
                                                 <span t-if="member.late_entries > 0"
-                                                      class="text-danger"
+                                                      class="text-danger fw-bold"
                                                       t-esc="member.late_entries"/>
                                                 <span t-else="">0</span>
                                             </td>
@@ -292,16 +305,22 @@
     <t t-name="task_project_management.AdminDashboard">
         <div class="o_action task_dashboard admin_dashboard">
             <div class="container-fluid py-3">
-                <div class="row mb-3">
-                    <div class="col-8">
-                        <h2 class="dashboard-title">Administration Dashboard</h2>
+
+                <!-- Header with Logo -->
+                <div class="dashboard-header">
+                    <div class="header-left">
+                        <img class="company-logo" src="/web/binary/company_logo" alt="Logo"/>
+                        <div>
+                            <h2 class="dashboard-title">Administration Dashboard</h2>
+                            <p class="company-name" t-esc="state.companyName"/>
+                        </div>
                     </div>
-                    <div class="col-4 text-end">
-                        <button class="btn btn-outline-primary me-2"
+                    <div class="header-actions">
+                        <button class="btn btn-outline-light me-2"
                                 t-on-click="onExportCSV">
                             <i class="fa fa-file-text-o"/> Export CSV
                         </button>
-                        <button class="btn btn-outline-secondary"
+                        <button class="btn btn-outline-light"
                                 t-on-click="onExportImage">
                             <i class="fa fa-image"/> Export Image
                         </button>
@@ -376,7 +395,7 @@
                                             <tr>
                                                 <td t-esc="project.name"/>
                                                 <td>
-                                                    <span t-attf-class="badge #{project.status === 'active' ? 'text-bg-success' : project.status === 'on_hold' ? 'text-bg-warning' : project.status === 'completed' ? 'text-bg-info' : 'text-bg-secondary'}"
+                                                    <span t-attf-class="badge #{project.status === 'active' ? 'text-bg-success' : project.status === 'on_hold' ? 'text-bg-warning' : project.status === 'completed' ? 'text-bg-info' : project.status === 'waiting' ? 'text-bg-danger' : 'text-bg-secondary'}"
                                                           t-esc="project.status"/>
                                                 </td>
                                                 <td>
