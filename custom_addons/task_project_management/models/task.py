@@ -502,7 +502,9 @@ class TaskManagementTask(models.Model):
                 'hoursToday': '0.00', 'hoursWeek': '0.00',
                 'hoursMonth': '0.00',
                 'dailyTarget': '8.00', 'weeklyTarget': '40.00',
+                'monthlyTarget': '0.00',
                 'dailyPerformance': 0, 'weeklyPerformance': 0,
+                'monthlyPerformance': 0,
                 'recentTasks': [],
             }
         tasks = self.sudo().search([('member_id', '=', member.id)])
@@ -539,6 +541,17 @@ class TaskManagementTask(models.Model):
         weekly_perf = round(
             (hours_week / weekly_target * 100) if weekly_target else 0, 1)
 
+        # Monthly target = daily_target * working days (Mon-Fri) in month
+        import calendar
+        cal = calendar.Calendar()
+        working_days = sum(
+            1 for d in cal.itermonthdays2(today.year, today.month)
+            if d[0] != 0 and d[1] < 5  # weekday 0-4 = Mon-Fri
+        )
+        monthly_target = daily_target * working_days
+        monthly_perf = round(
+            (hours_month / monthly_target * 100) if monthly_target else 0, 1)
+
         return {
             'totalTasks': len(tasks),
             'pendingTasks': len(tasks.filtered(
@@ -552,8 +565,10 @@ class TaskManagementTask(models.Model):
             'hoursMonth': f'{hours_month:.2f}',
             'dailyTarget': f'{daily_target:.2f}',
             'weeklyTarget': f'{weekly_target:.2f}',
+            'monthlyTarget': f'{monthly_target:.2f}',
             'dailyPerformance': daily_perf,
             'weeklyPerformance': weekly_perf,
+            'monthlyPerformance': monthly_perf,
             'recentTasks': recent_data,
         }
 

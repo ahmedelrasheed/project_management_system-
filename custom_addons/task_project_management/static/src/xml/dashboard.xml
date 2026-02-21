@@ -77,7 +77,7 @@
 
                 <!-- Performance Metrics -->
                 <div class="row mb-4">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card">
                             <div class="card-body text-center">
                                 <h6 class="text-muted">Daily Performance</h6>
@@ -90,7 +90,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card">
                             <div class="card-body text-center">
                                 <h6 class="text-muted">Weekly Performance</h6>
@@ -99,6 +99,19 @@
                                 </h3>
                                 <small class="text-muted">
                                     <t t-esc="state.hoursWeek"/> / <t t-esc="state.weeklyTarget"/> hrs target
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h6 class="text-muted">Monthly Performance</h6>
+                                <h3 t-attf-class="#{state.monthlyPerformance >= 100 ? 'text-success' : state.monthlyPerformance >= 75 ? 'text-warning' : 'text-danger'}">
+                                    <t t-esc="state.monthlyPerformance"/>%
+                                </h3>
+                                <small class="text-muted">
+                                    <t t-esc="state.hoursMonth"/> / <t t-esc="state.monthlyTarget"/> hrs target
                                 </small>
                             </div>
                         </div>
