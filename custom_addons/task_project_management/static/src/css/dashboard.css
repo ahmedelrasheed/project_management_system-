@@ -183,6 +183,11 @@ html[dir="rtl"] .task_dashboard .dashboard-header {
     flex-direction: row-reverse;
 }
 
+/* Navbar Background - Match Brand Theme */
+.o_main_navbar {
+    background: linear-gradient(135deg, #714B67 0%, #8e6584 100%) !important;
+}
+
 /* Company Logo in Navbar */
 .o_company_logo_navbar {
     height: 32px;
