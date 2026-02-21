@@ -1,4 +1,332 @@
-/* Task Management Dashboards - Professional Theme */
+/* ============================================================
+   Task Management - Professional Brand Theme
+   Primary: #714B67  |  Dark: #5a3a52  |  Light: #8e6584
+   Accent BG: #f5f0f4  |  White: #fff
+   ============================================================ */
+
+/* ============================================================
+   1. NAVBAR
+   ============================================================ */
+.o_main_navbar {
+    background: linear-gradient(135deg, #714B67 0%, #8e6584 100%) !important;
+    box-shadow: 0 2px 8px rgba(113, 75, 103, 0.3) !important;
+}
+
+/* Navbar menu items */
+.o_main_navbar .o_menu_sections .o_nav_entry,
+.o_main_navbar .o_menu_sections > .dropdown > .dropdown-toggle {
+    color: rgba(255,255,255,0.9) !important;
+    font-weight: 500 !important;
+}
+
+.o_main_navbar .o_menu_sections .o_nav_entry:hover,
+.o_main_navbar .o_menu_sections > .dropdown > .dropdown-toggle:hover {
+    color: #fff !important;
+    background: rgba(255,255,255,0.12) !important;
+    border-radius: 6px;
+}
+
+/* Navbar brand (app name) */
+.o_main_navbar .o_menu_brand {
+    color: #fff !important;
+    font-weight: 700 !important;
+    font-size: 1.05rem !important;
+}
+
+/* Navbar apps menu icon */
+.o_main_navbar .o_navbar_apps_menu .dropdown-toggle {
+    color: #fff !important;
+}
+
+/* Company Logo in Navbar */
+.o_company_logo_navbar {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255,255,255,0.5);
+    transition: border-color 0.2s;
+}
+
+.o_company_logo_navbar:hover {
+    border-color: #fff;
+}
+
+.o_company_logo_link {
+    text-decoration: none;
+}
+
+/* ============================================================
+   2. GLOBAL BUTTONS
+   ============================================================ */
+
+/* Primary action buttons (.btn-primary) */
+.o_form_view .btn-primary,
+.o_list_view .btn-primary,
+.modal .btn-primary {
+    background: linear-gradient(135deg, #714B67 0%, #8e6584 100%) !important;
+    border: none !important;
+    color: #fff !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.o_form_view .btn-primary:hover,
+.o_list_view .btn-primary:hover,
+.modal .btn-primary:hover {
+    background: linear-gradient(135deg, #5a3a52 0%, #714B67 100%) !important;
+    box-shadow: 0 3px 8px rgba(113, 75, 103, 0.4) !important;
+}
+
+/* Secondary buttons */
+.o_form_view .btn-secondary,
+.o_list_view .btn-secondary,
+.modal .btn-secondary {
+    color: #714B67 !important;
+    border-color: #714B67 !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+}
+
+.o_form_view .btn-secondary:hover,
+.o_list_view .btn-secondary:hover,
+.modal .btn-secondary:hover {
+    background: #f5f0f4 !important;
+    border-color: #5a3a52 !important;
+    color: #5a3a52 !important;
+}
+
+/* Save & Discard buttons */
+.o_form_status_indicator .o_form_button_save {
+    font-size: 0.95rem !important;
+    background: linear-gradient(135deg, #714B67 0%, #8e6584 100%) !important;
+    border: none !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 6px rgba(113, 75, 103, 0.35) !important;
+    transition: all 0.2s ease !important;
+    letter-spacing: 0.3px !important;
+}
+
+.o_form_status_indicator .o_form_button_save:hover {
+    background: linear-gradient(135deg, #5a3a52 0%, #714B67 100%) !important;
+    box-shadow: 0 4px 10px rgba(113, 75, 103, 0.45) !important;
+    transform: translateY(-1px) !important;
+}
+
+.o_form_status_indicator .o_form_button_cancel {
+    font-size: 0.95rem !important;
+    background: #fff !important;
+    color: #714B67 !important;
+    border: 1.5px solid #714B67 !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+    letter-spacing: 0.3px !important;
+}
+
+.o_form_status_indicator .o_form_button_cancel:hover {
+    background: #f5f0f4 !important;
+    border-color: #5a3a52 !important;
+    color: #5a3a52 !important;
+}
+
+.o_form_status_indicator .o_form_status_indicator_buttons {
+    gap: 8px;
+}
+
+/* Form header buttons (Approve, Reject, Submit Work, etc.) */
+.o_form_view .o_statusbar_buttons .btn-primary {
+    background: linear-gradient(135deg, #714B67 0%, #8e6584 100%) !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    padding: 6px 16px !important;
+}
+
+.o_form_view .o_statusbar_buttons .btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #3fbf5e 100%) !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    padding: 6px 16px !important;
+}
+
+.o_form_view .o_statusbar_buttons .btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #e8606d 100%) !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    padding: 6px 16px !important;
+}
+
+/* Create button in list views */
+.o_list_view .o_list_button_add,
+.o_cp_buttons .btn-primary {
+    background: linear-gradient(135deg, #714B67 0%, #8e6584 100%) !important;
+    border: none !important;
+    color: #fff !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+}
+
+.o_list_view .o_list_button_add:hover,
+.o_cp_buttons .btn-primary:hover {
+    background: linear-gradient(135deg, #5a3a52 0%, #714B67 100%) !important;
+}
+
+/* ============================================================
+   3. STATUSBAR
+   ============================================================ */
+.o_statusbar_status .o_arrow_button.disabled.o_arrow_button_current {
+    background: #714B67 !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+}
+
+/* ============================================================
+   4. FORM VIEWS
+   ============================================================ */
+
+/* Form labels */
+.o_form_view .o_form_label {
+    color: #4a3344 !important;
+    font-weight: 600 !important;
+}
+
+/* Form sheet */
+.o_form_view .o_form_sheet {
+    border-radius: 8px;
+}
+
+/* Notebook tabs */
+.o_form_view .o_notebook .nav-link {
+    color: #714B67 !important;
+    font-weight: 500 !important;
+}
+
+.o_form_view .o_notebook .nav-link.active {
+    color: #714B67 !important;
+    border-bottom: 3px solid #714B67 !important;
+    font-weight: 700 !important;
+}
+
+/* Stat buttons */
+.o_form_view .oe_stat_button {
+    border-color: #e8dce5 !important;
+}
+
+.o_form_view .oe_stat_button:hover {
+    background: #f5f0f4 !important;
+}
+
+/* ============================================================
+   5. LIST / TREE VIEWS
+   ============================================================ */
+
+/* Table header */
+.o_list_view thead th {
+    color: #714B67 !important;
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+    border-bottom: 2px solid #714B67 !important;
+}
+
+/* Row hover */
+.o_list_view tbody tr:hover {
+    background: #f9f5f8 !important;
+}
+
+/* Checkbox accent */
+.o_list_view .o_list_record_selector input[type="checkbox"]:checked {
+    accent-color: #714B67;
+}
+
+/* ============================================================
+   6. SEARCH BAR & CONTROL PANEL
+   ============================================================ */
+.o_searchview .o_searchview_input {
+    color: #4a3344 !important;
+}
+
+.o_searchview .o_searchview_facet .o_searchview_facet_label {
+    background: #714B67 !important;
+    color: #fff !important;
+}
+
+/* Group by headers */
+.o_group_header {
+    color: #714B67 !important;
+    font-weight: 700 !important;
+}
+
+/* ============================================================
+   7. BADGES
+   ============================================================ */
+.badge.text-bg-success {
+    background: linear-gradient(135deg, #28a745, #3fbf5e) !important;
+}
+
+.badge.text-bg-warning {
+    background: linear-gradient(135deg, #f0ad4e, #f5c36d) !important;
+}
+
+.badge.text-bg-danger {
+    background: linear-gradient(135deg, #dc3545, #e8606d) !important;
+}
+
+.badge.text-bg-info {
+    background: linear-gradient(135deg, #17a2b8, #3fc1d3) !important;
+}
+
+/* ============================================================
+   8. CHATTER / MESSAGING
+   ============================================================ */
+.o_Chatter .o_Message_authorName {
+    color: #714B67 !important;
+    font-weight: 600 !important;
+}
+
+/* ============================================================
+   9. MODALS / DIALOGS
+   ============================================================ */
+.modal .modal-header {
+    background: #f5f0f4 !important;
+    border-bottom: 2px solid #714B67 !important;
+}
+
+.modal .modal-title {
+    color: #714B67 !important;
+    font-weight: 700 !important;
+}
+
+/* ============================================================
+   10. SCROLLBAR (webkit)
+   ============================================================ */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f5f0f4;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c4a8bc;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #714B67;
+}
+
+/* ============================================================
+   11. DASHBOARD - Professional Theme
+   ============================================================ */
 .task_dashboard {
     background: linear-gradient(135deg, #f5f0f4 0%, #f8f9fa 100%);
     min-height: 100vh;
@@ -26,10 +354,11 @@
 .task_dashboard .dashboard-header .company-logo {
     width: 50px;
     height: 50px;
-    border-radius: 10px;
+    border-radius: 50%;
     background: #fff;
     padding: 4px;
     object-fit: contain;
+    border: 2px solid rgba(255,255,255,0.4);
 }
 
 .task_dashboard .dashboard-header .dashboard-title {
@@ -49,6 +378,7 @@
     border-color: rgba(255,255,255,0.5);
     color: #fff;
     font-weight: 500;
+    border-radius: 6px;
 }
 
 .task_dashboard .dashboard-header .header-actions .btn:hover {
@@ -82,7 +412,7 @@
     opacity: 0.9;
 }
 
-/* Cards */
+/* Dashboard Cards */
 .task_dashboard .card {
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
@@ -113,7 +443,7 @@
     letter-spacing: 0.5px;
 }
 
-/* Progress Bars */
+/* Dashboard Progress Bars */
 .task_dashboard .progress {
     border-radius: 10px;
     background-color: #e9ecef;
@@ -126,7 +456,7 @@
     font-weight: 600;
 }
 
-/* Tables */
+/* Dashboard Tables */
 .task_dashboard .table th {
     border-top: none;
     color: #714B67;
@@ -169,7 +499,9 @@
     margin-bottom: 12px;
 }
 
-/* RTL support */
+/* ============================================================
+   12. RTL SUPPORT
+   ============================================================ */
 html[dir="rtl"] .task_dashboard .text-end {
     text-align: left !important;
 }
@@ -183,67 +515,26 @@ html[dir="rtl"] .task_dashboard .dashboard-header {
     flex-direction: row-reverse;
 }
 
-/* Navbar Background - Match Brand Theme */
-.o_main_navbar {
-    background: linear-gradient(135deg, #714B67 0%, #8e6584 100%) !important;
-}
-
-/* Company Logo in Navbar */
-.o_company_logo_navbar {
-    height: 32px;
-    width: 32px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid rgba(255,255,255,0.5);
-}
-
-.o_company_logo_link {
-    text-decoration: none;
-}
-
-.o_company_logo_link:hover {
-    opacity: 0.85;
-}
-
-/* Save & Discard buttons - Professional Theme */
-.o_form_status_indicator .o_form_button_save {
-    font-size: 0.95rem !important;
-    background: linear-gradient(135deg, #714B67 0%, #8e6584 100%) !important;
-    border: none !important;
-    color: #fff !important;
-    border-radius: 8px !important;
-    box-shadow: 0 2px 6px rgba(113, 75, 103, 0.35) !important;
-    transition: all 0.2s ease !important;
-    letter-spacing: 0.3px !important;
-}
-
-.o_form_status_indicator .o_form_button_save:hover {
-    background: linear-gradient(135deg, #5a3a52 0%, #714B67 100%) !important;
-    box-shadow: 0 4px 10px rgba(113, 75, 103, 0.45) !important;
-    transform: translateY(-1px) !important;
-}
-
-.o_form_status_indicator .o_form_button_cancel {
-    font-size: 0.95rem !important;
-    background: #fff !important;
-    color: #714B67 !important;
-    border: 1.5px solid #714B67 !important;
-    border-radius: 8px !important;
-    transition: all 0.2s ease !important;
-    letter-spacing: 0.3px !important;
-}
-
-.o_form_status_indicator .o_form_button_cancel:hover {
-    background: #f5f0f4 !important;
-    border-color: #5a3a52 !important;
-    color: #5a3a52 !important;
-}
-
-.o_form_status_indicator .o_form_status_indicator_buttons {
-    gap: 8px;
-}
+/* ============================================================
+   13. MISC
+   ============================================================ */
 
 /* Hide SMS button from phone fields */
 .o_field_phone_sms {
     display: none !important;
+}
+
+/* Selection highlight */
+::selection {
+    background: #d4b8cc;
+    color: #fff;
+}
+
+/* Links inside views */
+.o_form_view a:not(.btn) {
+    color: #714B67 !important;
+}
+
+.o_form_view a:not(.btn):hover {
+    color: #5a3a52 !important;
 }
