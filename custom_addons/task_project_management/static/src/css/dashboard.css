@@ -887,7 +887,88 @@ html[dir="rtl"] .task_dashboard .dashboard-header {
 /* Activity Menu and Switch Company Menu removed via JS (systray_cleanup.js) */
 
 /* ============================================================
-   14. MISC
+   14. FONT SIZE PREFERENCE
+   ============================================================ */
+
+/* CSS variable default */
+:root {
+    --task-mgmt-font-size: 15px;
+}
+
+/* Small font */
+body.task-font-small .o_action_manager,
+body.task-font-small .o_content,
+body.task-font-small .o_form_view,
+body.task-font-small .o_list_view,
+body.task-font-small .task_dashboard,
+body.task-font-small .modal-body {
+    font-size: 13px !important;
+}
+
+body.task-font-small .o_form_view .o_form_label {
+    font-size: 12px !important;
+}
+
+body.task-font-small .o_list_view thead th {
+    font-size: 0.78rem !important;
+}
+
+/* Medium font (default) */
+body.task-font-medium .o_action_manager,
+body.task-font-medium .o_content,
+body.task-font-medium .o_form_view,
+body.task-font-medium .o_list_view,
+body.task-font-medium .task_dashboard,
+body.task-font-medium .modal-body {
+    font-size: 15px !important;
+}
+
+body.task-font-medium .o_form_view .o_form_label {
+    font-size: 14px !important;
+}
+
+body.task-font-medium .o_list_view thead th {
+    font-size: 0.88rem !important;
+}
+
+/* Large font */
+body.task-font-large .o_action_manager,
+body.task-font-large .o_content,
+body.task-font-large .o_form_view,
+body.task-font-large .o_list_view,
+body.task-font-large .task_dashboard,
+body.task-font-large .modal-body {
+    font-size: 17px !important;
+}
+
+body.task-font-large .o_form_view .o_form_label {
+    font-size: 16px !important;
+}
+
+body.task-font-large .o_list_view thead th {
+    font-size: 0.95rem !important;
+}
+
+/* Extra Large font */
+body.task-font-xlarge .o_action_manager,
+body.task-font-xlarge .o_content,
+body.task-font-xlarge .o_form_view,
+body.task-font-xlarge .o_list_view,
+body.task-font-xlarge .task_dashboard,
+body.task-font-xlarge .modal-body {
+    font-size: 19px !important;
+}
+
+body.task-font-xlarge .o_form_view .o_form_label {
+    font-size: 18px !important;
+}
+
+body.task-font-xlarge .o_list_view thead th {
+    font-size: 1.05rem !important;
+}
+
+/* ============================================================
+   15. MISC
    ============================================================ */
 
 /* Hide SMS button from phone fields */

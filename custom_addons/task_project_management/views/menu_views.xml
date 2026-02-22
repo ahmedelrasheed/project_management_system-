@@ -100,22 +100,23 @@
 
     <menuitem id="menu_tasks_to_review"
               name="Tasks to Review"
-              parent="menu_projects_parent"
+              parent="menu_my_tasks_parent"
               action="action_tasks_to_review"
-              sequence="20"/>
+              sequence="25"
+              groups="task_project_management.group_project_manager,task_project_management.group_admin_manager"/>
 
     <menuitem id="menu_assign_task"
               name="Assign Task"
-              parent="menu_projects_parent"
+              parent="menu_my_tasks_parent"
               action="action_assign_task"
-              sequence="25"
+              sequence="27"
               groups="task_project_management.group_project_manager,task_project_management.group_admin_manager"/>
 
     <menuitem id="menu_assigned_tasks"
               name="Assigned Tasks"
-              parent="menu_projects_parent"
+              parent="menu_my_tasks_parent"
               action="action_assigned_tasks"
-              sequence="27"
+              sequence="28"
               groups="task_project_management.group_project_manager,task_project_management.group_admin_manager"/>
 
     <menuitem id="menu_pm_dashboard"

@@ -38,6 +38,7 @@
         'views/task_audit_views.xml',
         'views/archive_views.xml',
         'views/res_config_settings_views.xml',
+        'views/res_users_views.xml',
         'views/menu_views.xml',
         'views/login_templates.xml',
         # Wizard
@@ -57,6 +58,7 @@
             'task_project_management/static/src/js/user_menu.js',
             'task_project_management/static/src/js/systray_cleanup.js',
             'task_project_management/static/src/js/float_time_spinner.js',
+            'task_project_management/static/src/js/font_size.js',
             'task_project_management/static/src/xml/navbar_apps_hide.xml',
         ],
     },

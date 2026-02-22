@@ -1,8 +1,23 @@
-from odoo import models, api
+from odoo import models, fields, api
 
 
 class ResUsers(models.Model):
     _inherit = 'res.users'
+
+    task_font_size = fields.Selection([
+        ('small', 'Small'),
+        ('medium', 'Medium'),
+        ('large', 'Large'),
+        ('xlarge', 'Extra Large'),
+    ], string='Font Size', default='medium')
+
+    @property
+    def SELF_READABLE_FIELDS(self):
+        return super().SELF_READABLE_FIELDS + ['task_font_size']
+
+    @property
+    def SELF_WRITEABLE_FIELDS(self):
+        return super().SELF_WRITEABLE_FIELDS + ['task_font_size']
 
     @api.model_create_multi
     def create(self, vals_list):
