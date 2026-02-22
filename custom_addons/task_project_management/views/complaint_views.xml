@@ -38,13 +38,13 @@
                     <group>
                         <field name="message"/>
                     </group>
-                    <group string="Manager Review"
+                    <group string="Project Manager Review"
                            groups="task_project_management.group_manager,task_project_management.group_admin_manager">
                         <field name="manager_comment"
                                placeholder="Add your comment before approving or rejecting..."
                                readonly="status != 'pending'"/>
                     </group>
-                    <group string="Manager Comment"
+                    <group string="Project Manager Comment"
                            groups="!task_project_management.group_manager">
                         <field name="manager_comment" readonly="1"/>
                     </group>

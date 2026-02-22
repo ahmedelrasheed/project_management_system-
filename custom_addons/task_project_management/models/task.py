@@ -456,7 +456,18 @@ class TaskManagementTask(models.Model):
         if 'can_assign' in fields_list:
             defaults['can_assign'] = is_pm
         if 'is_current_user_member' in fields_list:
-            defaults['is_current_user_member'] = False
+            # Check if the task will belong to the current user
+            default_member = self.env.context.get('default_member_id')
+            if default_member:
+                member = self.env['task.management.member'].browse(default_member)
+                defaults['is_current_user_member'] = (
+                    member.exists() and member.user_id.id == self.env.uid
+                )
+            else:
+                # No explicit member → task creation auto-assigns current user
+                member = self.env['task.management.member'].search(
+                    [('user_id', '=', self.env.uid)], limit=1)
+                defaults['is_current_user_member'] = bool(member)
         return defaults
 
     @api.model_create_multi

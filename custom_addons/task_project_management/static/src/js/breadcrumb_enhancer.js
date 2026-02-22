@@ -11,6 +11,11 @@ const REPORT_WIZARD_MODELS = [
     'task.management.project.performance.report',
 ];
 
+// Models whose form breadcrumb should show a fixed label instead of record name
+const FORM_BREADCRUMB_LABELS = {
+    'task.management.project': 'Project Report',
+};
+
 patch(ControlPanel.prototype, {
     setup() {
         super.setup(...arguments);
@@ -42,6 +47,16 @@ patch(ControlPanel.prototype, {
 
             // Otherwise show breadcrumb and inject section name
             breadcrumbOl.style.display = '';
+
+            // Replace the active breadcrumb item with a fixed label for specific models
+            const viewType = this.env?.config?.viewType || '';
+            const formLabel = FORM_BREADCRUMB_LABELS[resModel];
+            if (formLabel && viewType === 'form') {
+                const activeItem = breadcrumbOl.querySelector('.breadcrumb-item.active');
+                if (activeItem && activeItem.textContent.trim() !== formLabel) {
+                    activeItem.textContent = formLabel;
+                }
+            }
 
             // Remove previously injected section to avoid duplicates
             const existing = breadcrumbOl.querySelector('.o_breadcrumb_section');

@@ -1428,6 +1428,18 @@ msgid "Manager Review"
 msgstr "مراجعة المدير"
 
 #. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_complaint_form
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_form
+msgid "Project Manager Comment"
+msgstr "تعليق مدير المشروع"
+
+#. module: task_project_management
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_complaint_form
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_task_form
+msgid "Project Manager Review"
+msgstr "مراجعة مدير المشروع"
+
+#. module: task_project_management
 #: model_terms:ir.ui.view,arch_db:task_project_management.view_res_config_settings_form
 msgid "Max Attachment Size"
 msgstr "الحجم الأقصى للمرفقات"
