@@ -249,14 +249,22 @@
               name="Complaints"
               parent="menu_task_management_root"
               sequence="45"
-              groups="task_project_management.group_manager,task_project_management.group_member,task_project_management.group_project_manager,task_project_management.group_admin_manager"/>
+              groups="task_project_management.group_manager,task_project_management.group_member,task_project_management.group_admin_manager"/>
 
     <menuitem id="menu_complaints"
               name="Complaints"
               parent="menu_complaints_parent"
               action="action_complaints"
               sequence="10"
-              groups="task_project_management.group_manager,task_project_management.group_admin_manager,task_project_management.group_project_manager"/>
+              groups="task_project_management.group_manager,task_project_management.group_admin_manager"/>
+
+    <!-- Force-remove PM group from complaints menus -->
+    <record id="menu_complaints_parent" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [ref('group_manager'), ref('group_member'), ref('group_admin_manager')])]"/>
+    </record>
+    <record id="menu_complaints" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [ref('group_manager'), ref('group_admin_manager')])]"/>
+    </record>
 
     <menuitem id="menu_my_complaints"
               name="My Complaints"

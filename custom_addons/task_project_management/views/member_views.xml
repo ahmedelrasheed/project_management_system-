@@ -10,6 +10,10 @@
                 <field name="is_current_user_admin" invisible="1"/>
                 <field name="user_id" invisible="1"/>
                 <header>
+                    <button name="action_assign_task"
+                            string="Assign Task"
+                            type="object" class="btn-primary"
+                            groups="task_project_management.group_project_manager"/>
                     <button name="action_change_password"
                             string="Change Password"
                             type="object" class="btn-secondary"

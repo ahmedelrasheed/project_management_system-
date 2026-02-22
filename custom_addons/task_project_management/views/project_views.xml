@@ -55,9 +55,16 @@
                                    readonly="id and not is_admin_user"/>
                         </page>
                         <page string="Members" name="members">
-                            <field name="member_ids" widget="many2many_tags"
+                            <field name="member_ids"
                                    domain="[('id', 'not in', project_manager_ids)]"
-                                   readonly="id and not is_admin_user"/>
+                                   readonly="id and not is_admin_user">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="email"/>
+                                    <field name="job_title"/>
+                                    <field name="role"/>
+                                </tree>
+                            </field>
                         </page>
                         <page string="Oversight Managers" name="oversight_managers"
                               groups="task_project_management.group_admin_manager">

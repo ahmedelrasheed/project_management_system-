@@ -130,6 +130,22 @@ class TaskManagementMember(models.Model):
             users_to_archive.sudo().write({'active': False})
         return res
 
+    def action_assign_task(self):
+        """Open assign-task form pre-filled with this member."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Assign Task'),
+            'res_model': 'task.management.task',
+            'view_mode': 'form',
+            'context': {
+                'default_approval_status': 'assigned',
+                'default_member_id': self.id,
+                'form_view_initial_mode': 'edit',
+            },
+            'target': 'current',
+        }
+
     def action_change_password(self):
         """Open the change-password wizard for this member."""
         self.ensure_one()

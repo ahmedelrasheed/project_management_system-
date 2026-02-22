@@ -14,10 +14,10 @@
                     <field name="assigned_by_id" invisible="1"/>
                     <button name="action_approve" string="Approve"
                             type="object" class="btn-primary"
-                            invisible="approval_status not in ('pending', 'assigned_pending') or not is_current_user_pm"/>
+                            invisible="approval_status not in ('pending', 'assigned_pending') or not is_current_user_pm or is_current_user_member"/>
                     <button name="action_reject" string="Reject"
                             type="object" class="btn-danger"
-                            invisible="approval_status not in ('pending', 'assigned_pending') or not is_current_user_pm"/>
+                            invisible="approval_status not in ('pending', 'assigned_pending') or not is_current_user_pm or is_current_user_member"/>
                     <!-- Statusbar for regular tasks -->
                     <field name="approval_status" widget="statusbar"
                            statusbar_visible="pending,approved,rejected"
