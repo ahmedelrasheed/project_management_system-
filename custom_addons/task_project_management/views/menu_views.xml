@@ -140,21 +140,21 @@
               sequence="10"/>
 
     <!-- ============================================================ -->
-    <!-- Archive / Portfolio (All roles)                                -->
+    <!-- Shared Libraries (All roles)                                   -->
     <!-- ============================================================ -->
     <menuitem id="menu_archive_parent"
-              name="Archive / Portfolio"
+              name="Shared Libraries"
               parent="menu_task_management_root"
               sequence="40"/>
 
     <menuitem id="menu_my_archive"
-              name="My Archive"
+              name="My Library"
               parent="menu_archive_parent"
               action="action_my_archive"
               sequence="10"/>
 
     <menuitem id="menu_public_archives"
-              name="Browse Public Archives"
+              name="Browse Public Libraries"
               parent="menu_archive_parent"
               action="action_public_archives"
               sequence="20"/>

@@ -4,7 +4,7 @@ from odoo.exceptions import AccessError
 
 class TaskManagementArchive(models.Model):
     _name = 'task.management.archive'
-    _description = 'Member Project Archive / Portfolio'
+    _description = 'Shared Library'
     _order = 'end_date desc, id desc'
 
     member_id = fields.Many2one(
@@ -32,16 +32,16 @@ class TaskManagementArchive(models.Model):
     )
 
     def _check_owner(self):
-        """Check that the current user is the owner of this archive entry."""
+        """Check that the current user is the owner of this library entry."""
         is_admin = self.env.user.has_group(
             'task_project_management.group_admin_manager')
         for rec in self:
             if not is_admin and rec.user_id.id != self.env.uid:
                 raise AccessError(
-                    _('You can only modify your own archive entries.'))
+                    _('You can only modify your own library entries.'))
 
     def _sync_attachment_visibility(self):
-        """Set attachment public flag based on archive visibility."""
+        """Set attachment public flag based on library visibility."""
         for rec in self:
             if rec.attachment_ids:
                 rec.attachment_ids.sudo().write({

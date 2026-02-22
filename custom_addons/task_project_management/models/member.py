@@ -51,7 +51,7 @@ class TaskManagementMember(models.Model):
     )
     archive_ids = fields.One2many(
         'task.management.archive', 'member_id',
-        string='Archive Entries',
+        string='Library Entries',
     )
 
     _sql_constraints = [

@@ -6,7 +6,7 @@
         <field name="name">task.management.archive.form</field>
         <field name="model">task.management.archive</field>
         <field name="arch" type="xml">
-            <form string="Archive Entry">
+            <form string="Library Entry">
                 <sheet>
                     <group>
                         <group>
@@ -72,7 +72,7 @@
         <field name="name">task.management.archive.tree</field>
         <field name="model">task.management.archive</field>
         <field name="arch" type="xml">
-            <tree string="Archive">
+            <tree string="Library">
                 <field name="user_id"/>
                 <field name="member_id" optional="hide"/>
                 <field name="project_name"/>
@@ -91,7 +91,7 @@
         <field name="name">task.management.archive.search</field>
         <field name="model">task.management.archive</field>
         <field name="arch" type="xml">
-            <search string="Search Archive">
+            <search string="Search Library">
                 <field name="project_name"/>
                 <field name="member_id"/>
                 <field name="role_played"/>
@@ -111,22 +111,22 @@
         </field>
     </record>
 
-    <!-- My Archive Action (full CRUD) -->
+    <!-- My Library Action (full CRUD) -->
     <record id="action_my_archive" model="ir.actions.act_window">
-        <field name="name">My Archive</field>
+        <field name="name">My Library</field>
         <field name="res_model">task.management.archive</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('user_id', '=', uid)]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Add a project to your portfolio
+                Add a project to your library
             </p>
         </field>
     </record>
 
-    <!-- Browse Public Archives Action (read-only) -->
+    <!-- Browse Public Libraries Action (read-only) -->
     <record id="action_public_archives" model="ir.actions.act_window">
-        <field name="name">Browse Public Archives</field>
+        <field name="name">Browse Public Libraries</field>
         <field name="res_model">task.management.archive</field>
         <field name="view_mode">tree,form</field>
         <field name="view_ids" eval="[
