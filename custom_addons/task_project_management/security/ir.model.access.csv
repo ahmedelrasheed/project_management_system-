@@ -34,3 +34,4 @@ access_phase_pm,task.management.project.phase.pm,model_task_management_project_p
 access_phase_admin,task.management.project.phase.admin,model_task_management_project_phase,group_admin_manager,1,1,1,1
 access_proj_report_phase_pm,task.management.project.performance.phase.pm,model_task_management_project_performance_phase,group_project_manager,1,1,1,1
 access_proj_report_phase_admin,task.management.project.performance.phase.admin,model_task_management_project_performance_phase,group_admin_manager,1,1,1,1
+access_change_password_admin,task.management.change.password.wizard.admin,model_task_management_change_password_wizard,group_admin_manager,1,1,1,1

@@ -128,6 +128,18 @@ class TaskManagementMember(models.Model):
             users_to_archive.sudo().write({'active': False})
         return res
 
+    def action_change_password(self):
+        """Open the change-password wizard for this member."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Change Password'),
+            'res_model': 'task.management.change.password.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_member_id': self.id},
+        }
+
     @api.model
     def _get_member_for_user(self, user=None):
         """Get the member record for a given user (or current user)."""

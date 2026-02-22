@@ -44,6 +44,7 @@
         'wizard/export_report_wizard_views.xml',
         'wizard/member_performance_report_views.xml',
         'wizard/project_performance_report_views.xml',
+        'wizard/change_password_wizard_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

@@ -8,6 +8,13 @@
         <field name="arch" type="xml">
             <form string="Company Staff">
                 <field name="is_current_user_admin" invisible="1"/>
+                <field name="user_id" invisible="1"/>
+                <header>
+                    <button name="action_change_password"
+                            string="Change Password"
+                            type="object" class="btn-secondary"
+                            invisible="not is_current_user_admin or not user_id"/>
+                </header>
                 <sheet>
                     <group>
                         <group>
