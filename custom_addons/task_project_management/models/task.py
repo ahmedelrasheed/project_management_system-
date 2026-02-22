@@ -758,15 +758,7 @@ class TaskManagementTask(models.Model):
         member = self.env['task.management.member'].sudo().search(
             [('user_id', '=', self.env.uid)], limit=1)
 
-        # Admin sees all non-archived projects even if not a PM
-        is_admin = self.env.user.has_group(
-            'task_project_management.group_admin_manager')
-
-        if is_admin:
-            projects = Project.search([
-                ('status', '!=', 'archived'),
-            ])
-        elif member:
+        if member:
             projects = Project.search([
                 ('project_manager_ids', 'in', [member.id]),
                 ('status', '!=', 'archived'),
