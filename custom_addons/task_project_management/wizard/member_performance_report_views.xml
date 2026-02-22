@@ -6,7 +6,7 @@
         <field name="name">member.performance.report.form</field>
         <field name="model">task.management.member.performance.report</field>
         <field name="arch" type="xml">
-            <form string="Member Performance Report">
+            <form string="Member Performance Report" create="false" class="o_report_wizard">
                 <header>
                     <button name="action_export_csv" string="Export CSV"
                             type="object" class="btn-primary"
@@ -15,6 +15,10 @@
                     <button name="action_export_png" string="Export PNG"
                             type="object" class="btn-secondary"
                             icon="fa-file-image-o"
+                            invisible="not member_id"/>
+                    <button name="action_export_pdf" string="Export PDF"
+                            type="object" class="btn-secondary"
+                            icon="fa-file-pdf-o"
                             invisible="not member_id"/>
                 </header>
                 <sheet>

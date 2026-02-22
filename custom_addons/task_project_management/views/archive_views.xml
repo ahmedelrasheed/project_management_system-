@@ -6,13 +6,13 @@
         <field name="name">task.management.archive.form</field>
         <field name="model">task.management.archive</field>
         <field name="arch" type="xml">
-            <form string="Library Entry">
+            <form string="Library Entry" delete="1">
                 <sheet>
                     <group>
                         <group>
-                            <field name="user_id" readonly="1"/>
-                            <field name="member_id" readonly="1"
-                                   invisible="not member_id"/>
+                            <field name="user_id" invisible="1"/>
+                            <field name="member_id" invisible="1"/>
+                            <field name="name" readonly="1"/>
                             <field name="project_name"/>
                             <field name="role_played"/>
                         </group>
@@ -44,8 +44,7 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="user_id"/>
-                            <field name="member_id" invisible="not member_id"/>
+                            <field name="name"/>
                             <field name="project_name"/>
                             <field name="role_played"/>
                         </group>
@@ -72,9 +71,8 @@
         <field name="name">task.management.archive.tree</field>
         <field name="model">task.management.archive</field>
         <field name="arch" type="xml">
-            <tree string="Library">
-                <field name="user_id"/>
-                <field name="member_id" optional="hide"/>
+            <tree string="Library" delete="1">
+                <field name="name"/>
                 <field name="project_name"/>
                 <field name="role_played"/>
                 <field name="start_date"/>
@@ -135,6 +133,7 @@
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_archive_form_readonly')}),
         ]"/>
         <field name="domain">[('visibility', '=', 'public')]</field>
+        <field name="context">{'create': False}</field>
     </record>
 
 </odoo>

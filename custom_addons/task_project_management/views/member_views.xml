@@ -6,7 +6,7 @@
         <field name="name">task.management.member.form</field>
         <field name="model">task.management.member</field>
         <field name="arch" type="xml">
-            <form string="Company Staff">
+            <form string="Members">
                 <field name="is_current_user_admin" invisible="1"/>
                 <field name="user_id" invisible="1"/>
                 <header>
@@ -83,7 +83,7 @@
         <field name="name">task.management.member.tree</field>
         <field name="model">task.management.member</field>
         <field name="arch" type="xml">
-            <tree string="Company Staff">
+            <tree string="Members">
                 <field name="name"/>
                 <field name="email"/>
                 <field name="phone"/>
@@ -91,7 +91,8 @@
                 <field name="role" widget="badge"
                        decoration-info="role == 'member'"
                        decoration-warning="role == 'project_manager'"
-                       decoration-danger="role == 'admin_manager'"/>
+                       decoration-danger="role == 'admin_manager'"
+                       decoration-success="role == 'manager'"/>
             </tree>
         </field>
     </record>
@@ -101,7 +102,7 @@
         <field name="name">task.management.member.search</field>
         <field name="model">task.management.member</field>
         <field name="arch" type="xml">
-            <search string="Search Company Staff">
+            <search string="Search Members">
                 <field name="name"/>
                 <field name="email"/>
                 <field name="job_title"/>
@@ -115,12 +116,12 @@
 
     <!-- Member Action -->
     <record id="action_member" model="ir.actions.act_window">
-        <field name="name">Company Staff</field>
+        <field name="name">Members</field>
         <field name="res_model">task.management.member</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Add a company staff member
+                Add a member
             </p>
         </field>
     </record>

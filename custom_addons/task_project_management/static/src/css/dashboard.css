@@ -685,6 +685,37 @@
 /* ============================================================
    11. DASHBOARD - Professional Theme
    ============================================================ */
+
+/* --- 11a. Breadcrumb styling for dashboards --- */
+.task_dashboard .o_control_panel {
+    background: #f5f0f4 !important;
+    border-bottom: 1px solid rgba(113, 75, 103, 0.15) !important;
+    padding: 4px 16px !important;
+    min-height: auto !important;
+}
+.task_dashboard .o_control_panel .breadcrumb {
+    margin-bottom: 0 !important;
+    background: transparent !important;
+    padding: 4px 0 !important;
+    font-size: 0.9rem !important;
+}
+.task_dashboard .o_control_panel .breadcrumb-item a {
+    color: #714B67 !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+}
+.task_dashboard .o_control_panel .breadcrumb-item a:hover {
+    color: #5a3a52 !important;
+    text-decoration: underline !important;
+}
+.task_dashboard .o_control_panel .breadcrumb-item.active {
+    color: #8e6584 !important;
+    font-weight: 600 !important;
+}
+.task_dashboard .o_control_panel .breadcrumb-item + .breadcrumb-item::before {
+    color: #8e6584 !important;
+}
+
 .task_dashboard {
     background: linear-gradient(135deg, #f5f0f4 0%, #f8f9fa 100%);
     overflow-y: auto !important;
@@ -693,7 +724,8 @@
 }
 
 /* Ensure Odoo action manager allows dashboard scrolling */
-.o_action_manager > .task_dashboard {
+.o_action_manager > .task_dashboard,
+.task_dashboard .o_content {
     overflow-y: auto !important;
 }
 
@@ -968,7 +1000,55 @@ body.task-font-xlarge .o_list_view thead th {
 }
 
 /* ============================================================
-   15. MISC
+   15. REPORT WIZARD — Hide Save/Discard/New
+   ============================================================ */
+
+/* Hide Save / Discard / New buttons on report wizard forms */
+.o_report_wizard .o_form_status_indicator,
+.o_report_wizard .o_cp_buttons .o_form_button_save,
+.o_report_wizard .o_cp_buttons .o_form_button_cancel,
+.o_report_wizard .o_cp_buttons .o_form_button_create {
+    display: none !important;
+}
+
+/* ============================================================
+   15b. GLOBAL BREADCRUMB — Menu Section Prefix
+   ============================================================ */
+
+/* Section breadcrumb item (first item, non-clickable) */
+.breadcrumb-item.o_breadcrumb_section {
+    color: #8e6584 !important;
+    cursor: default !important;
+    pointer-events: none !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
+}
+
+/* Separator arrow after section */
+.breadcrumb-item.o_breadcrumb_section + .breadcrumb-item::before {
+    color: #c4a8bc !important;
+}
+
+/* Clickable breadcrumb items (middle) */
+.o_control_panel .breadcrumb-item a {
+    color: #714B67 !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+}
+
+.o_control_panel .breadcrumb-item a:hover {
+    color: #5a3a52 !important;
+    text-decoration: underline !important;
+}
+
+/* Active breadcrumb item (current page, last) */
+.o_control_panel .breadcrumb-item.active {
+    color: #4a3344 !important;
+    font-weight: 600 !important;
+}
+
+/* ============================================================
+   16. MISC
    ============================================================ */
 
 /* Hide SMS button from phone fields */

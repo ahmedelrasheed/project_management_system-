@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Complaint Form View -->
+    <record id="view_complaint_form" model="ir.ui.view">
+        <field name="name">task.management.complaint.form</field>
+        <field name="model">task.management.complaint</field>
+        <field name="arch" type="xml">
+            <form string="Complaint">
+                <header>
+                    <button name="action_approve" string="Approve"
+                            type="object" class="btn-primary"
+                            invisible="status != 'pending'"
+                            groups="task_project_management.group_manager,task_project_management.group_admin_manager"/>
+                    <button name="action_reject" string="Reject"
+                            type="object" class="btn-danger"
+                            invisible="status != 'pending'"
+                            groups="task_project_management.group_manager,task_project_management.group_admin_manager"/>
+                    <field name="status" widget="statusbar"
+                           statusbar_visible="pending,approved,rejected"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="task_id"/>
+                            <field name="project_id"/>
+                            <field name="member_id"/>
+                        </group>
+                        <group>
+                            <field name="task_approval_status" widget="badge"
+                                   decoration-warning="task_approval_status in ('pending', 'assigned_pending')"
+                                   decoration-success="task_approval_status in ('approved', 'assigned_approved')"
+                                   decoration-danger="task_approval_status in ('rejected', 'assigned_rejected')"/>
+                            <field name="reviewed_by"/>
+                            <field name="reviewed_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="message"/>
+                    </group>
+                    <group string="Manager Review"
+                           groups="task_project_management.group_manager,task_project_management.group_admin_manager">
+                        <field name="manager_comment"
+                               placeholder="Add your comment before approving or rejecting..."
+                               readonly="status != 'pending'"/>
+                    </group>
+                    <group string="Manager Comment"
+                           groups="!task_project_management.group_manager">
+                        <field name="manager_comment" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Complaint Tree View -->
+    <record id="view_complaint_tree" model="ir.ui.view">
+        <field name="name">task.management.complaint.tree</field>
+        <field name="model">task.management.complaint</field>
+        <field name="arch" type="xml">
+            <tree string="Complaints" create="0"
+                  decoration-warning="status == 'pending'"
+                  decoration-success="status == 'approved'"
+                  decoration-danger="status == 'rejected'">
+                <field name="task_id"/>
+                <field name="project_id"/>
+                <field name="member_id"/>
+                <field name="message"/>
+                <field name="status" widget="badge"
+                       decoration-warning="status == 'pending'"
+                       decoration-success="status == 'approved'"
+                       decoration-danger="status == 'rejected'"/>
+                <field name="reviewed_by"/>
+                <field name="create_date" string="Filed On"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Complaint Search View -->
+    <record id="view_complaint_search" model="ir.ui.view">
+        <field name="name">task.management.complaint.search</field>
+        <field name="model">task.management.complaint</field>
+        <field name="arch" type="xml">
+            <search string="Search Complaints">
+                <field name="task_id"/>
+                <field name="member_id"/>
+                <field name="project_id"/>
+                <separator/>
+                <filter string="Pending" name="filter_pending"
+                        domain="[('status', '=', 'pending')]"/>
+                <filter string="Approved" name="filter_approved"
+                        domain="[('status', '=', 'approved')]"/>
+                <filter string="Rejected" name="filter_rejected"
+                        domain="[('status', '=', 'rejected')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Project" name="group_project"
+                            context="{'group_by': 'project_id'}"/>
+                    <filter string="Status" name="group_status"
+                            context="{'group_by': 'status'}"/>
+                    <filter string="Member" name="group_member"
+                            context="{'group_by': 'member_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Complaint Actions -->
+    <record id="action_complaints" model="ir.actions.act_window">
+        <field name="name">Complaints</field>
+        <field name="res_model">task.management.complaint</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{
+            'search_default_filter_pending': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No complaints to review
+            </p>
+        </field>
+    </record>
+
+    <!-- Member's own complaints action -->
+    <record id="action_member_complaints" model="ir.actions.act_window">
+        <field name="name">My Complaints</field>
+        <field name="res_model">task.management.complaint</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('member_id.user_id', '=', uid)]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                You haven't filed any complaints
+            </p>
+        </field>
+    </record>
+
+</odoo>

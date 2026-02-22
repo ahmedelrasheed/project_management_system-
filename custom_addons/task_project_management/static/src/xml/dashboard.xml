@@ -3,7 +3,7 @@
 
     <!-- Member Dashboard -->
     <t t-name="task_project_management.MemberDashboard">
-        <div class="o_action task_dashboard member_dashboard">
+        <Layout display="display" className="'o_action task_dashboard member_dashboard'">
             <div class="container-fluid py-3">
 
                 <!-- Header with Logo -->
@@ -158,8 +158,8 @@
                                                 <td t-esc="task.description"/>
                                                 <td t-esc="task.hours"/>
                                                 <td>
-                                                    <span t-attf-class="badge #{task.status === 'approved' ? 'text-bg-success' : task.status === 'rejected' ? 'text-bg-danger' : 'text-bg-warning'}"
-                                                          t-esc="task.status"/>
+                                                    <span t-attf-class="badge #{task.status === 'approved' || task.status === 'assigned_approved' ? 'text-bg-success' : task.status === 'rejected' || task.status === 'assigned_rejected' ? 'text-bg-danger' : task.status === 'assigned' ? 'text-bg-info' : 'text-bg-warning'}"
+                                                          t-esc="task.status_display or task.status"/>
                                                 </td>
                                             </tr>
                                         </t>
@@ -170,12 +170,12 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </Layout>
     </t>
 
     <!-- PM Dashboard -->
     <t t-name="task_project_management.PMDashboard">
-        <div class="o_action task_dashboard pm_dashboard">
+        <Layout display="display" className="'o_action task_dashboard pm_dashboard'">
             <div class="container-fluid py-3">
 
                 <!-- Header with Logo -->
@@ -190,11 +190,15 @@
                     <div class="header-actions">
                         <button class="btn btn-outline-light me-2"
                                 t-on-click="onExportCSV">
-                            <i class="fa fa-file-text-o"/> Export CSV
+                            <i class="fa fa-file-text-o"/> CSV
+                        </button>
+                        <button class="btn btn-outline-light me-2"
+                                t-on-click="onExportPDF">
+                            <i class="fa fa-file-pdf-o"/> PDF
                         </button>
                         <button class="btn btn-outline-light"
                                 t-on-click="onExportImage">
-                            <i class="fa fa-image"/> Export Image
+                            <i class="fa fa-image"/> Image
                         </button>
                     </div>
                 </div>
@@ -309,12 +313,12 @@
                     </div>
                 </t>
             </div>
-        </div>
+        </Layout>
     </t>
 
     <!-- Admin Dashboard -->
     <t t-name="task_project_management.AdminDashboard">
-        <div class="o_action task_dashboard admin_dashboard">
+        <Layout display="display" className="'o_action task_dashboard admin_dashboard'">
             <div class="container-fluid py-3">
 
                 <!-- Header with Logo -->
@@ -329,11 +333,15 @@
                     <div class="header-actions">
                         <button class="btn btn-outline-light me-2"
                                 t-on-click="onExportCSV">
-                            <i class="fa fa-file-text-o"/> Export CSV
+                            <i class="fa fa-file-text-o"/> CSV
+                        </button>
+                        <button class="btn btn-outline-light me-2"
+                                t-on-click="onExportPDF">
+                            <i class="fa fa-file-pdf-o"/> PDF
                         </button>
                         <button class="btn btn-outline-light"
                                 t-on-click="onExportImage">
-                            <i class="fa fa-image"/> Export Image
+                            <i class="fa fa-image"/> Image
                         </button>
                     </div>
                 </div>
@@ -435,7 +443,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </Layout>
     </t>
 
 </templates>

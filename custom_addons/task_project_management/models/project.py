@@ -39,12 +39,6 @@ class TaskManagementProject(models.Model):
         'project_id', 'member_id',
         string='Members',
     )
-    removed_member_ids = fields.Many2many(
-        'task.management.member',
-        'project_removed_member_rel',
-        'project_id', 'member_id',
-        string='Removed Members',
-    )
     task_ids = fields.One2many(
         'task.management.task', 'project_id',
         string='Tasks',
@@ -52,6 +46,13 @@ class TaskManagementProject(models.Model):
     phase_ids = fields.One2many(
         'task.management.project.phase', 'project_id',
         string='Phases',
+    )
+    manager_ids = fields.Many2many(
+        'task.management.member',
+        'project_oversight_manager_rel',
+        'project_id', 'member_id',
+        string='Oversight Managers',
+        domain=[('role', '=', 'manager')],
     )
 
     # Role flag for view readonly control
@@ -88,7 +89,8 @@ class TaskManagementProject(models.Model):
     def _compute_total_logged_hours(self):
         for project in self:
             approved_tasks = project.task_ids.filtered(
-                lambda t: t.approval_status == 'approved')
+                lambda t: t.approval_status in (
+                    'approved', 'assigned_approved'))
             project.total_logged_hours = sum(
                 approved_tasks.mapped('duration_hours'))
 
@@ -109,7 +111,8 @@ class TaskManagementProject(models.Model):
             project.task_count = len(project.task_ids)
             project.pending_task_count = len(
                 project.task_ids.filtered(
-                    lambda t: t.approval_status == 'pending'))
+                    lambda t: t.approval_status in (
+                        'pending', 'assigned_pending')))
 
     @api.constrains('project_manager_ids', 'member_ids')
     def _check_pm_not_member(self):
@@ -137,24 +140,6 @@ class TaskManagementProject(models.Model):
             if not project.project_manager_ids:
                 raise ValidationError(
                     _('A project must have at least one Project Manager.'))
-
-    def write(self, vals):
-        # Track removed members
-        if 'member_ids' in vals:
-            for project in self:
-                old_members = project.member_ids
-                result = super(TaskManagementProject, project).write(vals)
-                new_members = project.member_ids
-                removed = old_members - new_members
-                if removed:
-                    # Add to removed_member_ids without triggering recursion
-                    existing_removed = project.removed_member_ids
-                    all_removed = existing_removed | removed
-                    super(TaskManagementProject, project).write({
-                        'removed_member_ids': [(6, 0, all_removed.ids)],
-                    })
-            return True
-        return super().write(vals)
 
     @api.model
     def _name_search(self, name='', domain=None, operator='ilike',

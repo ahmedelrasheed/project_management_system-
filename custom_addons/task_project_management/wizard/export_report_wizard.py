@@ -21,6 +21,7 @@ class ExportReportWizard(models.TransientModel):
     export_type = fields.Selection([
         ('csv', 'CSV'),
         ('image', 'Image (PNG)'),
+        ('pdf', 'PDF'),
     ], string='Export Type', required=True, default='csv')
     report_file = fields.Binary(string='Report File', readonly=True)
     report_filename = fields.Char(string='Filename')
@@ -40,6 +41,8 @@ class ExportReportWizard(models.TransientModel):
 
         if self.export_type == 'csv':
             return self._export_csv(tasks)
+        elif self.export_type == 'pdf':
+            return self._export_pdf(tasks)
         else:
             return self._export_image(tasks)
 
@@ -63,9 +66,9 @@ class ExportReportWizard(models.TransientModel):
         writer.writerow([])
 
         # ── Summary by Status ──
-        approved = tasks.filtered(lambda t: t.approval_status == 'approved')
-        pending = tasks.filtered(lambda t: t.approval_status == 'pending')
-        rejected = tasks.filtered(lambda t: t.approval_status == 'rejected')
+        approved = tasks.filtered(lambda t: t.approval_status in ('approved', 'assigned_approved'))
+        pending = tasks.filtered(lambda t: t.approval_status in ('pending', 'assigned_pending'))
+        rejected = tasks.filtered(lambda t: t.approval_status in ('rejected', 'assigned_rejected'))
         assigned = tasks.filtered(lambda t: t.approval_status == 'assigned')
         late = tasks.filtered(lambda t: t.is_late_entry)
         writer.writerow(['STATUS SUMMARY'])
@@ -147,6 +150,40 @@ class ExportReportWizard(models.TransientModel):
             raise UserError(_('Image generation timed out.'))
         return self._return_download_action()
 
+    def _export_pdf(self, tasks):
+        """Export report as PDF using wkhtmltopdf."""
+        html = self._build_html_report(tasks)
+        try:
+            with tempfile.NamedTemporaryFile(
+                suffix='.html', mode='w', delete=False,
+                encoding='utf-8',
+            ) as html_file:
+                html_file.write(html)
+                html_path = html_file.name
+            pdf_path = html_path.replace('.html', '.pdf')
+            result = subprocess.run(
+                ['wkhtmltopdf', '--page-size', 'A4',
+                 '--margin-top', '10mm', '--margin-bottom', '10mm',
+                 '--margin-left', '10mm', '--margin-right', '10mm',
+                 html_path, pdf_path],
+                capture_output=True, timeout=30,
+            )
+            if result.returncode != 0:
+                raise UserError(
+                    _('Failed to generate PDF: %s') %
+                    result.stderr.decode())
+            with open(pdf_path, 'rb') as f:
+                self.report_file = base64.b64encode(f.read())
+            self.report_filename = (
+                f'task_report_{self.date_from}_{self.date_to}.pdf')
+        except FileNotFoundError:
+            raise UserError(
+                _('wkhtmltopdf is not installed. '
+                  'Please install wkhtmltopdf package.'))
+        except subprocess.TimeoutExpired:
+            raise UserError(_('PDF generation timed out.'))
+        return self._return_download_action()
+
     def _build_html_report(self, tasks):
         """Build an HTML table for the report."""
         rows = ''
@@ -156,6 +193,9 @@ class ExportReportWizard(models.TransientModel):
                 'pending': '#f0ad4e',
                 'approved': '#5cb85c',
                 'rejected': '#d9534f',
+                'assigned_pending': '#f0ad4e',
+                'assigned_approved': '#5cb85c',
+                'assigned_rejected': '#d9534f',
             }.get(task.approval_status, '#999')
             rows += f'''
             <tr>
@@ -167,7 +207,7 @@ class ExportReportWizard(models.TransientModel):
                 <td>{self._float_to_time(task.time_to)}</td>
                 <td>{task.duration_hours:.2f}</td>
                 <td style="color: {status_color}; font-weight: bold;">
-                    {task.approval_status.upper()}
+                    {task.approval_status.replace('_', ' ').title()}
                 </td>
                 <td>{'⚠' if task.is_late_entry else ''}</td>
             </tr>'''

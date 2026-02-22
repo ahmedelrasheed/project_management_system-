@@ -3,16 +3,19 @@
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { Component, useState, onWillStart } from "@odoo/owl";
+import { Layout } from "@web/search/layout";
 
 // ============================================================
 // Member Dashboard
 // ============================================================
 export class MemberDashboard extends Component {
     static template = "task_project_management.MemberDashboard";
+    static components = { Layout };
 
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
+        this.display = { controlPanel: {} };
         this.state = useState({
             companyName: "",
             totalTasks: 0,
@@ -57,10 +60,12 @@ export class MemberDashboard extends Component {
 // ============================================================
 export class PMDashboard extends Component {
     static template = "task_project_management.PMDashboard";
+    static components = { Layout };
 
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
+        this.display = { controlPanel: {} };
         this.state = useState({
             companyName: "",
             projects: [],
@@ -100,6 +105,14 @@ export class PMDashboard extends Component {
         link.download = result.filename;
         link.click();
     }
+
+    async onExportPDF() {
+        const result = await this.orm.call("task.management.task", "export_pm_dashboard_pdf", []);
+        const link = document.createElement("a");
+        link.href = "data:application/pdf;base64," + result.file_content;
+        link.download = result.filename;
+        link.click();
+    }
 }
 
 // ============================================================
@@ -107,10 +120,12 @@ export class PMDashboard extends Component {
 // ============================================================
 export class AdminDashboard extends Component {
     static template = "task_project_management.AdminDashboard";
+    static components = { Layout };
 
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
+        this.display = { controlPanel: {} };
         this.state = useState({
             companyName: "",
             totalProjects: 0,
@@ -151,6 +166,14 @@ export class AdminDashboard extends Component {
         const result = await this.orm.call("task.management.task", "export_admin_dashboard_png", []);
         const link = document.createElement("a");
         link.href = "data:image/png;base64," + result.file_content;
+        link.download = result.filename;
+        link.click();
+    }
+
+    async onExportPDF() {
+        const result = await this.orm.call("task.management.task", "export_admin_dashboard_pdf", []);
+        const link = document.createElement("a");
+        link.href = "data:application/pdf;base64," + result.file_content;
         link.download = result.filename;
         link.click();
     }

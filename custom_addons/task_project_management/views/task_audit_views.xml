@@ -11,9 +11,10 @@
                 <field name="changed_at"/>
                 <field name="old_status" widget="badge"/>
                 <field name="new_status" widget="badge"
-                       decoration-warning="new_status == 'pending'"
-                       decoration-success="new_status == 'approved'"
-                       decoration-danger="new_status == 'rejected'"/>
+                       decoration-warning="new_status in ('pending', 'assigned_pending')"
+                       decoration-success="new_status in ('approved', 'assigned_approved')"
+                       decoration-danger="new_status in ('rejected', 'assigned_rejected')"
+                       decoration-info="new_status == 'assigned'"/>
                 <field name="changed_by"/>
                 <field name="comment"/>
             </tree>
@@ -30,9 +31,9 @@
                 <field name="changed_by"/>
                 <separator/>
                 <filter string="Approved" name="filter_approved"
-                        domain="[('new_status', '=', 'approved')]"/>
+                        domain="[('new_status', 'in', ['approved', 'assigned_approved'])]"/>
                 <filter string="Rejected" name="filter_rejected"
-                        domain="[('new_status', '=', 'rejected')]"/>
+                        domain="[('new_status', 'in', ['rejected', 'assigned_rejected'])]"/>
                 <separator/>
                 <group expand="0" string="Group By">
                     <filter string="Task" name="group_task"

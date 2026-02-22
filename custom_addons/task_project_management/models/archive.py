@@ -16,6 +16,19 @@ class TaskManagementArchive(models.Model):
         'res.users', string='User', required=True,
         default=lambda self: self.env.uid, index=True,
     )
+    name = fields.Char(
+        string='Name', compute='_compute_name', store=True,
+    )
+
+    @api.depends('member_id', 'member_id.name', 'user_id', 'user_id.name')
+    def _compute_name(self):
+        for rec in self:
+            if rec.member_id:
+                rec.name = rec.member_id.name
+            elif rec.user_id:
+                rec.name = rec.user_id.name
+            else:
+                rec.name = ''
     project_name = fields.Char(string='Project Name', required=True)
     description = fields.Text(string='Description')
     start_date = fields.Date(string='Start Date')

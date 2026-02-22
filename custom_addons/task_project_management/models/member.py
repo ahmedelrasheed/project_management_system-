@@ -16,6 +16,7 @@ class TaskManagementMember(models.Model):
         ('member', 'Member'),
         ('project_manager', 'Project Manager'),
         ('admin_manager', 'Admin Manager'),
+        ('manager', 'Manager'),
     ], string='Role', default='member', required=True, tracking=True)
     user_id = fields.Many2one(
         'res.users', string='Related User',
@@ -65,6 +66,7 @@ class TaskManagementMember(models.Model):
         'member': 'task_project_management.group_member',
         'project_manager': 'task_project_management.group_project_manager',
         'admin_manager': 'task_project_management.group_admin_manager',
+        'manager': 'task_project_management.group_manager',
     }
 
     def _get_role_group(self, role):

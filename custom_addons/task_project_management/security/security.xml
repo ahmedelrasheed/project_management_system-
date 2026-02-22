@@ -32,6 +32,16 @@
         <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
     </record>
 
+    <!--
+        Manager: read-only oversight role. Does NOT imply any other TM group.
+        Visibility controlled via project.manager_ids (admin assigns projects).
+    -->
+    <record id="group_manager" model="res.groups">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="module_category_task_management"/>
+        <field name="implied_ids" eval="[(6, 0, [ref('base.group_user')])]"/>
+    </record>
+
     <!-- ============================================================ -->
     <!-- Record Rules                                                 -->
     <!-- ============================================================ -->
@@ -209,6 +219,86 @@
         <field name="model_id" ref="model_task_management_task_audit"/>
         <field name="domain_force">[(1, '=', 1)]</field>
         <field name="groups" eval="[(4, ref('group_admin_manager'))]"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Manager Record Rules (oversight via project.manager_ids)     -->
+    <!-- ============================================================ -->
+
+    <!-- Manager: tasks from admin-assigned projects -->
+    <record id="rule_task_manager" model="ir.rule">
+        <field name="name">Task: Manager sees tasks from assigned projects</field>
+        <field name="model_id" ref="model_task_management_task"/>
+        <field name="domain_force">[('project_id.manager_ids.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]"/>
+    </record>
+
+    <!-- Manager: projects assigned by admin -->
+    <record id="rule_project_manager_role" model="ir.rule">
+        <field name="name">Project: Manager sees assigned projects</field>
+        <field name="model_id" ref="model_task_management_project"/>
+        <field name="domain_force">[('manager_ids.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]"/>
+    </record>
+
+    <!-- Manager: all members (read-only via ACL) -->
+    <record id="rule_member_manager" model="ir.rule">
+        <field name="name">Member: Manager sees all members</field>
+        <field name="model_id" ref="model_task_management_member"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]"/>
+    </record>
+
+    <!-- Manager: phases from assigned projects -->
+    <record id="rule_phase_manager" model="ir.rule">
+        <field name="name">Phase: Manager sees phases of assigned projects</field>
+        <field name="model_id" ref="model_task_management_project_phase"/>
+        <field name="domain_force">[('project_id.manager_ids.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]"/>
+    </record>
+
+    <!-- Manager: audit from assigned project tasks -->
+    <record id="rule_audit_manager" model="ir.rule">
+        <field name="name">Audit: Manager sees audit of assigned projects</field>
+        <field name="model_id" ref="model_task_management_task_audit"/>
+        <field name="domain_force">[('task_id.project_id.manager_ids.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]"/>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Complaint Record Rules                                       -->
+    <!-- ============================================================ -->
+
+    <!-- Member: own complaints -->
+    <record id="rule_complaint_member" model="ir.rule">
+        <field name="name">Complaint: Member sees own complaints</field>
+        <field name="model_id" ref="model_task_management_complaint"/>
+        <field name="domain_force">[('member_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_member'))]"/>
+    </record>
+
+    <!-- PM: complaints from managed project tasks -->
+    <record id="rule_complaint_pm" model="ir.rule">
+        <field name="name">Complaint: PM sees managed project complaints</field>
+        <field name="model_id" ref="model_task_management_complaint"/>
+        <field name="domain_force">[('task_id.project_id.project_manager_ids.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_project_manager'))]"/>
+    </record>
+
+    <!-- Admin: all complaints -->
+    <record id="rule_complaint_admin" model="ir.rule">
+        <field name="name">Complaint: Admin sees all</field>
+        <field name="model_id" ref="model_task_management_complaint"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('group_admin_manager'))]"/>
+    </record>
+
+    <!-- Manager: complaints from assigned projects -->
+    <record id="rule_complaint_manager" model="ir.rule">
+        <field name="name">Complaint: Manager sees assigned project complaints</field>
+        <field name="model_id" ref="model_task_management_complaint"/>
+        <field name="domain_force">[('task_id.project_id.manager_ids.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('group_manager'))]"/>
     </record>
 
 </odoo>

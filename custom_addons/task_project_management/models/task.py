@@ -27,6 +27,11 @@ class TaskManagementTask(models.Model):
         domain="[('status', 'in', ['waiting', 'active'])]",
         tracking=True,
     )
+    phase_id = fields.Many2one(
+        'task.management.project.phase', string='Phase',
+        ondelete='set null',
+        domain="[('project_id', '=', project_id)]",
+    )
     member_id = fields.Many2one(
         'task.management.member', string='Member',
         required=True, ondelete='restrict',
@@ -45,6 +50,9 @@ class TaskManagementTask(models.Model):
         ('pending', 'Pending'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
+        ('assigned_pending', 'Assigned / Pending'),
+        ('assigned_approved', 'Assigned / Approved'),
+        ('assigned_rejected', 'Assigned / Rejected'),
     ], string='Approval Status', default='pending',
         required=True, tracking=True,
     )
@@ -86,6 +94,16 @@ class TaskManagementTask(models.Model):
         'task.management.task.audit', 'task_id',
         string='Audit Trail',
     )
+    complaint_ids = fields.One2many(
+        'task.management.complaint', 'task_id',
+        string='Complaints',
+    )
+    has_complaint = fields.Boolean(
+        compute='_compute_has_complaint',
+    )
+    can_file_complaint = fields.Boolean(
+        compute='_compute_can_file_complaint',
+    )
     is_current_user_pm = fields.Boolean(
         compute='_compute_is_current_user_pm',
     )
@@ -94,6 +112,10 @@ class TaskManagementTask(models.Model):
     )
     is_current_user_member = fields.Boolean(
         compute='_compute_is_current_user_member',
+    )
+    project_member_ids = fields.Many2many(
+        'task.management.member',
+        compute='_compute_project_member_ids',
     )
 
     @api.depends_context('uid')
@@ -122,6 +144,45 @@ class TaskManagementTask(models.Model):
             task.is_current_user_member = (
                 task.member_id and task.member_id.user_id.id == self.env.uid
             )
+
+    @api.depends('project_id')
+    def _compute_project_member_ids(self):
+        for task in self:
+            if task.project_id:
+                task.project_member_ids = task.project_id.member_ids
+            else:
+                task.project_member_ids = self.env['task.management.member']
+
+    @api.depends('complaint_ids')
+    def _compute_has_complaint(self):
+        for task in self:
+            task.has_complaint = bool(task.complaint_ids)
+
+    @api.depends('approval_status', 'complaint_ids', 'member_id')
+    @api.depends_context('uid')
+    def _compute_can_file_complaint(self):
+        for task in self:
+            task.can_file_complaint = (
+                task.approval_status in ('rejected', 'assigned_rejected')
+                and not task.complaint_ids
+                and task.member_id
+                and task.member_id.user_id.id == self.env.uid
+            )
+
+    def action_file_complaint(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('File Complaint'),
+            'res_model': 'task.management.complaint.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_task_id': self.id},
+        }
+
+    @api.onchange('project_id')
+    def _onchange_project_id_phase(self):
+        self.phase_id = False
 
     @api.onchange('member_id')
     def _onchange_member_id_project_domain(self):
@@ -174,7 +235,7 @@ class TaskManagementTask(models.Model):
     def _check_required_for_submission(self):
         """Ensure date, time, description are filled for non-assigned tasks."""
         for task in self:
-            if task.approval_status in ('pending', 'approved', 'rejected'):
+            if task.approval_status != 'assigned':
                 if not task.date:
                     raise ValidationError(
                         _('Date is required.'))
@@ -441,8 +502,9 @@ class TaskManagementTask(models.Model):
             initial_status = 'assigned' if is_assignment else 'pending'
             comment = _('Task assigned') if is_assignment else _('Task created')
             record._create_audit_entry(False, initial_status, comment)
-            # Validate attachments
+            # Validate attachments and fix access control
             record._validate_attachment_size()
+            record._ensure_attachment_access()
             if is_assignment:
                 # Notify the member about the assignment
                 record._notify_member_on_assign()
@@ -457,7 +519,7 @@ class TaskManagementTask(models.Model):
 
         for task in self:
             # Block editing of approved tasks (except status/comment changes)
-            if task.approval_status == 'approved':
+            if task.approval_status in ('approved', 'assigned_approved'):
                 allowed_fields = {
                     'approval_status', 'manager_comment',
                     'message_follower_ids', 'message_ids',
@@ -467,16 +529,18 @@ class TaskManagementTask(models.Model):
                         _('Cannot edit an approved task.'))
 
             # If editing a rejected task (non-status fields), reset to pending
-            if task.approval_status == 'rejected':
+            if task.approval_status in ('rejected', 'assigned_rejected'):
                 if 'approval_status' not in vals:
                     non_status_fields = set(vals.keys()) - {
                         'approval_status', 'manager_comment',
                         'message_follower_ids', 'message_ids',
                     }
                     if non_status_fields:
-                        vals = dict(vals, approval_status='pending')
+                        new_status = ('assigned_pending'
+                                      if task.assigned_by_id else 'pending')
+                        vals = dict(vals, approval_status=new_status)
 
-            # If member edits an assigned task, submit it (assigned → pending)
+            # If member edits an assigned task, submit it
             # PM/Admin editing assignment details should NOT trigger submission
             if task.approval_status == 'assigned':
                 if 'approval_status' not in vals:
@@ -488,7 +552,8 @@ class TaskManagementTask(models.Model):
                         submit_fields = {'date', 'time_from', 'time_to',
                                          'description', 'attachment_ids'}
                         if set(vals.keys()) & submit_fields:
-                            vals = dict(vals, approval_status='pending')
+                            vals = dict(vals,
+                                        approval_status='assigned_pending')
 
         result = super().write(vals)
 
@@ -499,19 +564,23 @@ class TaskManagementTask(models.Model):
                 old_status = old_statuses.get(task.id, 'pending')
                 comment = vals.get('manager_comment', '')
                 task._create_audit_entry(old_status, new_status, comment)
-                if new_status in ('approved', 'rejected'):
+                if new_status in ('approved', 'rejected',
+                                  'assigned_approved', 'assigned_rejected'):
                     task._notify_member_status_change(new_status)
-                elif new_status == 'pending' and old_status == 'rejected':
+                elif (new_status in ('pending', 'assigned_pending')
+                      and old_status in ('rejected', 'assigned_rejected')):
                     # Resubmission after rejection: notify PM
                     task._notify_pm_on_submit()
-                elif new_status == 'pending' and old_status == 'assigned':
+                elif (new_status == 'assigned_pending'
+                      and old_status == 'assigned'):
                     # Member submitted assigned task: notify PM
                     task._notify_pm_on_submit()
 
-        # Validate attachment sizes if attachments changed
-        if 'attachment_ids' in vals:
+        # Validate attachment sizes and fix access if attachments changed
+        if 'attachment_ids' in vals or 'assignment_attachment_ids' in vals:
             for task in self:
                 task._validate_attachment_size()
+                task._ensure_attachment_access()
 
         return result
 
@@ -522,31 +591,17 @@ class TaskManagementTask(models.Model):
 
     def action_approve(self):
         self._check_can_approve()
-        self.write({
-            'approval_status': 'approved',
-        })
+        for task in self:
+            status = ('assigned_approved'
+                      if task.assigned_by_id else 'approved')
+            task.write({'approval_status': status})
 
     def action_reject(self):
         self._check_can_approve()
-        self.write({
-            'approval_status': 'rejected',
-        })
-
-    def action_submit_work(self):
-        """Member submits work for an assigned task."""
-        self.ensure_one()
-        if self.approval_status != 'assigned':
-            raise UserError(_('This task is not in assigned status.'))
-        # Validate required fields before submission
-        if not self.date:
-            raise UserError(_('Please fill in the Date before submitting.'))
-        if not self.time_from and not self.time_to:
-            raise UserError(
-                _('Please fill in Time From and Time To before submitting.'))
-        if not self.description:
-            raise UserError(
-                _('Please fill in the Task Description before submitting.'))
-        self.write({'approval_status': 'pending'})
+        for task in self:
+            status = ('assigned_rejected'
+                      if task.assigned_by_id else 'rejected')
+            task.write({'approval_status': status})
 
     def _check_can_approve(self):
         """Check that the current user can approve/reject tasks."""
@@ -586,6 +641,23 @@ class TaskManagementTask(models.Model):
                 raise ValidationError(
                     _('File "%(name)s" exceeds maximum size of %(size)s MB.',
                       name=attachment.name, size=max_mb))
+
+    def _ensure_attachment_access(self):
+        """Set res_model/res_id on task attachments so Odoo's built-in
+        ir.attachment access check grants read to anyone who can read
+        the task (PM, Admin, Manager)."""
+        self.ensure_one()
+        all_attachments = (
+            self.sudo().attachment_ids | self.sudo().assignment_attachment_ids
+        )
+        to_fix = all_attachments.filtered(
+            lambda a: a.res_model != self._name or a.res_id != self.id
+        )
+        if to_fix:
+            to_fix.write({
+                'res_model': self._name,
+                'res_id': self.id,
+            })
 
     def _notify_pm_on_submit(self):
         """Notify project managers when a member submits a task."""
@@ -645,6 +717,9 @@ class TaskManagementTask(models.Model):
                     'approved': 'Approved',
                     'rejected': 'Rejected',
                     'pending': 'Pending',
+                    'assigned_approved': 'Assigned / Approved',
+                    'assigned_rejected': 'Assigned / Rejected',
+                    'assigned_pending': 'Assigned / Pending',
                 }
                 status_text = status_labels.get(new_status, new_status)
                 desc = (self.description or '')[:50]
@@ -697,6 +772,7 @@ class TaskManagementTask(models.Model):
             lambda t: t.date and t.date >= month_start).mapped('duration_hours'))
 
         recent = tasks[:10]
+        status_map = dict(self._fields['approval_status'].selection)
         recent_data = [{
             'id': t.id,
             'date': str(t.date),
@@ -704,6 +780,8 @@ class TaskManagementTask(models.Model):
             'description': (t.description or '')[:60],
             'hours': f'{t.duration_hours:.2f}',
             'status': t.approval_status,
+            'status_display': status_map.get(t.approval_status,
+                                             t.approval_status),
         } for t in recent]
 
         # Performance vs targets
@@ -734,11 +812,14 @@ class TaskManagementTask(models.Model):
             'assignedTasks': len(tasks.filtered(
                 lambda t: t.approval_status == 'assigned')),
             'pendingTasks': len(tasks.filtered(
-                lambda t: t.approval_status == 'pending')),
+                lambda t: t.approval_status in (
+                    'pending', 'assigned_pending'))),
             'approvedTasks': len(tasks.filtered(
-                lambda t: t.approval_status == 'approved')),
+                lambda t: t.approval_status in (
+                    'approved', 'assigned_approved'))),
             'rejectedTasks': len(tasks.filtered(
-                lambda t: t.approval_status == 'rejected')),
+                lambda t: t.approval_status in (
+                    'rejected', 'assigned_rejected'))),
             'hoursToday': f'{hours_today:.2f}',
             'hoursWeek': f'{hours_week:.2f}',
             'hoursMonth': f'{hours_month:.2f}',
@@ -773,7 +854,8 @@ class TaskManagementTask(models.Model):
                 m_tasks = proj.task_ids.filtered(
                     lambda t, member=m: t.member_id == member)
                 approved = len(m_tasks.filtered(
-                    lambda t: t.approval_status == 'approved'))
+                    lambda t: t.approval_status in (
+                        'approved', 'assigned_approved')))
                 total = len(m_tasks)
                 rate = round((approved / total * 100) if total else 0, 1)
                 late = len(m_tasks.filtered(lambda t: t.is_late_entry))
@@ -925,11 +1007,8 @@ class TaskManagementTask(models.Model):
         }
 
     @api.model
-    def export_pm_dashboard_png(self):
-        """Export PM dashboard as PNG image (all projects)."""
-        data = self.get_pm_dashboard_data()
-        company = self.env.company
-        today = fields.Date.context_today(self)
+    def _build_pm_dashboard_html(self, data, company, today):
+        """Build HTML for PM dashboard export (shared by PNG and PDF)."""
 
         logo_html = ''
         if company.logo:
@@ -1057,7 +1136,25 @@ class TaskManagementTask(models.Model):
     <div class="footer">Generated by {company.name} | PM Dashboard | {today}</div>
 </body></html>'''
 
+        return html
+
+    @api.model
+    def export_pm_dashboard_png(self):
+        """Export PM dashboard as PNG image."""
+        data = self.get_pm_dashboard_data()
+        company = self.env.company
+        today = fields.Date.context_today(self)
+        html = self._build_pm_dashboard_html(data, company, today)
         return self._html_to_png(html, f'pm_dashboard_{today}.png')
+
+    @api.model
+    def export_pm_dashboard_pdf(self):
+        """Export PM dashboard as PDF."""
+        data = self.get_pm_dashboard_data()
+        company = self.env.company
+        today = fields.Date.context_today(self)
+        html = self._build_pm_dashboard_html(data, company, today)
+        return self._html_to_pdf(html, f'pm_dashboard_{today}.pdf')
 
     @api.model
     def export_admin_dashboard_csv(self):
@@ -1125,11 +1222,8 @@ class TaskManagementTask(models.Model):
         }
 
     @api.model
-    def export_admin_dashboard_png(self):
-        """Export Admin dashboard as PNG image."""
-        data = self.get_admin_dashboard_data()
-        company = self.env.company
-        today = fields.Date.context_today(self)
+    def _build_admin_dashboard_html(self, data, company, today):
+        """Build HTML for Admin dashboard export (shared by PNG and PDF)."""
 
         logo_html = ''
         if company.logo:
@@ -1216,7 +1310,25 @@ class TaskManagementTask(models.Model):
     <div class="footer">Generated by {company.name} | Admin Dashboard | {today}</div>
 </body></html>'''
 
+        return html
+
+    @api.model
+    def export_admin_dashboard_png(self):
+        """Export Admin dashboard as PNG image."""
+        data = self.get_admin_dashboard_data()
+        company = self.env.company
+        today = fields.Date.context_today(self)
+        html = self._build_admin_dashboard_html(data, company, today)
         return self._html_to_png(html, f'admin_dashboard_{today}.png')
+
+    @api.model
+    def export_admin_dashboard_pdf(self):
+        """Export Admin dashboard as PDF."""
+        data = self.get_admin_dashboard_data()
+        company = self.env.company
+        today = fields.Date.context_today(self)
+        html = self._build_admin_dashboard_html(data, company, today)
+        return self._html_to_pdf(html, f'admin_dashboard_{today}.pdf')
 
     @api.model
     def _html_to_png(self, html_content, filename):
@@ -1253,3 +1365,41 @@ class TaskManagementTask(models.Model):
                   'Please install wkhtmltopdf package.'))
         except subprocess.TimeoutExpired:
             raise UserError(_('Image generation timed out.'))
+
+    @api.model
+    def _html_to_pdf(self, html_content, filename):
+        """Convert HTML to PDF using wkhtmltopdf and return base64."""
+        try:
+            with tempfile.NamedTemporaryFile(
+                suffix='.html', mode='w', delete=False,
+                encoding='utf-8',
+            ) as html_file:
+                html_file.write(html_content)
+                html_path = html_file.name
+            pdf_path = html_path.replace('.html', '.pdf')
+            result = subprocess.run(
+                ['wkhtmltopdf', '--page-size', 'A4',
+                 '--margin-top', '10mm', '--margin-bottom', '10mm',
+                 '--margin-left', '10mm', '--margin-right', '10mm',
+                 html_path, pdf_path],
+                capture_output=True, timeout=30,
+            )
+            if result.returncode != 0:
+                raise UserError(
+                    _('Failed to generate PDF: %s') %
+                    result.stderr.decode())
+            with open(pdf_path, 'rb') as f:
+                pdf_data = base64.b64encode(f.read()).decode()
+            import os
+            os.unlink(html_path)
+            os.unlink(pdf_path)
+            return {
+                'file_content': pdf_data,
+                'filename': filename,
+            }
+        except FileNotFoundError:
+            raise UserError(
+                _('wkhtmltopdf is not installed. '
+                  'Please install wkhtmltopdf package.'))
+        except subprocess.TimeoutExpired:
+            raise UserError(_('PDF generation timed out.'))

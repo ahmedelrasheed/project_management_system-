@@ -12,17 +12,20 @@
                     <field name="can_assign" invisible="1"/>
                     <field name="is_current_user_member" invisible="1"/>
                     <field name="assigned_by_id" invisible="1"/>
-                    <button name="action_submit_work" string="Submit Work"
-                            type="object" class="btn-success"
-                            invisible="approval_status != 'assigned' or not is_current_user_member"/>
                     <button name="action_approve" string="Approve"
                             type="object" class="btn-primary"
-                            invisible="approval_status != 'pending' or not is_current_user_pm"/>
+                            invisible="approval_status not in ('pending', 'assigned_pending') or not is_current_user_pm"/>
                     <button name="action_reject" string="Reject"
                             type="object" class="btn-danger"
-                            invisible="approval_status != 'pending' or not is_current_user_pm"/>
+                            invisible="approval_status not in ('pending', 'assigned_pending') or not is_current_user_pm"/>
+                    <!-- Statusbar for regular tasks -->
                     <field name="approval_status" widget="statusbar"
-                           statusbar_visible="assigned,pending,approved,rejected"/>
+                           statusbar_visible="pending,approved,rejected"
+                           invisible="assigned_by_id or approval_status == 'assigned'"/>
+                    <!-- Statusbar for assigned tasks -->
+                    <field name="approval_status" widget="statusbar"
+                           statusbar_visible="assigned,assigned_pending,assigned_approved,assigned_rejected"
+                           invisible="not assigned_by_id and approval_status != 'assigned'"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -50,11 +53,22 @@
                                        required="approval_status == 'assigned'"/>
                                 <field name="due_date"
                                        readonly="approval_status != 'assigned' or not is_current_user_pm"/>
+                                <field name="project_id" string="Project"
+                                       readonly="approval_status != 'assigned' or not is_current_user_pm"
+                                       required="approval_status == 'assigned'"
+                                       domain="[('status', 'in', ['waiting', 'active'])]"
+                                       options="{'no_create': True}"/>
+                                <field name="phase_id"
+                                       readonly="approval_status != 'assigned' or not is_current_user_pm"
+                                       domain="[('project_id', '=', project_id)]"
+                                       options="{'no_create': True}"/>
                             </group>
                             <group>
+                                <field name="project_member_ids" invisible="1"/>
                                 <field name="member_id" string="Assigned To"
                                        readonly="approval_status != 'assigned' or not is_current_user_pm"
-                                       required="approval_status == 'assigned'"/>
+                                       required="approval_status == 'assigned'"
+                                       domain="[('id', 'in', project_member_ids)]"/>
                                 <field name="assigned_by_id" string="Assigned By"
                                        readonly="1"
                                        invisible="not assigned_by_id"/>
@@ -79,19 +93,25 @@
                                    invisible="not is_current_user_pm or assigned_by_id or approval_status == 'assigned'"
                                    readonly="1"/>
                             <field name="project_id"
-                                   readonly="approval_status == 'approved'"
+                                   readonly="approval_status in ('approved', 'assigned_approved')"
+                                   invisible="assigned_by_id or approval_status == 'assigned'"
                                    domain="[('status', 'in', ['waiting', 'active'])]"
                                    context="{'restrict_to_member_projects': True}"
+                                   options="{'no_create': True}"/>
+                            <field name="phase_id"
+                                   readonly="approval_status in ('approved', 'assigned_approved')"
+                                   invisible="assigned_by_id or approval_status == 'assigned'"
+                                   domain="[('project_id', '=', project_id)]"
                                    options="{'no_create': True}"/>
                         </group>
                         <!-- Work fields: hidden when PM/Admin views an assigned task (no work data yet) -->
                         <group invisible="approval_status == 'assigned' and not is_current_user_member">
                             <field name="date"
-                                   readonly="approval_status == 'approved'"/>
+                                   readonly="approval_status in ('approved', 'assigned_approved')"/>
                             <field name="time_from" widget="float_time_spinner"
-                                   readonly="approval_status == 'approved'"/>
+                                   readonly="approval_status in ('approved', 'assigned_approved')"/>
                             <field name="time_to" widget="float_time_spinner"
-                                   readonly="approval_status == 'approved'"/>
+                                   readonly="approval_status in ('approved', 'assigned_approved')"/>
                             <field name="duration_hours" widget="float_time"
                                    readonly="1"/>
                             <field name="entry_timestamp" readonly="1"/>
@@ -99,12 +119,12 @@
                     </group>
                     <group invisible="approval_status == 'assigned' and not is_current_user_member">
                         <field name="description"
-                               readonly="approval_status == 'approved'"
+                               readonly="approval_status in ('approved', 'assigned_approved')"
                                placeholder="Describe the work done..."/>
                     </group>
                     <group invisible="approval_status == 'assigned' and not is_current_user_member">
                         <field name="attachment_ids" widget="many2many_binary"
-                               readonly="approval_status == 'approved'"
+                               readonly="approval_status in ('approved', 'assigned_approved')"
                                string="Attachments"/>
                     </group>
                     <group string="Manager Review"
@@ -123,14 +143,34 @@
                                     <field name="changed_at"/>
                                     <field name="old_status" widget="badge"/>
                                     <field name="new_status" widget="badge"
-                                           decoration-warning="new_status == 'pending'"
-                                           decoration-success="new_status == 'approved'"
-                                           decoration-danger="new_status == 'rejected'"
+                                           decoration-warning="new_status in ('pending', 'assigned_pending')"
+                                           decoration-success="new_status in ('approved', 'assigned_approved')"
+                                           decoration-danger="new_status in ('rejected', 'assigned_rejected')"
                                            decoration-info="new_status == 'assigned'"/>
                                     <field name="changed_by"/>
                                     <field name="comment"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="Complaint" name="complaint"
+                              invisible="approval_status not in ('rejected', 'assigned_rejected') and not has_complaint">
+                            <field name="has_complaint" invisible="1"/>
+                            <field name="can_file_complaint" invisible="1"/>
+                            <field name="complaint_ids" readonly="1">
+                                <tree>
+                                    <field name="message"/>
+                                    <field name="status" widget="badge"
+                                           decoration-warning="status == 'pending'"
+                                           decoration-success="status == 'approved'"
+                                           decoration-danger="status == 'rejected'"/>
+                                    <field name="manager_comment"/>
+                                    <field name="reviewed_by"/>
+                                </tree>
+                            </field>
+                            <button name="action_file_complaint"
+                                    string="File Complaint"
+                                    type="object" class="btn-warning mt-2"
+                                    invisible="has_complaint or not is_current_user_member or approval_status not in ('rejected', 'assigned_rejected')"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -144,12 +184,13 @@
         <field name="model">task.management.task</field>
         <field name="arch" type="xml">
             <tree string="Tasks" delete="0"
-                  decoration-warning="approval_status == 'pending'"
-                  decoration-success="approval_status == 'approved'"
-                  decoration-danger="approval_status == 'rejected'"
+                  decoration-warning="approval_status in ('pending', 'assigned_pending')"
+                  decoration-success="approval_status in ('approved', 'assigned_approved')"
+                  decoration-danger="approval_status in ('rejected', 'assigned_rejected')"
                   decoration-info="approval_status == 'assigned'">
                 <field name="date"/>
                 <field name="project_id"/>
+                <field name="phase_id" optional="hide"/>
                 <field name="member_id" optional="hide"/>
                 <field name="assignment_name" string="Task Name" optional="show"/>
                 <field name="description"/>
@@ -158,9 +199,9 @@
                 <field name="duration_hours" widget="float_time" sum="Total Hours"/>
                 <field name="due_date" optional="show"/>
                 <field name="approval_status" widget="badge"
-                       decoration-warning="approval_status == 'pending'"
-                       decoration-success="approval_status == 'approved'"
-                       decoration-danger="approval_status == 'rejected'"
+                       decoration-warning="approval_status in ('pending', 'assigned_pending')"
+                       decoration-success="approval_status in ('approved', 'assigned_approved')"
+                       decoration-danger="approval_status in ('rejected', 'assigned_rejected')"
                        decoration-info="approval_status == 'assigned'"/>
                 <field name="is_late_entry" optional="show"/>
             </tree>
@@ -181,11 +222,11 @@
                 <filter string="Assigned" name="filter_assigned"
                         domain="[('approval_status', '=', 'assigned')]"/>
                 <filter string="Pending" name="filter_pending"
-                        domain="[('approval_status', '=', 'pending')]"/>
+                        domain="['|', ('approval_status', '=', 'pending'), ('approval_status', '=', 'assigned_pending')]"/>
                 <filter string="Approved" name="filter_approved"
-                        domain="[('approval_status', '=', 'approved')]"/>
+                        domain="['|', ('approval_status', '=', 'approved'), ('approval_status', '=', 'assigned_approved')]"/>
                 <filter string="Rejected" name="filter_rejected"
-                        domain="[('approval_status', '=', 'rejected')]"/>
+                        domain="['|', ('approval_status', '=', 'rejected'), ('approval_status', '=', 'assigned_rejected')]"/>
                 <separator/>
                 <filter string="Today" name="filter_today"
                         domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
@@ -223,12 +264,13 @@
         <field name="model">task.management.task</field>
         <field name="arch" type="xml">
             <tree string="Tasks" delete="0"
-                  decoration-warning="approval_status == 'pending'"
-                  decoration-success="approval_status == 'approved'"
-                  decoration-danger="approval_status == 'rejected'"
+                  decoration-warning="approval_status in ('pending', 'assigned_pending')"
+                  decoration-success="approval_status in ('approved', 'assigned_approved')"
+                  decoration-danger="approval_status in ('rejected', 'assigned_rejected')"
                   decoration-info="approval_status == 'assigned'">
                 <field name="date"/>
                 <field name="project_id"/>
+                <field name="phase_id" optional="hide"/>
                 <field name="member_id"/>
                 <field name="assignment_name" string="Task Name" optional="show"/>
                 <field name="description"/>
@@ -237,9 +279,9 @@
                 <field name="duration_hours" widget="float_time" sum="Total Hours"/>
                 <field name="due_date" optional="show"/>
                 <field name="approval_status" widget="badge"
-                       decoration-warning="approval_status == 'pending'"
-                       decoration-success="approval_status == 'approved'"
-                       decoration-danger="approval_status == 'rejected'"
+                       decoration-warning="approval_status in ('pending', 'assigned_pending')"
+                       decoration-success="approval_status in ('approved', 'assigned_approved')"
+                       decoration-danger="approval_status in ('rejected', 'assigned_rejected')"
                        decoration-info="approval_status == 'assigned'"/>
                 <field name="is_late_entry" optional="show"/>
             </tree>
@@ -252,19 +294,20 @@
         <field name="model">task.management.task</field>
         <field name="arch" type="xml">
             <tree string="Assigned Tasks" create="0" delete="0"
-                  decoration-warning="approval_status == 'pending'"
-                  decoration-success="approval_status == 'approved'"
-                  decoration-danger="approval_status == 'rejected'"
+                  decoration-warning="approval_status in ('pending', 'assigned_pending')"
+                  decoration-success="approval_status in ('approved', 'assigned_approved')"
+                  decoration-danger="approval_status in ('rejected', 'assigned_rejected')"
                   decoration-info="approval_status == 'assigned'">
                 <field name="assignment_name" string="Task Name"/>
                 <field name="project_id"/>
+                <field name="phase_id" optional="hide"/>
                 <field name="member_id" string="Assigned To"/>
                 <field name="due_date"/>
                 <field name="date" string="Work Date" optional="show"/>
                 <field name="approval_status" widget="badge"
-                       decoration-warning="approval_status == 'pending'"
-                       decoration-success="approval_status == 'approved'"
-                       decoration-danger="approval_status == 'rejected'"
+                       decoration-warning="approval_status in ('pending', 'assigned_pending')"
+                       decoration-success="approval_status in ('approved', 'assigned_approved')"
+                       decoration-danger="approval_status in ('rejected', 'assigned_rejected')"
                        decoration-info="approval_status == 'assigned'"/>
             </tree>
         </field>
@@ -276,19 +319,20 @@
         <field name="model">task.management.task</field>
         <field name="arch" type="xml">
             <tree string="My Assignments" create="0" delete="0"
-                  decoration-warning="approval_status == 'pending'"
-                  decoration-success="approval_status == 'approved'"
-                  decoration-danger="approval_status == 'rejected'"
+                  decoration-warning="approval_status in ('pending', 'assigned_pending')"
+                  decoration-success="approval_status in ('approved', 'assigned_approved')"
+                  decoration-danger="approval_status in ('rejected', 'assigned_rejected')"
                   decoration-info="approval_status == 'assigned'">
                 <field name="assignment_name" string="Task Name"/>
                 <field name="project_id"/>
+                <field name="phase_id" optional="hide"/>
                 <field name="assigned_by_id" string="Assigned By"/>
                 <field name="due_date"/>
                 <field name="date" string="Work Date" optional="show"/>
                 <field name="approval_status" widget="badge"
-                       decoration-warning="approval_status == 'pending'"
-                       decoration-success="approval_status == 'approved'"
-                       decoration-danger="approval_status == 'rejected'"
+                       decoration-warning="approval_status in ('pending', 'assigned_pending')"
+                       decoration-success="approval_status in ('approved', 'assigned_approved')"
+                       decoration-danger="approval_status in ('rejected', 'assigned_rejected')"
                        decoration-info="approval_status == 'assigned'"/>
             </tree>
         </field>
@@ -358,6 +402,7 @@
         <field name="context">{
             'search_default_filter_pending': 1,
             'search_default_group_project': 1,
+            'create': False,
         }</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

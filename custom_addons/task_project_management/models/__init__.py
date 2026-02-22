@@ -4,5 +4,6 @@ from . import project_phase
 from . import task
 from . import task_audit
 from . import archive
+from . import complaint
 from . import res_config_settings
 from . import res_users

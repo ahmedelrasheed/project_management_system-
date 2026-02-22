@@ -128,11 +128,11 @@ class MemberPerformanceReport(models.TransientModel):
             ], order='date desc, id desc')
 
             approved = tasks.filtered(
-                lambda t: t.approval_status == 'approved')
+                lambda t: t.approval_status in ('approved', 'assigned_approved'))
             rejected = tasks.filtered(
-                lambda t: t.approval_status == 'rejected')
+                lambda t: t.approval_status in ('rejected', 'assigned_rejected'))
             pending = tasks.filtered(
-                lambda t: t.approval_status == 'pending')
+                lambda t: t.approval_status in ('pending', 'assigned_pending'))
             late = tasks.filtered(lambda t: t.is_late_entry)
 
             total = len(tasks)
@@ -213,7 +213,7 @@ class MemberPerformanceReport(models.TransientModel):
                 p_tasks = tasks.filtered(
                     lambda t, p=proj: t.project_id == p)
                 p_approved = p_tasks.filtered(
-                    lambda t: t.approval_status == 'approved')
+                    lambda t: t.approval_status in ('approved', 'assigned_approved'))
                 p_total = len(p_tasks)
                 project_lines.append((0, 0, {
                     'project_name': proj.name,
@@ -297,7 +297,7 @@ class MemberPerformanceReport(models.TransientModel):
         for pi, proj in enumerate(projects, 1):
             p_tasks = tasks.filtered(lambda t, p=proj: t.project_id == p)
             p_approved = p_tasks.filtered(
-                lambda t: t.approval_status == 'approved')
+                lambda t: t.approval_status in ('approved', 'assigned_approved'))
             p_total = len(p_tasks)
             p_hrs = sum(p_tasks.mapped('duration_hours'))
             p_app_hrs = sum(p_approved.mapped('duration_hours'))
@@ -376,7 +376,7 @@ class MemberPerformanceReport(models.TransientModel):
         for proj in projects:
             p_tasks = tasks.filtered(lambda t, p=proj: t.project_id == p)
             p_approved = p_tasks.filtered(
-                lambda t: t.approval_status == 'approved')
+                lambda t: t.approval_status in ('approved', 'assigned_approved'))
             p_total = len(p_tasks)
             p_total_hrs = sum(p_tasks.mapped('duration_hours'))
             p_approved_hrs = sum(p_approved.mapped('duration_hours'))
@@ -400,6 +400,9 @@ class MemberPerformanceReport(models.TransientModel):
                 'pending': '#f0ad4e',
                 'approved': '#5cb85c',
                 'rejected': '#d9534f',
+                'assigned_pending': '#f0ad4e',
+                'assigned_approved': '#5cb85c',
+                'assigned_rejected': '#d9534f',
             }.get(task.approval_status, '#999')
             task_rows += f'''<tr>
                 <td>{task.date}</td>
@@ -409,7 +412,7 @@ class MemberPerformanceReport(models.TransientModel):
                 <td>{self._float_to_time(task.time_to)}</td>
                 <td>{task.duration_hours:.2f}</td>
                 <td style="color:{status_color};font-weight:bold;">
-                    {task.approval_status.upper()}</td>
+                    {task.approval_status.replace('_', ' ').title()}</td>
                 <td>{"Yes" if task.is_late_entry else ""}</td>
             </tr>'''
             total_hours += task.duration_hours
@@ -539,6 +542,194 @@ class MemberPerformanceReport(models.TransientModel):
             'target': 'new',
         }
 
+    def action_export_pdf(self):
+        """Export the performance report as PDF."""
+        self.ensure_one()
+        if not self.member_id:
+            return
+
+        d_from, d_to = self._get_date_range()
+        tasks = self.env['task.management.task'].search([
+            ('member_id', '=', self.member_id.id),
+            ('date', '>=', d_from),
+            ('date', '<=', d_to),
+        ], order='date desc, id desc')
+
+        projects = tasks.mapped('project_id')
+
+        # Build project breakdown rows
+        project_rows = ''
+        for proj in projects:
+            p_tasks = tasks.filtered(lambda t, p=proj: t.project_id == p)
+            p_approved = p_tasks.filtered(
+                lambda t: t.approval_status in ('approved', 'assigned_approved'))
+            p_total = len(p_tasks)
+            p_total_hrs = sum(p_tasks.mapped('duration_hours'))
+            p_approved_hrs = sum(p_approved.mapped('duration_hours'))
+            p_late = p_tasks.filtered(lambda t: t.is_late_entry)
+            rate = round(
+                (len(p_approved) / p_total * 100) if p_total else 0, 1)
+            project_rows += f'''<tr>
+                <td>{proj.name}</td>
+                <td>{p_total}</td>
+                <td>{p_total_hrs:.2f}</td>
+                <td>{p_approved_hrs:.2f}</td>
+                <td>{rate}%</td>
+                <td>{len(p_late)}</td>
+            </tr>'''
+
+        # Build task detail rows
+        task_rows = ''
+        total_hours = 0
+        for task in tasks:
+            status_color = {
+                'pending': '#f0ad4e',
+                'approved': '#5cb85c',
+                'rejected': '#d9534f',
+                'assigned_pending': '#f0ad4e',
+                'assigned_approved': '#5cb85c',
+                'assigned_rejected': '#d9534f',
+            }.get(task.approval_status, '#999')
+            task_rows += f'''<tr>
+                <td>{task.date}</td>
+                <td>{task.project_id.name}</td>
+                <td>{(task.description or "")[:60]}</td>
+                <td>{self._float_to_time(task.time_from)}</td>
+                <td>{self._float_to_time(task.time_to)}</td>
+                <td>{task.duration_hours:.2f}</td>
+                <td style="color:{status_color};font-weight:bold;">
+                    {task.approval_status.replace('_', ' ').title()}</td>
+                <td>{"Yes" if task.is_late_entry else ""}</td>
+            </tr>'''
+            total_hours += task.duration_hours
+
+        # Get company logo
+        company = self.env.company
+        logo_html = ''
+        if company.logo:
+            logo_b64 = company.logo.decode() if isinstance(company.logo, bytes) else company.logo
+            logo_html = f'<img src="data:image/png;base64,{logo_b64}" class="logo"/>'
+
+        html = f'''<!DOCTYPE html>
+<html><head><meta charset="utf-8"/>
+<style>
+    body {{ font-family: Arial, sans-serif; margin: 20px; background: #fff; }}
+    .header {{ display: flex; align-items: center; gap: 15px;
+               border-bottom: 3px solid #714B67; padding-bottom: 15px; margin-bottom: 20px; }}
+    .logo {{ height: 60px; width: auto; }}
+    .header-text h1 {{ color: #714B67; margin: 0; font-size: 24px; }}
+    .header-text p {{ color: #666; margin: 3px 0 0 0; font-size: 13px; }}
+    h2 {{ color: #714B67; margin-top: 20px; border-bottom: 2px solid #714B67;
+          padding-bottom: 5px; font-size: 16px; }}
+    .kpi-grid {{ display: flex; flex-wrap: wrap; gap: 10px; margin: 15px 0; }}
+    .kpi {{ background: #f3edf2; border: 1px solid #ddd; border-radius: 8px;
+            padding: 10px 15px; text-align: center; min-width: 110px; }}
+    .kpi-value {{ font-size: 20px; font-weight: bold; color: #714B67; }}
+    .kpi-label {{ font-size: 10px; color: #666; text-transform: uppercase; }}
+    table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
+    th {{ background: #714B67; color: white; padding: 8px; text-align: left; font-size: 12px; }}
+    td {{ padding: 6px 8px; border-bottom: 1px solid #ddd; font-size: 12px; }}
+    tr:nth-child(even) {{ background: #f9f9f9; }}
+    .total {{ font-weight: bold; margin-top: 10px; font-size: 14px; color: #714B67; }}
+    .footer {{ margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd;
+               color: #999; font-size: 10px; text-align: center; }}
+</style></head><body>
+    <div class="header">
+        {logo_html}
+        <div class="header-text">
+            <h1>Member Performance Report</h1>
+            <p>{company.name} | {self.member_id.name} | Period: {d_from} to {d_to}</p>
+        </div>
+    </div>
+
+    <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-value">{self.total_tasks}</div>
+            <div class="kpi-label">Total Tasks</div></div>
+        <div class="kpi"><div class="kpi-value" style="color:#5cb85c">
+            {self.approved_tasks}</div>
+            <div class="kpi-label">Approved</div></div>
+        <div class="kpi"><div class="kpi-value" style="color:#d9534f">
+            {self.rejected_tasks}</div>
+            <div class="kpi-label">Rejected</div></div>
+        <div class="kpi"><div class="kpi-value" style="color:#f0ad4e">
+            {self.pending_tasks}</div>
+            <div class="kpi-label">Pending</div></div>
+        <div class="kpi"><div class="kpi-value">{self.approval_rate:.1f}%</div>
+            <div class="kpi-label">Approval Rate</div></div>
+        <div class="kpi"><div class="kpi-value">{self.approved_hours:.1f}</div>
+            <div class="kpi-label">Approved Hours</div></div>
+        <div class="kpi"><div class="kpi-value" style="color:#d9534f">
+            {self.late_entries}</div>
+            <div class="kpi-label">Late Entries</div></div>
+        <div class="kpi"><div class="kpi-value">{self.avg_hours_per_day:.2f}</div>
+            <div class="kpi-label">Avg Hours/Day</div></div>
+        <div class="kpi"><div class="kpi-value" style="color:{'#5cb85c' if self.daily_performance >= 100 else '#f0ad4e' if self.daily_performance >= 75 else '#d9534f'}">{self.daily_performance:.1f}%</div>
+            <div class="kpi-label">Daily Performance</div></div>
+        <div class="kpi"><div class="kpi-value" style="color:{'#5cb85c' if self.weekly_performance >= 100 else '#f0ad4e' if self.weekly_performance >= 75 else '#d9534f'}">{self.weekly_performance:.1f}%</div>
+            <div class="kpi-label">Weekly Performance</div></div>
+        <div class="kpi"><div class="kpi-value">{self.monthly_target:.0f}</div>
+            <div class="kpi-label">Monthly Target (hrs)</div></div>
+        <div class="kpi"><div class="kpi-value" style="color:{'#5cb85c' if self.monthly_performance >= 100 else '#f0ad4e' if self.monthly_performance >= 75 else '#d9534f'}">{self.monthly_performance:.1f}%</div>
+            <div class="kpi-label">Monthly Performance</div></div>
+    </div>
+
+    <h2>Project Breakdown</h2>
+    <table><thead><tr>
+        <th>Project</th><th>Tasks</th><th>Total Hours</th>
+        <th>Approved Hours</th><th>Approval Rate</th><th>Late</th>
+    </tr></thead><tbody>{project_rows}</tbody></table>
+
+    <h2>Task Details</h2>
+    <table><thead><tr>
+        <th>Date</th><th>Project</th><th>Description</th>
+        <th>From</th><th>To</th><th>Hours</th><th>Status</th><th>Late</th>
+    </tr></thead><tbody>{task_rows}</tbody></table>
+    <div class="total">Total Hours: {total_hours:.2f}</div>
+    <div class="footer">Generated by {company.name} - Task & Project Management System</div>
+</body></html>'''
+
+        try:
+            with tempfile.NamedTemporaryFile(
+                suffix='.html', mode='w', delete=False,
+                encoding='utf-8',
+            ) as html_file:
+                html_file.write(html)
+                html_path = html_file.name
+            pdf_path = html_path.replace('.html', '.pdf')
+            result = subprocess.run(
+                ['wkhtmltopdf', '--page-size', 'A4',
+                 '--margin-top', '10mm', '--margin-bottom', '10mm',
+                 '--margin-left', '10mm', '--margin-right', '10mm',
+                 html_path, pdf_path],
+                capture_output=True, timeout=30,
+            )
+            if result.returncode != 0:
+                raise UserError(
+                    _('Failed to generate PDF: %s') %
+                    result.stderr.decode())
+            with open(pdf_path, 'rb') as f:
+                self.report_file = base64.b64encode(f.read())
+            member_name = self.member_id.name.replace(' ', '_')
+            self.report_filename = (
+                f'member_report_{member_name}_{d_from}_{d_to}.pdf')
+        except FileNotFoundError:
+            raise UserError(
+                _('wkhtmltopdf is not installed. '
+                  'Please install wkhtmltopdf package.'))
+        except subprocess.TimeoutExpired:
+            raise UserError(_('PDF generation timed out.'))
+        return {
+            'type': 'ir.actions.act_url',
+            'url': (
+                f'/web/content?model={self._name}'
+                f'&id={self.id}'
+                f'&field=report_file'
+                f'&filename_field=report_filename'
+                f'&download=true'
+            ),
+            'target': 'new',
+        }
+
     @staticmethod
     def _float_to_time(value):
         hours = int(value)
@@ -563,6 +754,9 @@ class MemberPerformanceLine(models.TransientModel):
         ('pending', 'Pending'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
+        ('assigned_pending', 'Assigned / Pending'),
+        ('assigned_approved', 'Assigned / Approved'),
+        ('assigned_rejected', 'Assigned / Rejected'),
     ], string='Status')
     is_late_entry = fields.Boolean(string='Late')
 
