@@ -688,6 +688,8 @@
 .task_dashboard {
     background: linear-gradient(135deg, #f5f0f4 0%, #f8f9fa 100%);
     min-height: 100vh;
+    overflow-y: auto;
+    max-height: 100vh;
 }
 
 /* Dashboard Header with Logo */
