@@ -15,6 +15,7 @@ class MemberPerformanceReport(models.TransientModel):
 
     member_id = fields.Many2one(
         'task.management.member', string='Member', required=True,
+        domain=[('role', '!=', 'manager')],
     )
     period = fields.Selection([
         ('today', 'Today'),
@@ -30,10 +31,16 @@ class MemberPerformanceReport(models.TransientModel):
         string='Total Tasks', compute='_compute_stats')
     approved_tasks = fields.Integer(
         string='Approved Tasks', compute='_compute_stats')
+    assigned_approved_tasks = fields.Integer(
+        string='Assigned Approved', compute='_compute_stats')
     rejected_tasks = fields.Integer(
         string='Rejected Tasks', compute='_compute_stats')
+    assigned_rejected_tasks = fields.Integer(
+        string='Assigned Rejected', compute='_compute_stats')
     pending_tasks = fields.Integer(
         string='Pending Tasks', compute='_compute_stats')
+    assigned_pending_tasks = fields.Integer(
+        string='Assigned Pending', compute='_compute_stats')
     total_hours = fields.Float(
         string='Total Hours', compute='_compute_stats')
     approved_hours = fields.Float(
@@ -102,8 +109,11 @@ class MemberPerformanceReport(models.TransientModel):
             if not report.member_id:
                 report.total_tasks = 0
                 report.approved_tasks = 0
+                report.assigned_approved_tasks = 0
                 report.rejected_tasks = 0
+                report.assigned_rejected_tasks = 0
                 report.pending_tasks = 0
+                report.assigned_pending_tasks = 0
                 report.total_hours = 0.0
                 report.approved_hours = 0.0
                 report.approval_rate = 0.0
@@ -128,22 +138,32 @@ class MemberPerformanceReport(models.TransientModel):
             ], order='date desc, id desc')
 
             approved = tasks.filtered(
-                lambda t: t.approval_status in ('approved', 'assigned_approved'))
+                lambda t: t.approval_status == 'approved')
+            assigned_approved = tasks.filtered(
+                lambda t: t.approval_status == 'assigned_approved')
             rejected = tasks.filtered(
-                lambda t: t.approval_status in ('rejected', 'assigned_rejected'))
+                lambda t: t.approval_status == 'rejected')
+            assigned_rejected = tasks.filtered(
+                lambda t: t.approval_status == 'assigned_rejected')
             pending = tasks.filtered(
-                lambda t: t.approval_status in ('pending', 'assigned_pending'))
+                lambda t: t.approval_status == 'pending')
+            assigned_pending = tasks.filtered(
+                lambda t: t.approval_status == 'assigned_pending')
             late = tasks.filtered(lambda t: t.is_late_entry)
 
+            all_approved = approved | assigned_approved
             total = len(tasks)
             report.total_tasks = total
             report.approved_tasks = len(approved)
+            report.assigned_approved_tasks = len(assigned_approved)
             report.rejected_tasks = len(rejected)
+            report.assigned_rejected_tasks = len(assigned_rejected)
             report.pending_tasks = len(pending)
+            report.assigned_pending_tasks = len(assigned_pending)
             report.total_hours = sum(tasks.mapped('duration_hours'))
-            report.approved_hours = sum(approved.mapped('duration_hours'))
+            report.approved_hours = sum(all_approved.mapped('duration_hours'))
             report.approval_rate = round(
-                (len(approved) / total * 100) if total else 0, 1)
+                (len(all_approved) / total * 100) if total else 0, 1)
             report.late_entries = len(late)
 
             # Avg hours per day (unique working days)
@@ -261,8 +281,11 @@ class MemberPerformanceReport(models.TransientModel):
         writer.writerow(['', 'Metric', 'Value'])
         writer.writerow(['', 'Total Tasks', self.total_tasks])
         writer.writerow(['', 'Approved', self.approved_tasks])
+        writer.writerow(['', 'Assigned Approved', self.assigned_approved_tasks])
         writer.writerow(['', 'Rejected', self.rejected_tasks])
+        writer.writerow(['', 'Assigned Rejected', self.assigned_rejected_tasks])
         writer.writerow(['', 'Pending', self.pending_tasks])
+        writer.writerow(['', 'Assigned Pending', self.assigned_pending_tasks])
         writer.writerow(['', 'Total Hours', f'{self.total_hours:.2f}'])
         writer.writerow(['', 'Approved Hours', f'{self.approved_hours:.2f}'])
         writer.writerow(['', 'Approval Rate', f'{self.approval_rate:.1f}%'])
@@ -463,12 +486,21 @@ class MemberPerformanceReport(models.TransientModel):
         <div class="kpi"><div class="kpi-value" style="color:#5cb85c">
             {self.approved_tasks}</div>
             <div class="kpi-label">Approved</div></div>
+        <div class="kpi"><div class="kpi-value" style="color:#5cb85c">
+            {self.assigned_approved_tasks}</div>
+            <div class="kpi-label">Asgn Approved</div></div>
         <div class="kpi"><div class="kpi-value" style="color:#d9534f">
             {self.rejected_tasks}</div>
             <div class="kpi-label">Rejected</div></div>
+        <div class="kpi"><div class="kpi-value" style="color:#d9534f">
+            {self.assigned_rejected_tasks}</div>
+            <div class="kpi-label">Asgn Rejected</div></div>
         <div class="kpi"><div class="kpi-value" style="color:#f0ad4e">
             {self.pending_tasks}</div>
             <div class="kpi-label">Pending</div></div>
+        <div class="kpi"><div class="kpi-value" style="color:#f0ad4e">
+            {self.assigned_pending_tasks}</div>
+            <div class="kpi-label">Asgn Pending</div></div>
         <div class="kpi"><div class="kpi-value">{self.approval_rate:.1f}%</div>
             <div class="kpi-label">Approval Rate</div></div>
         <div class="kpi"><div class="kpi-value">{self.approved_hours:.1f}</div>
@@ -648,12 +680,21 @@ class MemberPerformanceReport(models.TransientModel):
         <div class="kpi"><div class="kpi-value" style="color:#5cb85c">
             {self.approved_tasks}</div>
             <div class="kpi-label">Approved</div></div>
+        <div class="kpi"><div class="kpi-value" style="color:#5cb85c">
+            {self.assigned_approved_tasks}</div>
+            <div class="kpi-label">Asgn Approved</div></div>
         <div class="kpi"><div class="kpi-value" style="color:#d9534f">
             {self.rejected_tasks}</div>
             <div class="kpi-label">Rejected</div></div>
+        <div class="kpi"><div class="kpi-value" style="color:#d9534f">
+            {self.assigned_rejected_tasks}</div>
+            <div class="kpi-label">Asgn Rejected</div></div>
         <div class="kpi"><div class="kpi-value" style="color:#f0ad4e">
             {self.pending_tasks}</div>
             <div class="kpi-label">Pending</div></div>
+        <div class="kpi"><div class="kpi-value" style="color:#f0ad4e">
+            {self.assigned_pending_tasks}</div>
+            <div class="kpi-label">Asgn Pending</div></div>
         <div class="kpi"><div class="kpi-value">{self.approval_rate:.1f}%</div>
             <div class="kpi-label">Approval Rate</div></div>
         <div class="kpi"><div class="kpi-value">{self.approved_hours:.1f}</div>

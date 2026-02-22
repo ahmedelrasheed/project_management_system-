@@ -78,6 +78,26 @@ class TaskManagementProject(models.Model):
         string='Pending Tasks',
         compute='_compute_task_stats',
     )
+    assigned_pending_task_count = fields.Integer(
+        string='Assigned Pending',
+        compute='_compute_task_stats',
+    )
+    approved_task_count = fields.Integer(
+        string='Approved Tasks',
+        compute='_compute_task_stats',
+    )
+    assigned_approved_task_count = fields.Integer(
+        string='Assigned Approved',
+        compute='_compute_task_stats',
+    )
+    rejected_task_count = fields.Integer(
+        string='Rejected Tasks',
+        compute='_compute_task_stats',
+    )
+    assigned_rejected_task_count = fields.Integer(
+        string='Assigned Rejected',
+        compute='_compute_task_stats',
+    )
 
     def _compute_is_admin_user(self):
         is_admin = self.env.user.has_group(
@@ -108,11 +128,20 @@ class TaskManagementProject(models.Model):
     @api.depends('task_ids', 'task_ids.approval_status')
     def _compute_task_stats(self):
         for project in self:
-            project.task_count = len(project.task_ids)
+            tasks = project.task_ids
+            project.task_count = len(tasks)
             project.pending_task_count = len(
-                project.task_ids.filtered(
-                    lambda t: t.approval_status in (
-                        'pending', 'assigned_pending')))
+                tasks.filtered(lambda t: t.approval_status == 'pending'))
+            project.assigned_pending_task_count = len(
+                tasks.filtered(lambda t: t.approval_status == 'assigned_pending'))
+            project.approved_task_count = len(
+                tasks.filtered(lambda t: t.approval_status == 'approved'))
+            project.assigned_approved_task_count = len(
+                tasks.filtered(lambda t: t.approval_status == 'assigned_approved'))
+            project.rejected_task_count = len(
+                tasks.filtered(lambda t: t.approval_status == 'rejected'))
+            project.assigned_rejected_task_count = len(
+                tasks.filtered(lambda t: t.approval_status == 'assigned_rejected'))
 
     @api.constrains('project_manager_ids', 'member_ids')
     def _check_pm_not_member(self):
@@ -180,7 +209,8 @@ class TaskManagementProject(models.Model):
             ('expected_end_date', '<=', today),
         ])
         for project in projects:
-            pending_count = project.pending_task_count
+            pending_count = (project.pending_task_count +
+                            project.assigned_pending_task_count)
             if pending_count > 0:
                 # Notify PMs
                 pm_partners = project.project_manager_ids.mapped(

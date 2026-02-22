@@ -31,6 +31,11 @@
                             <field name="total_logged_hours"/>
                             <field name="task_count"/>
                             <field name="pending_task_count"/>
+                            <field name="assigned_pending_task_count"/>
+                            <field name="approved_task_count"/>
+                            <field name="assigned_approved_task_count"/>
+                            <field name="rejected_task_count"/>
+                            <field name="assigned_rejected_task_count"/>
                         </group>
                     </group>
                     <group>
@@ -77,13 +82,12 @@
                                     <field name="date"/>
                                     <field name="member_id"/>
                                     <field name="description"/>
-                                    <field name="time_from" widget="float_time"/>
-                                    <field name="time_to" widget="float_time"/>
                                     <field name="duration_hours" widget="float_time"/>
                                     <field name="approval_status" widget="badge"
-                                           decoration-warning="approval_status == 'pending'"
-                                           decoration-success="approval_status == 'approved'"
-                                           decoration-danger="approval_status == 'rejected'"/>
+                                           decoration-warning="approval_status in ('pending', 'assigned_pending')"
+                                           decoration-success="approval_status in ('approved', 'assigned_approved')"
+                                           decoration-danger="approval_status in ('rejected', 'assigned_rejected')"
+                                           decoration-info="approval_status == 'assigned'"/>
                                     <field name="is_late_entry"/>
                                 </tree>
                             </field>
@@ -99,7 +103,7 @@
         <field name="name">task.management.project.tree</field>
         <field name="model">task.management.project</field>
         <field name="arch" type="xml">
-            <tree string="Projects">
+            <tree string="Projects" create="0">
                 <field name="name"/>
                 <field name="status" widget="badge"
                        decoration-danger="status == 'waiting'"
@@ -111,6 +115,11 @@
                 <field name="progress_percentage" widget="progressbar"/>
                 <field name="expected_end_date"/>
                 <field name="pending_task_count"/>
+                <field name="assigned_pending_task_count"/>
+                <field name="approved_task_count"/>
+                <field name="assigned_approved_task_count"/>
+                <field name="rejected_task_count"/>
+                <field name="assigned_rejected_task_count"/>
             </tree>
         </field>
     </record>

@@ -16,6 +16,11 @@ const FORM_BREADCRUMB_LABELS = {
     'task.management.project': 'Project Report',
 };
 
+// Models where the "New" button should be hidden
+const HIDE_CREATE_MODELS = [
+    'task.management.project',
+];
+
 patch(ControlPanel.prototype, {
     setup() {
         super.setup(...arguments);
@@ -43,6 +48,14 @@ patch(ControlPanel.prototype, {
             if (REPORT_WIZARD_MODELS.includes(resModel)) {
                 breadcrumbOl.style.display = 'none';
                 return;
+            }
+
+            // Hide "New" button for specific models
+            if (HIDE_CREATE_MODELS.includes(resModel)) {
+                const createButtons = cpEl.querySelectorAll(
+                    '.o_form_button_create, .o_list_button_add'
+                );
+                createButtons.forEach(btn => btn.style.display = 'none');
             }
 
             // Otherwise show breadcrumb and inject section name

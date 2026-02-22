@@ -2892,3 +2892,102 @@ msgstr "wkhtmltoimage غير مثبّت. يرجى تثبيت حزمة wkhtmltopd
 #, python-format
 msgid "wkhtmltopdf is not installed. Please install wkhtmltopdf package."
 msgstr "برنامج wkhtmltopdf غير مثبت. يرجى تثبيت حزمة wkhtmltopdf."
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Assigned Pending"
+msgstr "معيّن / قيد المراجعة"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Assigned Approved"
+msgstr "معيّن / موافق عليه"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Assigned Rejected"
+msgstr "معيّن / مرفوض"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Asgn Pending"
+msgstr "معيّن معلّق"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Asgn Approved"
+msgstr "معيّن موافق"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Asgn Rejected"
+msgstr "معيّن مرفوض"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Asgn Pending:"
+msgstr "معيّن معلّق:"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Asgn Approved:"
+msgstr "معيّن موافق:"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Asgn Rejected:"
+msgstr "معيّن مرفوض:"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__assigned_pending_task_count
+msgid "Assigned Pending"
+msgstr "معيّن / قيد المراجعة"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__assigned_approved_task_count
+msgid "Assigned Approved"
+msgstr "معيّن / موافق عليه"
+
+#. module: task_project_management
+#: model:ir.model.fields,field_description:task_project_management.field_task_management_project__assigned_rejected_task_count
+msgid "Assigned Rejected"
+msgstr "معيّن / مرفوض"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Approved:"
+msgstr "الموافق عليها:"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Rejected:"
+msgstr "المرفوضة:"
+
+#. module: task_project_management
+#. odoo-javascript
+#: code:addons/task_project_management/static/src/xml/dashboard.xml:0
+#, python-format
+msgid "Pending:"
+msgstr "المعلّقة:"

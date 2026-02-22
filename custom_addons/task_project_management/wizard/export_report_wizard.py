@@ -15,7 +15,8 @@ class ExportReportWizard(models.TransientModel):
     project_id = fields.Many2one(
         'task.management.project', string='Project')
     member_id = fields.Many2one(
-        'task.management.member', string='Member')
+        'task.management.member', string='Member',
+        domain=[('role', '!=', 'manager')])
     date_from = fields.Date(string='Date From', required=True)
     date_to = fields.Date(string='Date To', required=True)
     export_type = fields.Selection([

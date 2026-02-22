@@ -10,7 +10,8 @@
                     <group>
                         <field name="project_id"
                                options="{'no_create': True}"/>
-                        <field name="member_id"/>
+                        <field name="member_id"
+                               domain="[('role', '!=', 'manager')]"/>
                     </group>
                     <group>
                         <field name="date_from"/>

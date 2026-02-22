@@ -760,8 +760,10 @@ class TaskManagementTask(models.Model):
             [('user_id', '=', self.env.uid)], limit=1)
         if not member:
             return {
-                'totalTasks': 0, 'pendingTasks': 0,
-                'approvedTasks': 0, 'rejectedTasks': 0,
+                'totalTasks': 0, 'assignedTasks': 0,
+                'pendingTasks': 0, 'assignedPendingTasks': 0,
+                'approvedTasks': 0, 'assignedApprovedTasks': 0,
+                'rejectedTasks': 0, 'assignedRejectedTasks': 0,
                 'hoursToday': '0.00', 'hoursWeek': '0.00',
                 'hoursMonth': '0.00',
                 'dailyTarget': '8.00', 'weeklyTarget': '40.00',
@@ -823,14 +825,17 @@ class TaskManagementTask(models.Model):
             'assignedTasks': len(tasks.filtered(
                 lambda t: t.approval_status == 'assigned')),
             'pendingTasks': len(tasks.filtered(
-                lambda t: t.approval_status in (
-                    'pending', 'assigned_pending'))),
+                lambda t: t.approval_status == 'pending')),
+            'assignedPendingTasks': len(tasks.filtered(
+                lambda t: t.approval_status == 'assigned_pending')),
             'approvedTasks': len(tasks.filtered(
-                lambda t: t.approval_status in (
-                    'approved', 'assigned_approved'))),
+                lambda t: t.approval_status == 'approved')),
+            'assignedApprovedTasks': len(tasks.filtered(
+                lambda t: t.approval_status == 'assigned_approved')),
             'rejectedTasks': len(tasks.filtered(
-                lambda t: t.approval_status in (
-                    'rejected', 'assigned_rejected'))),
+                lambda t: t.approval_status == 'rejected')),
+            'assignedRejectedTasks': len(tasks.filtered(
+                lambda t: t.approval_status == 'assigned_rejected')),
             'hoursToday': f'{hours_today:.2f}',
             'hoursWeek': f'{hours_week:.2f}',
             'hoursMonth': f'{hours_month:.2f}',
@@ -895,6 +900,11 @@ class TaskManagementTask(models.Model):
                 'logged_hours': f'{proj.total_logged_hours:.2f}',
                 'progress': round(proj.progress_percentage, 1),
                 'pending_tasks': proj.pending_task_count,
+                'assigned_pending_tasks': proj.assigned_pending_task_count,
+                'approved_tasks': proj.approved_task_count,
+                'assigned_approved_tasks': proj.assigned_approved_task_count,
+                'rejected_tasks': proj.rejected_task_count,
+                'assigned_rejected_tasks': proj.assigned_rejected_task_count,
                 'assigned_tasks': assigned_count,
                 'members': members_data,
                 'phases': phases_data,
@@ -922,6 +932,11 @@ class TaskManagementTask(models.Model):
                 'progress': round(proj.progress_percentage, 1),
                 'task_count': proj.task_count,
                 'pending_tasks': proj.pending_task_count,
+                'assigned_pending_tasks': proj.assigned_pending_task_count,
+                'approved_tasks': proj.approved_task_count,
+                'assigned_approved_tasks': proj.assigned_approved_task_count,
+                'rejected_tasks': proj.rejected_task_count,
+                'assigned_rejected_tasks': proj.assigned_rejected_task_count,
                 'member_count': len(proj.member_ids),
                 'late_entries': late,
             })
@@ -964,11 +979,20 @@ class TaskManagementTask(models.Model):
             writer.writerow([])
             writer.writerow(
                 ['', 'Status', 'Progress', 'Logged Hours',
-                 'Pending Tasks', 'Assigned Tasks'])
+                 'Pending', 'Asgn Pending',
+                 'Approved', 'Asgn Approved',
+                 'Rejected', 'Asgn Rejected',
+                 'Assigned Tasks'])
             writer.writerow(
                 ['', proj['status'].replace('_', ' ').title(),
                  f'{proj["progress"]}%', proj['logged_hours'],
-                 proj['pending_tasks'], proj.get('assigned_tasks', 0)])
+                 proj['pending_tasks'],
+                 proj.get('assigned_pending_tasks', 0),
+                 proj.get('approved_tasks', 0),
+                 proj.get('assigned_approved_tasks', 0),
+                 proj.get('rejected_tasks', 0),
+                 proj.get('assigned_rejected_tasks', 0),
+                 proj.get('assigned_tasks', 0)])
             writer.writerow([])
 
             # ── Team Members ──
@@ -1097,6 +1121,26 @@ class TaskManagementTask(models.Model):
                         <div class="kpi-label">Pending</div></div>
                     <div class="kpi">
                         <div class="kpi-value"
+                             style="color:#f0ad4e">{proj.get("assigned_pending_tasks", 0)}</div>
+                        <div class="kpi-label">Asgn Pending</div></div>
+                    <div class="kpi">
+                        <div class="kpi-value"
+                             style="color:#5cb85c">{proj.get("approved_tasks", 0)}</div>
+                        <div class="kpi-label">Approved</div></div>
+                    <div class="kpi">
+                        <div class="kpi-value"
+                             style="color:#5cb85c">{proj.get("assigned_approved_tasks", 0)}</div>
+                        <div class="kpi-label">Asgn Approved</div></div>
+                    <div class="kpi">
+                        <div class="kpi-value"
+                             style="color:#d9534f">{proj.get("rejected_tasks", 0)}</div>
+                        <div class="kpi-label">Rejected</div></div>
+                    <div class="kpi">
+                        <div class="kpi-value"
+                             style="color:#d9534f">{proj.get("assigned_rejected_tasks", 0)}</div>
+                        <div class="kpi-label">Asgn Rejected</div></div>
+                    <div class="kpi">
+                        <div class="kpi-value"
                              style="color:#17a2b8">{proj.get("assigned_tasks", 0)}</div>
                         <div class="kpi-label">Assigned</div></div>
                 </div>
@@ -1199,7 +1243,10 @@ class TaskManagementTask(models.Model):
         writer.writerow([])
         writer.writerow(
             ['No.', 'Project', 'Status', 'Progress',
-             'Tasks', 'Pending', 'Members', 'Late Entries'])
+             'Tasks', 'Pending', 'Asgn Pending',
+             'Approved', 'Asgn Approved',
+             'Rejected', 'Asgn Rejected',
+             'Members', 'Late Entries'])
         total_tasks = 0
         total_pending = 0
         total_late = 0
@@ -1211,6 +1258,11 @@ class TaskManagementTask(models.Model):
                 f'{proj["progress"]}%',
                 proj['task_count'],
                 proj['pending_tasks'],
+                proj.get('assigned_pending_tasks', 0),
+                proj.get('approved_tasks', 0),
+                proj.get('assigned_approved_tasks', 0),
+                proj.get('rejected_tasks', 0),
+                proj.get('assigned_rejected_tasks', 0),
                 proj['member_count'],
                 proj['late_entries'],
             ])
@@ -1260,6 +1312,11 @@ class TaskManagementTask(models.Model):
                 f'<td>{proj["progress"]}%</td>'
                 f'<td>{proj["task_count"]}</td>'
                 f'<td>{proj["pending_tasks"]}</td>'
+                f'<td>{proj.get("assigned_pending_tasks", 0)}</td>'
+                f'<td>{proj.get("approved_tasks", 0)}</td>'
+                f'<td>{proj.get("assigned_approved_tasks", 0)}</td>'
+                f'<td>{proj.get("rejected_tasks", 0)}</td>'
+                f'<td>{proj.get("assigned_rejected_tasks", 0)}</td>'
                 f'<td>{proj["member_count"]}</td>'
                 f'<td>{proj["late_entries"]}</td></tr>')
 
@@ -1315,7 +1372,10 @@ class TaskManagementTask(models.Model):
     <h2>All Projects</h2>
     <table><thead><tr>
         <th>Project</th><th>Status</th><th>Progress</th>
-        <th>Tasks</th><th>Pending</th><th>Members</th><th>Late</th>
+        <th>Tasks</th><th>Pending</th><th>Asgn Pending</th>
+        <th>Approved</th><th>Asgn Approved</th>
+        <th>Rejected</th><th>Asgn Rejected</th>
+        <th>Members</th><th>Late</th>
     </tr></thead><tbody>{project_rows}</tbody></table>
 
     <div class="footer">Generated by {company.name} | Admin Dashboard | {today}</div>
