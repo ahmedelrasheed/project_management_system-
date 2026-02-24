@@ -59,14 +59,6 @@
                         </div>
                         <div class="col text-center">
                             <div class="border rounded p-2 bg-light">
-                                <small class="text-muted">Asgn Approved</small>
-                                <h4 class="text-success">
-                                    <field name="assigned_approved_tasks" class="d-inline"/>
-                                </h4>
-                            </div>
-                        </div>
-                        <div class="col text-center">
-                            <div class="border rounded p-2 bg-light">
                                 <small class="text-muted">Rejected</small>
                                 <h4 class="text-danger">
                                     <field name="rejected_tasks" class="d-inline"/>
@@ -75,25 +67,9 @@
                         </div>
                         <div class="col text-center">
                             <div class="border rounded p-2 bg-light">
-                                <small class="text-muted">Asgn Rejected</small>
-                                <h4 class="text-danger">
-                                    <field name="assigned_rejected_tasks" class="d-inline"/>
-                                </h4>
-                            </div>
-                        </div>
-                        <div class="col text-center">
-                            <div class="border rounded p-2 bg-light">
                                 <small class="text-muted">Pending</small>
                                 <h4 class="text-warning">
                                     <field name="pending_tasks" class="d-inline"/>
-                                </h4>
-                            </div>
-                        </div>
-                        <div class="col text-center">
-                            <div class="border rounded p-2 bg-light">
-                                <small class="text-muted">Asgn Pending</small>
-                                <h4 class="text-warning">
-                                    <field name="assigned_pending_tasks" class="d-inline"/>
                                 </h4>
                             </div>
                         </div>
@@ -202,9 +178,9 @@
                         </page>
                         <page string="Task Details" name="tasks">
                             <field name="task_line_ids" readonly="1">
-                                <tree decoration-warning="approval_status in ('pending', 'assigned_pending')"
-                                      decoration-success="approval_status in ('approved', 'assigned_approved')"
-                                      decoration-danger="approval_status in ('rejected', 'assigned_rejected')"
+                                <tree decoration-warning="approval_status == 'pending'"
+                                      decoration-success="approval_status == 'approved'"
+                                      decoration-danger="approval_status == 'rejected'"
                                       decoration-info="approval_status == 'assigned'">
                                     <field name="date"/>
                                     <field name="project_name"/>
@@ -213,10 +189,13 @@
                                     <field name="time_to" widget="float_time"/>
                                     <field name="duration_hours" widget="float_time"
                                            sum="Total Hours"/>
+                                    <field name="task_type" widget="badge"
+                                           decoration-info="task_type == 'assigned'"
+                                           decoration-muted="task_type == 'initiated'"/>
                                     <field name="approval_status" widget="badge"
-                                           decoration-warning="approval_status in ('pending', 'assigned_pending')"
-                                           decoration-success="approval_status in ('approved', 'assigned_approved')"
-                                           decoration-danger="approval_status in ('rejected', 'assigned_rejected')"
+                                           decoration-warning="approval_status == 'pending'"
+                                           decoration-success="approval_status == 'approved'"
+                                           decoration-danger="approval_status == 'rejected'"
                                            decoration-info="approval_status == 'assigned'"/>
                                     <field name="is_late_entry"/>
                                 </tree>
@@ -241,6 +220,7 @@
               name="Member Performance"
               parent="menu_members_parent"
               action="action_member_performance_report"
-              sequence="20"/>
+              sequence="20"
+              active="0"/>
 
 </odoo>

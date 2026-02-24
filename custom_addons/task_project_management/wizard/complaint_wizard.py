@@ -17,7 +17,7 @@ class TaskManagementComplaintWizard(models.TransientModel):
         self.ensure_one()
         task = self.task_id
         # Validate task is rejected
-        if task.approval_status not in ('rejected', 'assigned_rejected'):
+        if task.approval_status != 'rejected':
             raise UserError(
                 _('You can only file a complaint for rejected tasks.'))
         # Validate no existing complaint

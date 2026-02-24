@@ -13,6 +13,11 @@ class ProjectPerformanceReport(models.TransientModel):
     _name = 'task.management.project.performance.report'
     _description = 'Project Performance Report'
 
+    @api.depends()
+    def _compute_display_name(self):
+        for rec in self:
+            rec.display_name = _("Project Report")
+
     project_id = fields.Many2one(
         'task.management.project', string='Project', required=True,
     )
@@ -35,16 +40,10 @@ class ProjectPerformanceReport(models.TransientModel):
         string='Total Tasks', compute='_compute_stats')
     approved_tasks = fields.Integer(
         string='Approved Tasks', compute='_compute_stats')
-    assigned_approved_tasks = fields.Integer(
-        string='Assigned Approved', compute='_compute_stats')
     rejected_tasks = fields.Integer(
         string='Rejected Tasks', compute='_compute_stats')
-    assigned_rejected_tasks = fields.Integer(
-        string='Assigned Rejected', compute='_compute_stats')
     pending_tasks = fields.Integer(
         string='Pending Tasks', compute='_compute_stats')
-    assigned_pending_tasks = fields.Integer(
-        string='Assigned Pending', compute='_compute_stats')
     total_hours = fields.Float(
         string='Total Hours', compute='_compute_stats')
     approved_hours = fields.Float(
@@ -119,11 +118,8 @@ class ProjectPerformanceReport(models.TransientModel):
                 report.phase_count = 0
                 report.total_tasks = 0
                 report.approved_tasks = 0
-                report.assigned_approved_tasks = 0
                 report.rejected_tasks = 0
-                report.assigned_rejected_tasks = 0
                 report.pending_tasks = 0
-                report.assigned_pending_tasks = 0
                 report.total_hours = 0.0
                 report.approved_hours = 0.0
                 report.approval_rate = 0.0
@@ -140,22 +136,15 @@ class ProjectPerformanceReport(models.TransientModel):
 
             approved = tasks.filtered(
                 lambda t: t.approval_status == 'approved')
-            assigned_approved = tasks.filtered(
-                lambda t: t.approval_status == 'assigned_approved')
             rejected = tasks.filtered(
                 lambda t: t.approval_status == 'rejected')
-            assigned_rejected = tasks.filtered(
-                lambda t: t.approval_status == 'assigned_rejected')
             pending = tasks.filtered(
                 lambda t: t.approval_status == 'pending')
-            assigned_pending = tasks.filtered(
-                lambda t: t.approval_status == 'assigned_pending')
             late = tasks.filtered(lambda t: t.is_late_entry)
             total = len(tasks)
 
-            all_approved = approved | assigned_approved
             total_hrs = sum(tasks.mapped('duration_hours'))
-            approved_hrs = sum(all_approved.mapped('duration_hours'))
+            approved_hrs = sum(approved.mapped('duration_hours'))
 
             report.project_status = dict(
                 proj._fields['status'].selection).get(
@@ -163,15 +152,12 @@ class ProjectPerformanceReport(models.TransientModel):
             report.phase_count = len(proj.phase_ids)
             report.total_tasks = total
             report.approved_tasks = len(approved)
-            report.assigned_approved_tasks = len(assigned_approved)
             report.rejected_tasks = len(rejected)
-            report.assigned_rejected_tasks = len(assigned_rejected)
             report.pending_tasks = len(pending)
-            report.assigned_pending_tasks = len(assigned_pending)
             report.total_hours = total_hrs
             report.approved_hours = approved_hrs
             report.approval_rate = round(
-                (len(all_approved) / total * 100) if total else 0, 1)
+                (len(approved) / total * 100) if total else 0, 1)
             report.progress = round(proj.progress_percentage, 1)
             report.late_entries = len(late)
 
@@ -185,7 +171,7 @@ class ProjectPerformanceReport(models.TransientModel):
                 m_tasks = tasks.filtered(
                     lambda t, m=member: t.member_id == m)
                 m_approved = m_tasks.filtered(
-                    lambda t: t.approval_status in ('approved', 'assigned_approved'))
+                    lambda t: t.approval_status == 'approved')
                 m_total = len(m_tasks)
                 m_late = m_tasks.filtered(lambda t: t.is_late_entry)
                 m_total_hrs = sum(m_tasks.mapped('duration_hours'))
@@ -206,9 +192,9 @@ class ProjectPerformanceReport(models.TransientModel):
                         m_total_hrs / unique_days
                         if unique_days else 0, 2),
                     'pending_count': len(m_tasks.filtered(
-                        lambda t: t.approval_status in ('pending', 'assigned_pending'))),
+                        lambda t: t.approval_status == 'pending')),
                     'rejected_count': len(m_tasks.filtered(
-                        lambda t: t.approval_status in ('rejected', 'assigned_rejected'))),
+                        lambda t: t.approval_status == 'rejected')),
                 }))
             report.member_line_ids = member_lines or MemberLine
 
@@ -222,6 +208,7 @@ class ProjectPerformanceReport(models.TransientModel):
                     'time_from': task.time_from,
                     'time_to': task.time_to,
                     'duration_hours': task.duration_hours,
+                    'task_type': task.task_type,
                     'approval_status': task.approval_status,
                     'is_late_entry': task.is_late_entry,
                     'manager_comment': (task.manager_comment or '')[:50],
@@ -254,7 +241,7 @@ class ProjectPerformanceReport(models.TransientModel):
         company = self.env.company.name
         period_str = (f'{d_from}  to  {d_to}' if d_from else 'All Time')
 
-        # ── Report Header ──
+        # -- Report Header --
         writer.writerow(['PROJECT PERFORMANCE REPORT'])
         writer.writerow([])
         writer.writerow(['Company:', company])
@@ -264,18 +251,15 @@ class ProjectPerformanceReport(models.TransientModel):
         writer.writerow(['Period:', period_str])
         writer.writerow([])
 
-        # ── Project Summary ──
+        # -- Project Summary --
         writer.writerow(['PROJECT SUMMARY'])
         writer.writerow([])
         writer.writerow(['', 'Metric', 'Value'])
         writer.writerow(['', 'Phases', self.phase_count])
         writer.writerow(['', 'Total Tasks', self.total_tasks])
         writer.writerow(['', 'Approved', self.approved_tasks])
-        writer.writerow(['', 'Assigned Approved', self.assigned_approved_tasks])
         writer.writerow(['', 'Rejected', self.rejected_tasks])
-        writer.writerow(['', 'Assigned Rejected', self.assigned_rejected_tasks])
         writer.writerow(['', 'Pending', self.pending_tasks])
-        writer.writerow(['', 'Assigned Pending', self.assigned_pending_tasks])
         writer.writerow(['', 'Total Hours', f'{self.total_hours:.2f}'])
         writer.writerow(['', 'Approved Hours',
                           f'{self.approved_hours:.2f}'])
@@ -286,7 +270,7 @@ class ProjectPerformanceReport(models.TransientModel):
         writer.writerow(['', 'Active Members', self.member_count])
         writer.writerow([])
 
-        # ── Member Breakdown ──
+        # -- Member Breakdown --
         writer.writerow(['MEMBER BREAKDOWN'])
         writer.writerow([])
         writer.writerow([
@@ -302,7 +286,7 @@ class ProjectPerformanceReport(models.TransientModel):
             m_tasks = tasks.filtered(
                 lambda t, m=member: t.member_id == m)
             m_approved = m_tasks.filtered(
-                lambda t: t.approval_status in ('approved', 'assigned_approved'))
+                lambda t: t.approval_status == 'approved')
             m_total = len(m_tasks)
             m_total_hrs = sum(m_tasks.mapped('duration_hours'))
             m_approved_hrs = sum(m_approved.mapped('duration_hours'))
@@ -316,9 +300,9 @@ class ProjectPerformanceReport(models.TransientModel):
                 f'{m_total_hrs:.2f}', f'{m_approved_hrs:.2f}',
                 f'{round((len(m_approved) / m_total * 100) if m_total else 0, 1)}%',
                 len(m_tasks.filtered(
-                    lambda t: t.approval_status in ('pending', 'assigned_pending'))),
+                    lambda t: t.approval_status == 'pending')),
                 len(m_tasks.filtered(
-                    lambda t: t.approval_status in ('rejected', 'assigned_rejected'))),
+                    lambda t: t.approval_status == 'rejected')),
                 len(m_late),
                 f'{(m_total_hrs / unique_days if unique_days else 0):.2f}',
             ])
@@ -331,7 +315,7 @@ class ProjectPerformanceReport(models.TransientModel):
                           '', '', '', g_late, ''])
         writer.writerow([])
 
-        # ── Phase Breakdown ──
+        # -- Phase Breakdown --
         if self.phase_line_ids:
             writer.writerow(['PHASE BREAKDOWN'])
             writer.writerow([])
@@ -346,12 +330,12 @@ class ProjectPerformanceReport(models.TransientModel):
                 ])
             writer.writerow([])
 
-        # ── Task Details ──
+        # -- Task Details --
         writer.writerow(['ALL TASKS'])
         writer.writerow([])
         writer.writerow([
             '', 'No.', 'Date', 'Member', 'Description', 'From', 'To',
-            'Hours', 'Status', 'Late', 'Manager Comment',
+            'Hours', 'Task Type', 'Status', 'Late', 'Manager Comment',
         ])
         total_hrs = 0.0
         for i, task in enumerate(tasks, 1):
@@ -361,13 +345,14 @@ class ProjectPerformanceReport(models.TransientModel):
                 self._float_to_time(task.time_from),
                 self._float_to_time(task.time_to),
                 f'{task.duration_hours:.2f}',
+                task.task_type.title(),
                 task.approval_status.replace('_', ' ').title(),
                 'Yes' if task.is_late_entry else '',
                 (task.manager_comment or '')[:50],
             ])
             total_hrs += task.duration_hours
         writer.writerow(['', '', '', '', 'TOTAL', '', '',
-                          f'{total_hrs:.2f}', '', '', ''])
+                          f'{total_hrs:.2f}', '', '', '', ''])
         writer.writerow([])
         writer.writerow(['END OF REPORT'])
 
@@ -405,7 +390,7 @@ class ProjectPerformanceReport(models.TransientModel):
         for member in members:
             m_tasks = tasks.filtered(lambda t, m=member: t.member_id == m)
             m_approved = m_tasks.filtered(
-                lambda t: t.approval_status in ('approved', 'assigned_approved'))
+                lambda t: t.approval_status == 'approved')
             m_total = len(m_tasks)
             m_total_hrs = sum(m_tasks.mapped('duration_hours'))
             m_approved_hrs = sum(m_approved.mapped('duration_hours'))
@@ -425,13 +410,11 @@ class ProjectPerformanceReport(models.TransientModel):
         task_rows = ''
         total_hours = 0
         for task in tasks:
+            type_color = '#17a2b8' if task.task_type == 'assigned' else '#6c757d'
             status_color = {
                 'pending': '#f0ad4e',
                 'approved': '#5cb85c',
                 'rejected': '#d9534f',
-                'assigned_pending': '#f0ad4e',
-                'assigned_approved': '#5cb85c',
-                'assigned_rejected': '#d9534f',
             }.get(task.approval_status, '#999')
             task_rows += f'''<tr>
                 <td>{task.date}</td>
@@ -440,6 +423,7 @@ class ProjectPerformanceReport(models.TransientModel):
                 <td>{self._float_to_time(task.time_from)}</td>
                 <td>{self._float_to_time(task.time_to)}</td>
                 <td>{task.duration_hours:.2f}</td>
+                <td style="color:{type_color};font-weight:bold;">{task.task_type.title()}</td>
                 <td style="color:{status_color};font-weight:bold;">
                     {task.approval_status.replace('_', ' ').title()}</td>
                 <td>{"Yes" if task.is_late_entry else ""}</td>
@@ -468,23 +452,23 @@ class ProjectPerformanceReport(models.TransientModel):
 <style>
     body {{ font-family: Arial, sans-serif; margin: 20px; background: #fff; }}
     .header {{ display: flex; align-items: center; gap: 15px;
-               border-bottom: 3px solid #714B67; padding-bottom: 15px; margin-bottom: 20px; }}
+               border-bottom: 3px solid #0B3D91; padding-bottom: 15px; margin-bottom: 20px; }}
     .logo {{ height: 60px; width: auto; }}
-    .header-text h1 {{ color: #714B67; margin: 0; font-size: 24px; }}
+    .header-text h1 {{ color: #0B3D91; margin: 0; font-size: 24px; }}
     .header-text p {{ color: #666; margin: 3px 0 0 0; font-size: 13px; }}
-    h2 {{ color: #714B67; margin-top: 20px; border-bottom: 2px solid #714B67;
+    h2 {{ color: #0B3D91; margin-top: 20px; border-bottom: 2px solid #0B3D91;
           padding-bottom: 5px; font-size: 16px; }}
     .meta {{ color: #666; margin-bottom: 15px; font-size: 13px; }}
     .kpi-grid {{ display: flex; flex-wrap: wrap; gap: 10px; margin: 15px 0; }}
-    .kpi {{ background: #f3edf2; border: 1px solid #ddd; border-radius: 8px;
+    .kpi {{ background: #E8EEF7; border: 1px solid #ddd; border-radius: 8px;
             padding: 10px 15px; text-align: center; min-width: 110px; }}
-    .kpi-value {{ font-size: 20px; font-weight: bold; color: #714B67; }}
+    .kpi-value {{ font-size: 20px; font-weight: bold; color: #0B3D91; }}
     .kpi-label {{ font-size: 10px; color: #666; text-transform: uppercase; }}
     table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
-    th {{ background: #714B67; color: white; padding: 8px; text-align: left; font-size: 12px; }}
+    th {{ background: #0B3D91; color: white; padding: 8px; text-align: left; font-size: 12px; }}
     td {{ padding: 6px 8px; border-bottom: 1px solid #ddd; font-size: 12px; }}
     tr:nth-child(even) {{ background: #f9f9f9; }}
-    .total {{ font-weight: bold; margin-top: 10px; font-size: 14px; color: #714B67; }}
+    .total {{ font-weight: bold; margin-top: 10px; font-size: 14px; color: #0B3D91; }}
     .footer {{ margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd;
                color: #999; font-size: 10px; text-align: center; }}
 </style></head><body>
@@ -502,21 +486,12 @@ class ProjectPerformanceReport(models.TransientModel):
         <div class="kpi"><div class="kpi-value" style="color:#5cb85c">
             {self.approved_tasks}</div>
             <div class="kpi-label">Approved</div></div>
-        <div class="kpi"><div class="kpi-value" style="color:#5cb85c">
-            {self.assigned_approved_tasks}</div>
-            <div class="kpi-label">Asgn Approved</div></div>
         <div class="kpi"><div class="kpi-value" style="color:#d9534f">
             {self.rejected_tasks}</div>
             <div class="kpi-label">Rejected</div></div>
-        <div class="kpi"><div class="kpi-value" style="color:#d9534f">
-            {self.assigned_rejected_tasks}</div>
-            <div class="kpi-label">Asgn Rejected</div></div>
         <div class="kpi"><div class="kpi-value" style="color:#f0ad4e">
             {self.pending_tasks}</div>
             <div class="kpi-label">Pending</div></div>
-        <div class="kpi"><div class="kpi-value" style="color:#f0ad4e">
-            {self.assigned_pending_tasks}</div>
-            <div class="kpi-label">Asgn Pending</div></div>
         <div class="kpi"><div class="kpi-value">{self.phase_count}</div>
             <div class="kpi-label">Phases</div></div>
         <div class="kpi"><div class="kpi-value">{self.progress:.1f}%</div>
@@ -545,7 +520,7 @@ class ProjectPerformanceReport(models.TransientModel):
     <h2>Task Details</h2>
     <table><thead><tr>
         <th>Date</th><th>Member</th><th>Description</th>
-        <th>From</th><th>To</th><th>Hours</th><th>Status</th><th>Late</th>
+        <th>From</th><th>To</th><th>Hours</th><th>Type</th><th>Status</th><th>Late</th>
     </tr></thead><tbody>{task_rows}</tbody></table>
     <div class="total">Total Hours: {total_hours:.2f}</div>
     <div class="footer">Generated by {company.name} | Project Performance Report | {fields.Date.context_today(self)}</div>
@@ -608,7 +583,7 @@ class ProjectPerformanceReport(models.TransientModel):
         for member in members:
             m_tasks = tasks.filtered(lambda t, m=member: t.member_id == m)
             m_approved = m_tasks.filtered(
-                lambda t: t.approval_status in ('approved', 'assigned_approved'))
+                lambda t: t.approval_status == 'approved')
             m_total = len(m_tasks)
             m_total_hrs = sum(m_tasks.mapped('duration_hours'))
             m_approved_hrs = sum(m_approved.mapped('duration_hours'))
@@ -628,13 +603,11 @@ class ProjectPerformanceReport(models.TransientModel):
         task_rows = ''
         total_hours = 0
         for task in tasks:
+            type_color = '#17a2b8' if task.task_type == 'assigned' else '#6c757d'
             status_color = {
                 'pending': '#f0ad4e',
                 'approved': '#5cb85c',
                 'rejected': '#d9534f',
-                'assigned_pending': '#f0ad4e',
-                'assigned_approved': '#5cb85c',
-                'assigned_rejected': '#d9534f',
             }.get(task.approval_status, '#999')
             task_rows += f'''<tr>
                 <td>{task.date}</td>
@@ -643,6 +616,7 @@ class ProjectPerformanceReport(models.TransientModel):
                 <td>{self._float_to_time(task.time_from)}</td>
                 <td>{self._float_to_time(task.time_to)}</td>
                 <td>{task.duration_hours:.2f}</td>
+                <td style="color:{type_color};font-weight:bold;">{task.task_type.title()}</td>
                 <td style="color:{status_color};font-weight:bold;">
                     {task.approval_status.replace('_', ' ').title()}</td>
                 <td>{"Yes" if task.is_late_entry else ""}</td>
@@ -671,22 +645,22 @@ class ProjectPerformanceReport(models.TransientModel):
 <style>
     body {{ font-family: Arial, sans-serif; margin: 20px; background: #fff; }}
     .header {{ display: flex; align-items: center; gap: 15px;
-               border-bottom: 3px solid #714B67; padding-bottom: 15px; margin-bottom: 20px; }}
+               border-bottom: 3px solid #0B3D91; padding-bottom: 15px; margin-bottom: 20px; }}
     .logo {{ height: 60px; width: auto; }}
-    .header-text h1 {{ color: #714B67; margin: 0; font-size: 24px; }}
+    .header-text h1 {{ color: #0B3D91; margin: 0; font-size: 24px; }}
     .header-text p {{ color: #666; margin: 3px 0 0 0; font-size: 13px; }}
-    h2 {{ color: #714B67; margin-top: 20px; border-bottom: 2px solid #714B67;
+    h2 {{ color: #0B3D91; margin-top: 20px; border-bottom: 2px solid #0B3D91;
           padding-bottom: 5px; font-size: 16px; }}
     .kpi-grid {{ display: flex; flex-wrap: wrap; gap: 10px; margin: 15px 0; }}
-    .kpi {{ background: #f3edf2; border: 1px solid #ddd; border-radius: 8px;
+    .kpi {{ background: #E8EEF7; border: 1px solid #ddd; border-radius: 8px;
             padding: 10px 15px; text-align: center; min-width: 110px; }}
-    .kpi-value {{ font-size: 20px; font-weight: bold; color: #714B67; }}
+    .kpi-value {{ font-size: 20px; font-weight: bold; color: #0B3D91; }}
     .kpi-label {{ font-size: 10px; color: #666; text-transform: uppercase; }}
     table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
-    th {{ background: #714B67; color: white; padding: 8px; text-align: left; font-size: 12px; }}
+    th {{ background: #0B3D91; color: white; padding: 8px; text-align: left; font-size: 12px; }}
     td {{ padding: 6px 8px; border-bottom: 1px solid #ddd; font-size: 12px; }}
     tr:nth-child(even) {{ background: #f9f9f9; }}
-    .total {{ font-weight: bold; margin-top: 10px; font-size: 14px; color: #714B67; }}
+    .total {{ font-weight: bold; margin-top: 10px; font-size: 14px; color: #0B3D91; }}
     .footer {{ margin-top: 20px; padding-top: 10px; border-top: 1px solid #ddd;
                color: #999; font-size: 10px; text-align: center; }}
 </style></head><body>
@@ -704,21 +678,12 @@ class ProjectPerformanceReport(models.TransientModel):
         <div class="kpi"><div class="kpi-value" style="color:#5cb85c">
             {self.approved_tasks}</div>
             <div class="kpi-label">Approved</div></div>
-        <div class="kpi"><div class="kpi-value" style="color:#5cb85c">
-            {self.assigned_approved_tasks}</div>
-            <div class="kpi-label">Asgn Approved</div></div>
         <div class="kpi"><div class="kpi-value" style="color:#d9534f">
             {self.rejected_tasks}</div>
             <div class="kpi-label">Rejected</div></div>
-        <div class="kpi"><div class="kpi-value" style="color:#d9534f">
-            {self.assigned_rejected_tasks}</div>
-            <div class="kpi-label">Asgn Rejected</div></div>
         <div class="kpi"><div class="kpi-value" style="color:#f0ad4e">
             {self.pending_tasks}</div>
             <div class="kpi-label">Pending</div></div>
-        <div class="kpi"><div class="kpi-value" style="color:#f0ad4e">
-            {self.assigned_pending_tasks}</div>
-            <div class="kpi-label">Asgn Pending</div></div>
         <div class="kpi"><div class="kpi-value">{self.phase_count}</div>
             <div class="kpi-label">Phases</div></div>
         <div class="kpi"><div class="kpi-value">{self.progress:.1f}%</div>
@@ -747,7 +712,7 @@ class ProjectPerformanceReport(models.TransientModel):
     <h2>Task Details</h2>
     <table><thead><tr>
         <th>Date</th><th>Member</th><th>Description</th>
-        <th>From</th><th>To</th><th>Hours</th><th>Status</th><th>Late</th>
+        <th>From</th><th>To</th><th>Hours</th><th>Type</th><th>Status</th><th>Late</th>
     </tr></thead><tbody>{task_rows}</tbody></table>
     <div class="total">Total Hours: {total_hours:.2f}</div>
     <div class="footer">Generated by {company.name} | Project Performance Report | {fields.Date.context_today(self)}</div>
@@ -840,13 +805,15 @@ class ProjectPerformanceTask(models.TransientModel):
     time_from = fields.Float(string='From')
     time_to = fields.Float(string='To')
     duration_hours = fields.Float(string='Hours')
+    task_type = fields.Selection([
+        ('initiated', 'Initiated'),
+        ('assigned', 'Assigned'),
+    ], string='Task Type')
     approval_status = fields.Selection([
+        ('assigned', 'Assigned'),
         ('pending', 'Pending'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
-        ('assigned_pending', 'Assigned / Pending'),
-        ('assigned_approved', 'Assigned / Approved'),
-        ('assigned_rejected', 'Assigned / Rejected'),
     ], string='Status')
     is_late_entry = fields.Boolean(string='Late')
     manager_comment = fields.Char(string='Comment')

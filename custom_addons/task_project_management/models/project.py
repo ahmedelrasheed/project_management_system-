@@ -79,24 +79,16 @@ class TaskManagementProject(models.Model):
         string='Pending Tasks',
         compute='_compute_task_stats',
     )
-    assigned_pending_task_count = fields.Integer(
-        string='Assigned Pending',
-        compute='_compute_task_stats',
-    )
     approved_task_count = fields.Integer(
         string='Approved Tasks',
-        compute='_compute_task_stats',
-    )
-    assigned_approved_task_count = fields.Integer(
-        string='Assigned Approved',
         compute='_compute_task_stats',
     )
     rejected_task_count = fields.Integer(
         string='Rejected Tasks',
         compute='_compute_task_stats',
     )
-    assigned_rejected_task_count = fields.Integer(
-        string='Assigned Rejected',
+    assigned_task_count = fields.Integer(
+        string='Assigned Tasks',
         compute='_compute_task_stats',
     )
 
@@ -110,8 +102,7 @@ class TaskManagementProject(models.Model):
     def _compute_total_logged_hours(self):
         for project in self:
             approved_tasks = project.task_ids.filtered(
-                lambda t: t.approval_status in (
-                    'approved', 'assigned_approved'))
+                lambda t: t.approval_status == 'approved')
             project.total_logged_hours = sum(
                 approved_tasks.mapped('duration_hours'))
 
@@ -133,16 +124,12 @@ class TaskManagementProject(models.Model):
             project.task_count = len(tasks)
             project.pending_task_count = len(
                 tasks.filtered(lambda t: t.approval_status == 'pending'))
-            project.assigned_pending_task_count = len(
-                tasks.filtered(lambda t: t.approval_status == 'assigned_pending'))
             project.approved_task_count = len(
                 tasks.filtered(lambda t: t.approval_status == 'approved'))
-            project.assigned_approved_task_count = len(
-                tasks.filtered(lambda t: t.approval_status == 'assigned_approved'))
             project.rejected_task_count = len(
                 tasks.filtered(lambda t: t.approval_status == 'rejected'))
-            project.assigned_rejected_task_count = len(
-                tasks.filtered(lambda t: t.approval_status == 'assigned_rejected'))
+            project.assigned_task_count = len(
+                tasks.filtered(lambda t: t.approval_status == 'assigned'))
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -227,20 +214,8 @@ class TaskManagementProject(models.Model):
 
     @api.onchange('phase_ids')
     def _onchange_phase_ids_warn(self):
-        if not self._origin.id:
-            return
-        old_ids = set(self._origin.phase_ids.ids)
-        new_ids = set(rec.id for rec in self.phase_ids if rec.id)
-        removed_ids = old_ids - new_ids
-        if removed_ids:
-            removed = self.env['task.management.project.phase'].browse(removed_ids)
-            names = ', '.join(removed.mapped('name'))
-            return {'warning': {
-                'title': _('Phase Removed'),
-                'message': _('You are about to remove phase(s): %s '
-                             'from project "%s". '
-                             'Please save to confirm.') % (names, self.name),
-            }}
+        """No-op: confirmation is handled by the view's confirm_delete attribute."""
+        return
 
     @api.onchange('project_manager_ids')
     def _onchange_pm_ids_warn(self):
@@ -331,6 +306,18 @@ class TaskManagementProject(models.Model):
         except Exception:
             pass
 
+    def action_open_project_report(self):
+        """Open project performance report wizard pre-filled with this project."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Project Report'),
+            'res_model': 'task.management.project.performance.report',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {'default_project_id': self.id},
+        }
+
     @api.model
     def _name_search(self, name='', domain=None, operator='ilike',
                      limit=100, order=None):
@@ -370,8 +357,7 @@ class TaskManagementProject(models.Model):
             ('expected_end_date', '<=', today),
         ])
         for project in projects:
-            pending_count = (project.pending_task_count +
-                            project.assigned_pending_task_count)
+            pending_count = project.pending_task_count
             if pending_count > 0:
                 # Notify PMs
                 pm_partners = project.project_manager_ids.mapped(

@@ -111,11 +111,17 @@
         </field>
     </record>
 
-    <!-- Manager Members Action (read-only) -->
+    <!-- Manager Members Action (read-only, members+PMs of supervised projects, excludes self) -->
     <record id="action_manager_members" model="ir.actions.act_window">
         <field name="name">Members</field>
         <field name="res_model">task.management.member</field>
         <field name="view_mode">tree,form</field>
+        <field name="domain">[
+            '|',
+            ('member_project_ids.manager_ids.user_id', '=', uid),
+            ('managed_project_ids.manager_ids.user_id', '=', uid),
+            ('user_id', '!=', uid)
+        ]</field>
         <field name="context">{'create': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -197,7 +203,8 @@
               name="PM Dashboard"
               parent="menu_projects_parent"
               action="action_pm_dashboard"
-              sequence="30"/>
+              sequence="30"
+              groups="task_project_management.group_project_manager"/>
 
     <!-- ============================================================ -->
     <!-- Members Section (PM + Admin + Manager)                        -->
@@ -213,7 +220,19 @@
               parent="menu_members_parent"
               action="action_member"
               sequence="10"
-              groups="task_project_management.group_project_manager,task_project_management.group_admin_manager"/>
+              groups="task_project_management.group_admin_manager"/>
+
+    <!-- Force-set admin-only group on all-members menu -->
+    <record id="menu_all_members" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [ref('group_admin_manager')])]"/>
+    </record>
+
+    <menuitem id="menu_pm_members"
+              name="Members"
+              parent="menu_members_parent"
+              action="action_pm_members"
+              sequence="10"
+              groups="task_project_management.group_project_manager"/>
 
     <menuitem id="menu_manager_members"
               name="Members"

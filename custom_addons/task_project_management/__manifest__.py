@@ -1,6 +1,6 @@
 {
     'name': 'Task & Project Management',
-    'version': '17.0.2.1.0',
+    'version': '17.0.3.0.0',
     'category': 'Project',
     'summary': 'Task & Project Management with approval workflow',
     'description': """
@@ -62,6 +62,8 @@
             'task_project_management/static/src/js/float_time_spinner.js',
             'task_project_management/static/src/js/font_size.js',
             'task_project_management/static/src/js/breadcrumb_enhancer.js',
+            'task_project_management/static/src/js/login_alert.js',
+            'task_project_management/static/src/xml/login_alert.xml',
             'task_project_management/static/src/xml/navbar_apps_hide.xml',
         ],
     },

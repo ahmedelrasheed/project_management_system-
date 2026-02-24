@@ -30,7 +30,7 @@ class TaskManagementTask(models.Model):
     phase_id = fields.Many2one(
         'task.management.project.phase', string='Phase',
         ondelete='set null',
-        domain="[('project_id', '=', project_id)]",
+        domain="[('project_id', '=', project_id), ('is_active', '=', True), ('completion_rate', '<', 100)]",
     )
     member_id = fields.Many2one(
         'task.management.member', string='Member',
@@ -50,12 +50,13 @@ class TaskManagementTask(models.Model):
         ('pending', 'Pending'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
-        ('assigned_pending', 'Assigned / Pending'),
-        ('assigned_approved', 'Assigned / Approved'),
-        ('assigned_rejected', 'Assigned / Rejected'),
-    ], string='Approval Status', default='pending',
-        required=True, tracking=True,
-    )
+    ], string='Approval Status', default='pending', required=True, tracking=True)
+    task_type = fields.Selection([
+        ('initiated', 'Initiated'),
+        ('assigned', 'Assigned'),
+    ], string='Task Type', default='initiated', required=True, readonly=True)
+    is_seen_by_member = fields.Boolean(default=False)
+    is_seen_by_pm = fields.Boolean(default=False)
     manager_comment = fields.Text(string='Manager Comment', tracking=True)
     attachment_ids = fields.Many2many(
         'ir.attachment', 'task_attachment_rel',
@@ -181,7 +182,7 @@ class TaskManagementTask(models.Model):
     def _compute_can_file_complaint(self):
         for task in self:
             task.can_file_complaint = (
-                task.approval_status in ('rejected', 'assigned_rejected')
+                task.approval_status in ('rejected',)
                 and not task.complaint_ids
                 and task.member_id
                 and task.member_id.user_id.id == self.env.uid
@@ -495,7 +496,7 @@ class TaskManagementTask(models.Model):
                     member.exists() and member.user_id.id == self.env.uid
                 )
             else:
-                # No explicit member → task creation auto-assigns current user
+                # No explicit member -> task creation auto-assigns current user
                 member = self.env['task.management.member'].search(
                     [('user_id', '=', self.env.uid)], limit=1)
                 defaults['is_current_user_member'] = bool(member)
@@ -527,6 +528,8 @@ class TaskManagementTask(models.Model):
                 # Clear date default to avoid constraint issues
                 if not vals.get('date'):
                     vals['date'] = False
+                # Set task_type to assigned
+                vals['task_type'] = 'assigned'
             else:
                 # Auto-set member from current user for regular tasks
                 if not vals.get('member_id'):
@@ -569,7 +572,7 @@ class TaskManagementTask(models.Model):
                     self.env.uid in
                     task.project_id.project_manager_ids.mapped('user_id.id'))
                 if is_project_pm and not is_task_member:
-                    # PM reviewing someone else's task — only PM fields allowed
+                    # PM reviewing someone else's task -- only PM fields allowed
                     pm_allowed = {
                         'approval_status', 'manager_comment',
                         'message_follower_ids', 'message_ids',
@@ -579,7 +582,7 @@ class TaskManagementTask(models.Model):
                     if not vals:
                         return True
                 elif is_task_member:
-                    # Task member (even if PM) — cannot write manager_comment
+                    # Task member (even if PM) -- cannot write manager_comment
                     vals.pop('manager_comment', None)
                     if not vals:
                         return True
@@ -589,7 +592,7 @@ class TaskManagementTask(models.Model):
 
         for task in self:
             # Block editing of approved tasks (except status/comment changes)
-            if task.approval_status in ('approved', 'assigned_approved'):
+            if task.approval_status in ('approved',):
                 allowed_fields = {
                     'approval_status', 'manager_comment',
                     'message_follower_ids', 'message_ids',
@@ -599,16 +602,14 @@ class TaskManagementTask(models.Model):
                         _('Cannot edit an approved task.'))
 
             # If editing a rejected task (non-status fields), reset to pending
-            if task.approval_status in ('rejected', 'assigned_rejected'):
+            if task.approval_status in ('rejected',):
                 if 'approval_status' not in vals:
                     non_status_fields = set(vals.keys()) - {
                         'approval_status', 'manager_comment',
                         'message_follower_ids', 'message_ids',
                     }
                     if non_status_fields:
-                        new_status = ('assigned_pending'
-                                      if task.assigned_by_id else 'pending')
-                        vals = dict(vals, approval_status=new_status)
+                        vals = dict(vals, approval_status='pending')
 
             # If the assigned member edits an assigned task, submit it
             # The assigning PM/Admin editing should NOT trigger submission
@@ -623,7 +624,7 @@ class TaskManagementTask(models.Model):
                                          'description', 'attachment_ids'}
                         if set(vals.keys()) & submit_fields:
                             vals = dict(vals,
-                                        approval_status='assigned_pending')
+                                        approval_status='pending')
 
         result = super().write(vals)
 
@@ -634,17 +635,22 @@ class TaskManagementTask(models.Model):
                 old_status = old_statuses.get(task.id, 'pending')
                 comment = vals.get('manager_comment', '')
                 task._create_audit_entry(old_status, new_status, comment)
-                if new_status in ('approved', 'rejected',
-                                  'assigned_approved', 'assigned_rejected'):
+                if new_status in ('approved', 'rejected'):
                     task._notify_member_status_change(new_status)
-                elif (new_status in ('pending', 'assigned_pending')
-                      and old_status in ('rejected', 'assigned_rejected')):
+                elif (new_status in ('pending',)
+                      and old_status in ('rejected',)):
                     # Resubmission after rejection: notify PM
                     task._notify_pm_on_submit()
-                elif (new_status == 'assigned_pending'
+                elif (new_status == 'pending'
                       and old_status == 'assigned'):
                     # Member submitted assigned task: notify PM
                     task._notify_pm_on_submit()
+
+            # Reset seen flags based on new status
+            if new_status == 'pending':
+                self.sudo().write({'is_seen_by_pm': False})
+            elif new_status == 'assigned':
+                self.sudo().write({'is_seen_by_member': False})
 
         # Validate attachment sizes and fix access if attachments changed
         if 'attachment_ids' in vals or 'assignment_attachment_ids' in vals:
@@ -662,19 +668,19 @@ class TaskManagementTask(models.Model):
     def action_approve(self):
         self._check_can_approve()
         for task in self:
-            status = ('assigned_approved'
-                      if task.assigned_by_id else 'approved')
-            task.write({'approval_status': status})
+            task.write({'approval_status': 'approved'})
 
     def action_reject(self):
         self._check_can_approve()
         for task in self:
-            status = ('assigned_rejected'
-                      if task.assigned_by_id else 'rejected')
-            task.write({'approval_status': status})
+            task.write({'approval_status': 'rejected'})
 
     def _check_can_approve(self):
         """Check that the current user can approve/reject tasks."""
+        for task in self:
+            if task.has_complaint:
+                raise UserError(
+                    _('Cannot approve or reject a task that has a complaint.'))
         is_admin = self.env.user.has_group(
             'task_project_management.group_admin_manager')
         if is_admin:
@@ -787,9 +793,6 @@ class TaskManagementTask(models.Model):
                     'approved': 'Approved',
                     'rejected': 'Rejected',
                     'pending': 'Pending',
-                    'assigned_approved': 'Assigned / Approved',
-                    'assigned_rejected': 'Assigned / Rejected',
-                    'assigned_pending': 'Assigned / Pending',
                 }
                 status_text = status_labels.get(new_status, new_status)
                 desc = (self.description or '')[:50]
@@ -820,9 +823,9 @@ class TaskManagementTask(models.Model):
         if not member:
             return {
                 'totalTasks': 0, 'assignedTasks': 0,
-                'pendingTasks': 0, 'assignedPendingTasks': 0,
-                'approvedTasks': 0, 'assignedApprovedTasks': 0,
-                'rejectedTasks': 0, 'assignedRejectedTasks': 0,
+                'pendingTasks': 0,
+                'approvedTasks': 0,
+                'rejectedTasks': 0,
                 'hoursToday': '0.00', 'hoursWeek': '0.00',
                 'hoursMonth': '0.00',
                 'dailyTarget': '8.00', 'weeklyTarget': '40.00',
@@ -845,12 +848,15 @@ class TaskManagementTask(models.Model):
 
         recent = tasks[:10]
         status_map = dict(self._fields['approval_status'].selection)
+        type_map = dict(self._fields['task_type'].selection)
         recent_data = [{
             'id': t.id,
             'date': str(t.date),
             'project': t.project_id.name,
             'description': (t.description or '')[:60],
             'hours': f'{t.duration_hours:.2f}',
+            'task_type': t.task_type,
+            'task_type_display': type_map.get(t.task_type, t.task_type),
             'status': t.approval_status,
             'status_display': status_map.get(t.approval_status,
                                              t.approval_status),
@@ -885,16 +891,10 @@ class TaskManagementTask(models.Model):
                 lambda t: t.approval_status == 'assigned')),
             'pendingTasks': len(tasks.filtered(
                 lambda t: t.approval_status == 'pending')),
-            'assignedPendingTasks': len(tasks.filtered(
-                lambda t: t.approval_status == 'assigned_pending')),
             'approvedTasks': len(tasks.filtered(
                 lambda t: t.approval_status == 'approved')),
-            'assignedApprovedTasks': len(tasks.filtered(
-                lambda t: t.approval_status == 'assigned_approved')),
             'rejectedTasks': len(tasks.filtered(
                 lambda t: t.approval_status == 'rejected')),
-            'assignedRejectedTasks': len(tasks.filtered(
-                lambda t: t.approval_status == 'assigned_rejected')),
             'hoursToday': f'{hours_today:.2f}',
             'hoursWeek': f'{hours_week:.2f}',
             'hoursMonth': f'{hours_month:.2f}',
@@ -929,8 +929,7 @@ class TaskManagementTask(models.Model):
                 m_tasks = proj.task_ids.filtered(
                     lambda t, member=m: t.member_id == member)
                 approved = len(m_tasks.filtered(
-                    lambda t: t.approval_status in (
-                        'approved', 'assigned_approved')))
+                    lambda t: t.approval_status == 'approved'))
                 total = len(m_tasks)
                 rate = round((approved / total * 100) if total else 0, 1)
                 late = len(m_tasks.filtered(lambda t: t.is_late_entry))
@@ -959,11 +958,8 @@ class TaskManagementTask(models.Model):
                 'logged_hours': f'{proj.total_logged_hours:.2f}',
                 'progress': round(proj.progress_percentage, 1),
                 'pending_tasks': proj.pending_task_count,
-                'assigned_pending_tasks': proj.assigned_pending_task_count,
                 'approved_tasks': proj.approved_task_count,
-                'assigned_approved_tasks': proj.assigned_approved_task_count,
                 'rejected_tasks': proj.rejected_task_count,
-                'assigned_rejected_tasks': proj.assigned_rejected_task_count,
                 'assigned_tasks': assigned_count,
                 'members': members_data,
                 'phases': phases_data,
@@ -991,11 +987,8 @@ class TaskManagementTask(models.Model):
                 'progress': round(proj.progress_percentage, 1),
                 'task_count': proj.task_count,
                 'pending_tasks': proj.pending_task_count,
-                'assigned_pending_tasks': proj.assigned_pending_task_count,
                 'approved_tasks': proj.approved_task_count,
-                'assigned_approved_tasks': proj.assigned_approved_task_count,
                 'rejected_tasks': proj.rejected_task_count,
-                'assigned_rejected_tasks': proj.assigned_rejected_task_count,
                 'member_count': len(proj.member_ids),
                 'late_entries': late,
             })
@@ -1023,7 +1016,7 @@ class TaskManagementTask(models.Model):
         output = io.StringIO()
         writer = csv.writer(output)
 
-        # ── Report Header ──
+        # -- Report Header --
         writer.writerow(['PROJECT MANAGER DASHBOARD REPORT'])
         writer.writerow([])
         writer.writerow(['Company:', company])
@@ -1033,28 +1026,25 @@ class TaskManagementTask(models.Model):
 
         projects = data.get('projects', [])
         for idx, proj in enumerate(projects, 1):
-            # ── Project Header ──
+            # -- Project Header --
             writer.writerow([f'PROJECT {idx}: {proj["name"].upper()}'])
             writer.writerow([])
             writer.writerow(
                 ['', 'Status', 'Progress', 'Logged Hours',
-                 'Pending', 'Asgn Pending',
-                 'Approved', 'Asgn Approved',
-                 'Rejected', 'Asgn Rejected',
+                 'Pending',
+                 'Approved',
+                 'Rejected',
                  'Assigned Tasks'])
             writer.writerow(
                 ['', proj['status'].replace('_', ' ').title(),
                  f'{proj["progress"]}%', proj['logged_hours'],
                  proj['pending_tasks'],
-                 proj.get('assigned_pending_tasks', 0),
                  proj.get('approved_tasks', 0),
-                 proj.get('assigned_approved_tasks', 0),
                  proj.get('rejected_tasks', 0),
-                 proj.get('assigned_rejected_tasks', 0),
                  proj.get('assigned_tasks', 0)])
             writer.writerow([])
 
-            # ── Team Members ──
+            # -- Team Members --
             if proj.get('members'):
                 writer.writerow(['', 'TEAM MEMBERS'])
                 writer.writerow(
@@ -1073,7 +1063,7 @@ class TaskManagementTask(models.Model):
                      '', total_late])
                 writer.writerow([])
 
-            # ── Phases ──
+            # -- Phases --
             if proj.get('phases'):
                 writer.writerow(['', 'PROJECT PHASES'])
                 writer.writerow(
@@ -1090,7 +1080,7 @@ class TaskManagementTask(models.Model):
                 writer.writerow(['_' * 60])
                 writer.writerow([])
 
-        # ── Footer ──
+        # -- Footer --
         writer.writerow(SEP)
         writer.writerow(['END OF REPORT'])
 
@@ -1120,7 +1110,7 @@ class TaskManagementTask(models.Model):
                 'active': '#5cb85c', 'completed': '#5cb85c',
                 'waiting': '#f0ad4e', 'on_hold': '#f0ad4e',
                 'archived': '#999',
-            }.get(proj['status'], '#714B67')
+            }.get(proj['status'], '#0B3D91')
 
             # Member rows
             member_rows = ''
@@ -1180,24 +1170,12 @@ class TaskManagementTask(models.Model):
                         <div class="kpi-label">Pending</div></div>
                     <div class="kpi">
                         <div class="kpi-value"
-                             style="color:#f0ad4e">{proj.get("assigned_pending_tasks", 0)}</div>
-                        <div class="kpi-label">Asgn Pending</div></div>
-                    <div class="kpi">
-                        <div class="kpi-value"
                              style="color:#5cb85c">{proj.get("approved_tasks", 0)}</div>
                         <div class="kpi-label">Approved</div></div>
                     <div class="kpi">
                         <div class="kpi-value"
-                             style="color:#5cb85c">{proj.get("assigned_approved_tasks", 0)}</div>
-                        <div class="kpi-label">Asgn Approved</div></div>
-                    <div class="kpi">
-                        <div class="kpi-value"
                              style="color:#d9534f">{proj.get("rejected_tasks", 0)}</div>
                         <div class="kpi-label">Rejected</div></div>
-                    <div class="kpi">
-                        <div class="kpi-value"
-                             style="color:#d9534f">{proj.get("assigned_rejected_tasks", 0)}</div>
-                        <div class="kpi-label">Asgn Rejected</div></div>
                     <div class="kpi">
                         <div class="kpi-value"
                              style="color:#17a2b8">{proj.get("assigned_tasks", 0)}</div>
@@ -1212,30 +1190,30 @@ class TaskManagementTask(models.Model):
 <style>
     body {{ font-family: Arial, sans-serif; margin: 20px; background: #fff; }}
     .header {{ display: flex; align-items: center; gap: 15px;
-               border-bottom: 3px solid #714B67; padding-bottom: 15px;
+               border-bottom: 3px solid #0B3D91; padding-bottom: 15px;
                margin-bottom: 20px; }}
-    .header h1 {{ color: #714B67; margin: 0; font-size: 22px; }}
+    .header h1 {{ color: #0B3D91; margin: 0; font-size: 22px; }}
     .header p {{ color: #666; margin: 3px 0 0 0; font-size: 12px; }}
     .project-card {{ border: 1px solid #ddd; border-radius: 10px;
                      margin-bottom: 20px; padding: 15px;
                      background: #fafafa; }}
     .project-header {{ display: flex; justify-content: space-between;
                        align-items: center; margin-bottom: 10px; }}
-    .project-name {{ font-size: 18px; font-weight: bold; color: #714B67; }}
+    .project-name {{ font-size: 18px; font-weight: bold; color: #0B3D91; }}
     .status-badge {{ color: #fff; padding: 3px 10px; border-radius: 12px;
                      font-size: 11px; font-weight: bold; }}
-    h3 {{ color: #714B67; font-size: 14px; margin: 12px 0 6px 0;
-          border-bottom: 1px solid #714B67; padding-bottom: 4px; }}
+    h3 {{ color: #0B3D91; font-size: 14px; margin: 12px 0 6px 0;
+          border-bottom: 1px solid #0B3D91; padding-bottom: 4px; }}
     .kpi-grid {{ display: flex; gap: 10px; margin: 10px 0; }}
-    .kpi {{ background: #f3edf2; border-radius: 8px;
+    .kpi {{ background: #E8EEF7; border-radius: 8px;
             padding: 8px 14px; text-align: center; min-width: 90px; }}
-    .kpi-value {{ font-size: 18px; font-weight: bold; color: #714B67; }}
+    .kpi-value {{ font-size: 18px; font-weight: bold; color: #0B3D91; }}
     .kpi-label {{ font-size: 9px; color: #666; text-transform: uppercase; }}
     table {{ width: 100%; border-collapse: collapse; margin-top: 6px; }}
-    th {{ background: #714B67; color: #fff; padding: 6px 8px;
+    th {{ background: #0B3D91; color: #fff; padding: 6px 8px;
           text-align: left; font-size: 11px; }}
     td {{ padding: 5px 8px; border-bottom: 1px solid #ddd; font-size: 11px; }}
-    tr:nth-child(even) {{ background: #f5f0f4; }}
+    tr:nth-child(even) {{ background: #E8EEF7; }}
     .footer {{ margin-top: 20px; padding-top: 8px; border-top: 1px solid #ddd;
                color: #999; font-size: 10px; text-align: center; }}
 </style></head><body>
@@ -1280,14 +1258,14 @@ class TaskManagementTask(models.Model):
         output = io.StringIO()
         writer = csv.writer(output)
 
-        # ── Report Header ──
+        # -- Report Header --
         writer.writerow(['ADMINISTRATION DASHBOARD REPORT'])
         writer.writerow([])
         writer.writerow(['Company:', company])
         writer.writerow(['Report Date:', str(today)])
         writer.writerow([])
 
-        # ── Organization Summary ──
+        # -- Organization Summary --
         writer.writerow(['ORGANIZATION SUMMARY'])
         writer.writerow([])
         writer.writerow(['', 'Metric', 'Value'])
@@ -1297,14 +1275,14 @@ class TaskManagementTask(models.Model):
         writer.writerow(['', 'Total Late Entries', data['totalLateEntries']])
         writer.writerow([])
 
-        # ── All Projects ──
+        # -- All Projects --
         writer.writerow(['ALL PROJECTS'])
         writer.writerow([])
         writer.writerow(
             ['No.', 'Project', 'Status', 'Progress',
-             'Tasks', 'Pending', 'Asgn Pending',
-             'Approved', 'Asgn Approved',
-             'Rejected', 'Asgn Rejected',
+             'Tasks', 'Pending',
+             'Approved',
+             'Rejected',
              'Members', 'Late Entries'])
         total_tasks = 0
         total_pending = 0
@@ -1317,11 +1295,8 @@ class TaskManagementTask(models.Model):
                 f'{proj["progress"]}%',
                 proj['task_count'],
                 proj['pending_tasks'],
-                proj.get('assigned_pending_tasks', 0),
                 proj.get('approved_tasks', 0),
-                proj.get('assigned_approved_tasks', 0),
                 proj.get('rejected_tasks', 0),
-                proj.get('assigned_rejected_tasks', 0),
                 proj['member_count'],
                 proj['late_entries'],
             ])
@@ -1334,7 +1309,7 @@ class TaskManagementTask(models.Model):
              total_tasks, total_pending, '', total_late])
         writer.writerow([])
 
-        # ── Footer ──
+        # -- Footer --
         writer.writerow(['END OF REPORT'])
 
         csv_data = output.getvalue().encode('utf-8-sig')
@@ -1363,7 +1338,7 @@ class TaskManagementTask(models.Model):
                 'active': '#5cb85c', 'completed': '#5cb85c',
                 'waiting': '#f0ad4e', 'on_hold': '#f0ad4e',
                 'archived': '#999',
-            }.get(proj['status'], '#714B67')
+            }.get(proj['status'], '#0B3D91')
             project_rows += (
                 f'<tr><td>{proj["name"]}</td>'
                 f'<td style="color:{status_color};font-weight:bold;">'
@@ -1371,11 +1346,8 @@ class TaskManagementTask(models.Model):
                 f'<td>{proj["progress"]}%</td>'
                 f'<td>{proj["task_count"]}</td>'
                 f'<td>{proj["pending_tasks"]}</td>'
-                f'<td>{proj.get("assigned_pending_tasks", 0)}</td>'
                 f'<td>{proj.get("approved_tasks", 0)}</td>'
-                f'<td>{proj.get("assigned_approved_tasks", 0)}</td>'
                 f'<td>{proj.get("rejected_tasks", 0)}</td>'
-                f'<td>{proj.get("assigned_rejected_tasks", 0)}</td>'
                 f'<td>{proj["member_count"]}</td>'
                 f'<td>{proj["late_entries"]}</td></tr>')
 
@@ -1384,22 +1356,22 @@ class TaskManagementTask(models.Model):
 <style>
     body {{ font-family: Arial, sans-serif; margin: 20px; background: #fff; }}
     .header {{ display: flex; align-items: center; gap: 15px;
-               border-bottom: 3px solid #714B67; padding-bottom: 15px;
+               border-bottom: 3px solid #0B3D91; padding-bottom: 15px;
                margin-bottom: 20px; }}
-    .header h1 {{ color: #714B67; margin: 0; font-size: 22px; }}
+    .header h1 {{ color: #0B3D91; margin: 0; font-size: 22px; }}
     .header p {{ color: #666; margin: 3px 0 0 0; font-size: 12px; }}
     .kpi-grid {{ display: flex; gap: 12px; margin: 15px 0 20px 0; }}
-    .kpi {{ background: #f3edf2; border: 1px solid #ddd; border-radius: 8px;
+    .kpi {{ background: #E8EEF7; border: 1px solid #ddd; border-radius: 8px;
             padding: 12px 18px; text-align: center; min-width: 120px; }}
-    .kpi-value {{ font-size: 24px; font-weight: bold; color: #714B67; }}
+    .kpi-value {{ font-size: 24px; font-weight: bold; color: #0B3D91; }}
     .kpi-label {{ font-size: 10px; color: #666; text-transform: uppercase; }}
-    h2 {{ color: #714B67; font-size: 16px; margin-top: 20px;
-          border-bottom: 2px solid #714B67; padding-bottom: 5px; }}
+    h2 {{ color: #0B3D91; font-size: 16px; margin-top: 20px;
+          border-bottom: 2px solid #0B3D91; padding-bottom: 5px; }}
     table {{ width: 100%; border-collapse: collapse; margin-top: 8px; }}
-    th {{ background: #714B67; color: #fff; padding: 8px;
+    th {{ background: #0B3D91; color: #fff; padding: 8px;
           text-align: left; font-size: 12px; }}
     td {{ padding: 6px 8px; border-bottom: 1px solid #ddd; font-size: 12px; }}
-    tr:nth-child(even) {{ background: #f5f0f4; }}
+    tr:nth-child(even) {{ background: #E8EEF7; }}
     .footer {{ margin-top: 20px; padding-top: 8px; border-top: 1px solid #ddd;
                color: #999; font-size: 10px; text-align: center; }}
 </style></head><body>
@@ -1431,9 +1403,9 @@ class TaskManagementTask(models.Model):
     <h2>All Projects</h2>
     <table><thead><tr>
         <th>Project</th><th>Status</th><th>Progress</th>
-        <th>Tasks</th><th>Pending</th><th>Asgn Pending</th>
-        <th>Approved</th><th>Asgn Approved</th>
-        <th>Rejected</th><th>Asgn Rejected</th>
+        <th>Tasks</th><th>Pending</th>
+        <th>Approved</th>
+        <th>Rejected</th>
         <th>Members</th><th>Late</th>
     </tr></thead><tbody>{project_rows}</tbody></table>
 
@@ -1533,3 +1505,88 @@ class TaskManagementTask(models.Model):
                   'Please install wkhtmltopdf package.'))
         except subprocess.TimeoutExpired:
             raise UserError(_('PDF generation timed out.'))
+
+    # ----------------------------------------------------------------
+    # Phase 5: Login Alert RPC Methods
+    # ----------------------------------------------------------------
+
+    @api.model
+    def get_login_alerts(self):
+        """Return unseen alerts for the current user."""
+        member = self.env['task.management.member'].sudo().search(
+            [('user_id', '=', self.env.uid)], limit=1)
+        if not member:
+            return {'member_alerts': [], 'pm_alerts': []}
+
+        # Member alerts: assigned tasks not yet seen
+        member_alerts = self.sudo().search([
+            ('member_id', '=', member.id),
+            ('task_type', '=', 'assigned'),
+            ('approval_status', '=', 'assigned'),
+            ('is_seen_by_member', '=', False),
+        ])
+        # PM alerts: pending tasks in projects I manage, not yet seen
+        pm_alerts = self.env['task.management.task']
+        is_pm = self.env.user.has_group(
+            'task_project_management.group_project_manager') or \
+            self.env.user.has_group(
+            'task_project_management.group_admin_manager')
+        if is_pm:
+            managed_projects = self.env['task.management.project'].sudo().search([
+                ('project_manager_ids', 'in', [member.id]),
+            ])
+            if managed_projects:
+                pm_alerts = self.sudo().search([
+                    ('project_id', 'in', managed_projects.ids),
+                    ('approval_status', '=', 'pending'),
+                    ('is_seen_by_pm', '=', False),
+                    ('member_id', '!=', member.id),
+                ])
+
+        return {
+            'member_alerts': [{
+                'id': t.id,
+                'assignment_name': t.assignment_name or '',
+                'project_name': t.project_id.name or '',
+            } for t in member_alerts],
+            'pm_alerts': [{
+                'id': t.id,
+                'member_name': t.member_id.name or '',
+                'project_name': t.project_id.name or '',
+                'description': (t.description or '')[:50],
+            } for t in pm_alerts],
+        }
+
+    @api.model
+    def acknowledge_member_alerts(self):
+        """Mark all unseen assigned tasks as seen by the member."""
+        member = self.env['task.management.member'].sudo().search(
+            [('user_id', '=', self.env.uid)], limit=1)
+        if member:
+            tasks = self.sudo().search([
+                ('member_id', '=', member.id),
+                ('task_type', '=', 'assigned'),
+                ('approval_status', '=', 'assigned'),
+                ('is_seen_by_member', '=', False),
+            ])
+            tasks.sudo().write({'is_seen_by_member': True})
+        return True
+
+    @api.model
+    def acknowledge_pm_alerts(self):
+        """Mark all unseen pending tasks as seen by the PM."""
+        member = self.env['task.management.member'].sudo().search(
+            [('user_id', '=', self.env.uid)], limit=1)
+        if member:
+            managed_projects = self.env['task.management.project'].sudo().search([
+                ('project_manager_ids', 'in', [member.id]),
+            ])
+            if managed_projects:
+                tasks = self.sudo().search([
+                    ('project_id', 'in', managed_projects.ids),
+                    ('approval_status', '=', 'pending'),
+                    ('is_seen_by_pm', '=', False),
+                    ('member_id', '!=', member.id),
+                ])
+                tasks.sudo().write({'is_seen_by_pm': True})
+        return True

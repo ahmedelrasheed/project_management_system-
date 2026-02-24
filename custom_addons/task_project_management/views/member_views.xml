@@ -10,6 +10,9 @@
                 <field name="is_current_user_admin" invisible="1"/>
                 <field name="user_id" invisible="1"/>
                 <header>
+                    <button name="action_open_member_report" string="Performance Report"
+                            type="object" class="btn-secondary"
+                            groups="task_project_management.group_project_manager,task_project_management.group_admin_manager"/>
                     <button name="action_assign_task"
                             string="Assign Task"
                             type="object" class="btn-primary"
@@ -78,10 +81,14 @@
                                     <field name="project_id"/>
                                     <field name="description"/>
                                     <field name="duration_hours" widget="float_time"/>
+                                    <field name="task_type" widget="badge"
+                                           decoration-info="task_type == 'assigned'"
+                                           decoration-muted="task_type == 'initiated'"/>
                                     <field name="approval_status" widget="badge"
                                            decoration-warning="approval_status == 'pending'"
                                            decoration-success="approval_status == 'approved'"
-                                           decoration-danger="approval_status == 'rejected'"/>
+                                           decoration-danger="approval_status == 'rejected'"
+                                           decoration-info="approval_status == 'assigned'"/>
                                 </tree>
                             </field>
                         </page>
@@ -127,7 +134,7 @@
         </field>
     </record>
 
-    <!-- Member Action -->
+    <!-- Member Action (Admin: sees everyone) -->
     <record id="action_member" model="ir.actions.act_window">
         <field name="name">Members</field>
         <field name="res_model">task.management.member</field>
@@ -135,6 +142,24 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Add a member
+            </p>
+        </field>
+    </record>
+
+    <!-- Member Action (PM: only members of managed projects, excludes self) -->
+    <record id="action_pm_members" model="ir.actions.act_window">
+        <field name="name">Members</field>
+        <field name="res_model">task.management.member</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[
+            ('member_project_ids.project_manager_ids.user_id', '=', uid),
+            ('user_id', '!=', uid),
+            ('role', '!=', 'project_manager')
+        ]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No members found in your projects
             </p>
         </field>
     </record>

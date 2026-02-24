@@ -67,12 +67,36 @@ class TaskManagementMember(models.Model):
         string='Library Entries',
     )
 
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super().fields_get(allfields, attributes)
+        if 'role' in res and res['role'].get('selection'):
+            res['role']['selection'] = [
+                s for s in res['role']['selection']
+                if s[0] != 'admin_manager'
+            ]
+        return res
+
     _sql_constraints = [
         ('email_unique', 'UNIQUE(email)',
          'A member with this email already exists.'),
         ('user_id_unique', 'UNIQUE(user_id)',
          'This user is already linked to another member.'),
     ]
+
+    @api.constrains('role')
+    def _check_admin_role_limit(self):
+        """Only one admin_manager is allowed in the system."""
+        for rec in self:
+            if rec.role == 'admin_manager':
+                existing_admin = self.sudo().search([
+                    ('role', '=', 'admin_manager'),
+                    ('id', '!=', rec.id),
+                ], limit=1)
+                if existing_admin:
+                    raise ValidationError(
+                        _('Only one Admin Manager is allowed. '
+                          '"%s" already holds this role.') % existing_admin.name)
 
     _role_group_map = {
         'member': 'task_project_management.group_member',
@@ -190,6 +214,18 @@ class TaskManagementMember(models.Model):
             'res_model': 'task.management.change.password.wizard',
             'view_mode': 'form',
             'target': 'new',
+            'context': {'default_member_id': self.id},
+        }
+
+    def action_open_member_report(self):
+        """Open member performance report wizard pre-filled with this member."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Performance Report'),
+            'res_model': 'task.management.member.performance.report',
+            'view_mode': 'form',
+            'target': 'current',
             'context': {'default_member_id': self.id},
         }
 

@@ -15,18 +15,12 @@ class TaskManagementTaskAudit(models.Model):
         ('pending', 'Pending'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
-        ('assigned_pending', 'Assigned / Pending'),
-        ('assigned_approved', 'Assigned / Approved'),
-        ('assigned_rejected', 'Assigned / Rejected'),
     ], string='Previous Status')
     new_status = fields.Selection([
         ('assigned', 'Assigned'),
         ('pending', 'Pending'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
-        ('assigned_pending', 'Assigned / Pending'),
-        ('assigned_approved', 'Assigned / Approved'),
-        ('assigned_rejected', 'Assigned / Rejected'),
     ], string='New Status', required=True)
     changed_by = fields.Many2one(
         'res.users', string='Changed By',

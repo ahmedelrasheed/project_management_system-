@@ -5,7 +5,7 @@ from odoo.exceptions import AccessError, UserError
 class TaskManagementArchive(models.Model):
     _name = 'task.management.archive'
     _description = 'Shared Library'
-    _order = 'end_date desc, id desc'
+    _order = 'creation_date desc, id desc'
 
     member_id = fields.Many2one(
         'task.management.member', string='Member',
@@ -29,11 +29,9 @@ class TaskManagementArchive(models.Model):
                 rec.name = rec.user_id.name
             else:
                 rec.name = ''
-    project_name = fields.Char(string='Project Name', required=True)
+    document_name = fields.Char(string='Document Name', required=True)
     description = fields.Text(string='Description')
-    start_date = fields.Date(string='Start Date')
-    end_date = fields.Date(string='End Date')
-    role_played = fields.Char(string='Role Played')
+    creation_date = fields.Date(string='Creation Date')
     visibility = fields.Selection([
         ('public', 'Public'),
         ('private', 'Private'),

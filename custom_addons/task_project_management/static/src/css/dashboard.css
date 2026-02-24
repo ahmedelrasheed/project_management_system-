@@ -1,7 +1,7 @@
 /* ============================================================
    Task Management - Professional Brand Theme
-   Primary: #714B67  |  Dark: #5a3a52  |  Light: #8e6584
-   Accent BG: #f5f0f4  |  White: #fff
+   Primary: #0B3D91  |  Dark: #072A66  |  Light: #1E5BBF
+   Accent BG: #E8EEF7  |  White: #fff
    ============================================================ */
 
 /* ============================================================
@@ -10,10 +10,10 @@
 
 /* --- 1a. Main Container --- */
 .o_main_navbar {
-    background: #714B67 !important;
+    background: #0B3D91 !important;
     height: 48px !important;
     border-bottom: none !important;
-    box-shadow: 0 1px 6px rgba(90, 58, 82, 0.35) !important;
+    box-shadow: 0 1px 6px rgba(11, 61, 145, 0.35) !important;
     font-family: "Inter", "Segoe UI", Roboto, sans-serif !important;
     z-index: 1030 !important;
 }
@@ -126,7 +126,7 @@
     background: #fff !important;
     border: none !important;
     border-radius: 0 0 8px 8px !important;
-    box-shadow: 0 8px 24px rgba(90, 58, 82, 0.18), 0 2px 6px rgba(0,0,0,0.08) !important;
+    box-shadow: 0 8px 24px rgba(11, 61, 145, 0.18), 0 2px 6px rgba(0,0,0,0.08) !important;
     padding: 6px 0 !important;
     margin-top: 0 !important;
     min-width: 200px !important;
@@ -141,7 +141,7 @@
 /* Dropdown items */
 .o_main_navbar .o_menu_sections .dropdown-menu .dropdown-item,
 .o_main_navbar .o_navbar_apps_menu .dropdown-menu .dropdown-item {
-    color: #4a3344 !important;
+    color: #1A2940 !important;
     font-size: 0.875rem !important;
     font-weight: 500 !important;
     padding: 8px 18px !important;
@@ -152,22 +152,22 @@
 .o_main_navbar .o_menu_sections .dropdown-menu .dropdown-item:focus,
 .o_main_navbar .o_navbar_apps_menu .dropdown-menu .dropdown-item:hover,
 .o_main_navbar .o_navbar_apps_menu .dropdown-menu .dropdown-item:focus {
-    background: #f5f0f4 !important;
-    color: #714B67 !important;
-    border-left-color: #714B67 !important;
+    background: #E8EEF7 !important;
+    color: #0B3D91 !important;
+    border-left-color: #0B3D91 !important;
 }
 .o_main_navbar .o_menu_sections .dropdown-menu .dropdown-item.focus,
 .o_main_navbar .o_menu_sections .dropdown-menu .dropdown-item:active,
 .o_main_navbar .o_navbar_apps_menu .dropdown-menu .dropdown-item.focus,
 .o_main_navbar .o_navbar_apps_menu .dropdown-menu .dropdown-item:active {
-    background: #ede4ea !important;
-    color: #5a3a52 !important;
-    border-left-color: #5a3a52 !important;
+    background: #D0DCF0 !important;
+    color: #072A66 !important;
+    border-left-color: #072A66 !important;
 }
 
 /* Dropdown group headers */
 .o_main_navbar .dropdown-header {
-    color: #8e6584 !important;
+    color: #1E5BBF !important;
     font-size: 0.75rem !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
@@ -219,7 +219,7 @@
     background: #fff !important;
     border: none !important;
     border-radius: 0 0 8px 8px !important;
-    box-shadow: 0 8px 24px rgba(90, 58, 82, 0.18), 0 2px 6px rgba(0,0,0,0.08) !important;
+    box-shadow: 0 8px 24px rgba(11, 61, 145, 0.18), 0 2px 6px rgba(0,0,0,0.08) !important;
     padding: 6px 0 !important;
     animation: navDropFade 0.15s ease !important;
     min-width: 220px !important;
@@ -233,15 +233,15 @@
 .o_main_navbar .o_menu_systray .dropdown-menu p,
 .o_main_navbar .o_menu_systray .dropdown-menu div,
 .o_main_navbar .o_menu_systray .dropdown-menu button {
-    color: #4a3344 !important;
+    color: #1A2940 !important;
 }
 .o_main_navbar .o_menu_systray .dropdown-menu i {
-    color: #714B67 !important;
+    color: #0B3D91 !important;
 }
 
 /* Dropdown items */
 .o_main_navbar .o_menu_systray .dropdown-menu .dropdown-item {
-    color: #4a3344 !important;
+    color: #1A2940 !important;
     font-size: 0.875rem !important;
     font-weight: 500 !important;
     padding: 8px 18px !important;
@@ -251,22 +251,22 @@
 }
 .o_main_navbar .o_menu_systray .dropdown-menu .dropdown-item:hover,
 .o_main_navbar .o_menu_systray .dropdown-menu .dropdown-item:focus {
-    background: #f5f0f4 !important;
-    color: #714B67 !important;
-    border-left-color: #714B67 !important;
+    background: #E8EEF7 !important;
+    color: #0B3D91 !important;
+    border-left-color: #0B3D91 !important;
 }
 .o_main_navbar .o_menu_systray .dropdown-menu .dropdown-item:hover span,
 .o_main_navbar .o_menu_systray .dropdown-menu .dropdown-item:hover a,
 .o_main_navbar .o_menu_systray .dropdown-menu .dropdown-item:focus span,
 .o_main_navbar .o_menu_systray .dropdown-menu .dropdown-item:focus a {
-    color: #714B67 !important;
+    color: #0B3D91 !important;
 }
 
 /* Section headers inside systray dropdowns */
 .o_main_navbar .o_menu_systray .dropdown-menu .dropdown-header,
 .o_main_navbar .o_menu_systray .dropdown-menu h6,
 .o_main_navbar .o_menu_systray .dropdown-menu h5 {
-    color: #714B67 !important;
+    color: #0B3D91 !important;
     font-weight: 700 !important;
     font-size: 0.78rem !important;
     text-transform: uppercase !important;
@@ -284,7 +284,7 @@
     line-height: 16px !important;
     padding: 0 4px !important;
     border-radius: 8px !important;
-    border: 1.5px solid #714B67 !important;
+    border: 1.5px solid #0B3D91 !important;
     text-shadow: none !important;
 }
 
@@ -313,10 +313,10 @@
 .o_main_navbar .dropdown-menu button,
 .o_main_navbar .dropdown-menu label,
 .o_main_navbar .dropdown-menu p {
-    color: #4a3344 !important;
+    color: #1A2940 !important;
 }
 .o_main_navbar .dropdown-menu i {
-    color: #714B67 !important;
+    color: #0B3D91 !important;
 }
 .o_main_navbar .dropdown-menu .dropdown-item:hover,
 .o_main_navbar .dropdown-menu .dropdown-item:hover a,
@@ -324,7 +324,7 @@
 .o_main_navbar .dropdown-menu .dropdown-item:focus,
 .o_main_navbar .dropdown-menu .dropdown-item:focus a,
 .o_main_navbar .dropdown-menu .dropdown-item:focus span {
-    color: #714B67 !important;
+    color: #0B3D91 !important;
 }
 
 /* Prevent hover bg on navbar bar elements */
@@ -363,7 +363,7 @@
 .o_form_view .btn-primary,
 .o_list_view .btn-primary,
 .modal .btn-primary {
-    background: linear-gradient(135deg, #714B67 0%, #8e6584 100%) !important;
+    background: linear-gradient(135deg, #0B3D91 0%, #1E5BBF 100%) !important;
     border: none !important;
     color: #fff !important;
     border-radius: 6px !important;
@@ -374,16 +374,16 @@
 .o_form_view .btn-primary:hover,
 .o_list_view .btn-primary:hover,
 .modal .btn-primary:hover {
-    background: linear-gradient(135deg, #5a3a52 0%, #714B67 100%) !important;
-    box-shadow: 0 3px 8px rgba(113, 75, 103, 0.4) !important;
+    background: linear-gradient(135deg, #072A66 0%, #0B3D91 100%) !important;
+    box-shadow: 0 3px 8px rgba(11, 61, 145, 0.4) !important;
 }
 
 /* Secondary buttons */
 .o_form_view .btn-secondary,
 .o_list_view .btn-secondary,
 .modal .btn-secondary {
-    color: #714B67 !important;
-    border-color: #714B67 !important;
+    color: #0B3D91 !important;
+    border-color: #0B3D91 !important;
     border-radius: 6px !important;
     font-weight: 500 !important;
     transition: all 0.2s ease !important;
@@ -392,43 +392,43 @@
 .o_form_view .btn-secondary:hover,
 .o_list_view .btn-secondary:hover,
 .modal .btn-secondary:hover {
-    background: #f5f0f4 !important;
-    border-color: #5a3a52 !important;
-    color: #5a3a52 !important;
+    background: #E8EEF7 !important;
+    border-color: #072A66 !important;
+    color: #072A66 !important;
 }
 
 /* Save & Discard buttons */
 .o_form_status_indicator .o_form_button_save {
     font-size: 0.95rem !important;
-    background: linear-gradient(135deg, #714B67 0%, #8e6584 100%) !important;
+    background: linear-gradient(135deg, #0B3D91 0%, #1E5BBF 100%) !important;
     border: none !important;
     color: #fff !important;
     border-radius: 8px !important;
-    box-shadow: 0 2px 6px rgba(113, 75, 103, 0.35) !important;
+    box-shadow: 0 2px 6px rgba(11, 61, 145, 0.35) !important;
     transition: all 0.2s ease !important;
     letter-spacing: 0.3px !important;
 }
 
 .o_form_status_indicator .o_form_button_save:hover {
-    background: linear-gradient(135deg, #5a3a52 0%, #714B67 100%) !important;
-    box-shadow: 0 4px 10px rgba(113, 75, 103, 0.45) !important;
+    background: linear-gradient(135deg, #072A66 0%, #0B3D91 100%) !important;
+    box-shadow: 0 4px 10px rgba(11, 61, 145, 0.45) !important;
     transform: translateY(-1px) !important;
 }
 
 .o_form_status_indicator .o_form_button_cancel {
     font-size: 0.95rem !important;
     background: #fff !important;
-    color: #714B67 !important;
-    border: 1.5px solid #714B67 !important;
+    color: #0B3D91 !important;
+    border: 1.5px solid #0B3D91 !important;
     border-radius: 8px !important;
     transition: all 0.2s ease !important;
     letter-spacing: 0.3px !important;
 }
 
 .o_form_status_indicator .o_form_button_cancel:hover {
-    background: #f5f0f4 !important;
-    border-color: #5a3a52 !important;
-    color: #5a3a52 !important;
+    background: #E8EEF7 !important;
+    border-color: #072A66 !important;
+    color: #072A66 !important;
 }
 
 .o_form_status_indicator .o_form_status_indicator_buttons {
@@ -437,7 +437,7 @@
 
 /* Form header buttons (Approve, Reject, Submit Work, etc.) */
 .o_form_view .o_statusbar_buttons .btn-primary {
-    background: linear-gradient(135deg, #714B67 0%, #8e6584 100%) !important;
+    background: linear-gradient(135deg, #0B3D91 0%, #1E5BBF 100%) !important;
     border: none !important;
     border-radius: 6px !important;
     font-weight: 600 !important;
@@ -463,7 +463,7 @@
 /* Create button in list views */
 .o_list_view .o_list_button_add,
 .o_cp_buttons .btn-primary {
-    background: linear-gradient(135deg, #714B67 0%, #8e6584 100%) !important;
+    background: linear-gradient(135deg, #0B3D91 0%, #1E5BBF 100%) !important;
     border: none !important;
     color: #fff !important;
     border-radius: 6px !important;
@@ -472,7 +472,7 @@
 
 .o_list_view .o_list_button_add:hover,
 .o_cp_buttons .btn-primary:hover {
-    background: linear-gradient(135deg, #5a3a52 0%, #714B67 100%) !important;
+    background: linear-gradient(135deg, #072A66 0%, #0B3D91 100%) !important;
 }
 
 /* ============================================================
@@ -484,14 +484,14 @@
     font-weight: 500 !important;
     font-size: 0.85rem !important;
     transition: all 0.2s ease !important;
-    border-color: #e8dce5 !important;
+    border-color: #C5D3E8 !important;
 }
 
 /* Current step — solid brand purple with arrow */
 .o_statusbar_status .o_arrow_button.disabled.o_arrow_button_current,
 .o_statusbar_status button.o_arrow_button_current {
-    background: #714B67 !important;
-    background-color: #714B67 !important;
+    background: #0B3D91 !important;
+    background-color: #0B3D91 !important;
     color: #fff !important;
     font-weight: 700 !important;
     text-shadow: 0 1px 2px rgba(0,0,0,0.15) !important;
@@ -499,41 +499,41 @@
 /* Arrow pseudo-elements for current step */
 .o_statusbar_status .o_arrow_button.disabled.o_arrow_button_current::before,
 .o_statusbar_status button.o_arrow_button_current::before {
-    border-left-color: #714B67 !important;
+    border-left-color: #0B3D91 !important;
 }
 .o_statusbar_status .o_arrow_button.disabled.o_arrow_button_current::after,
 .o_statusbar_status button.o_arrow_button_current::after {
-    border-left-color: #714B67 !important;
+    border-left-color: #0B3D91 !important;
 }
 
 /* Completed (past) steps — light purple bg */
 .o_statusbar_status .o_arrow_button.disabled:not(.o_arrow_button_current) {
-    background: #f0e6ed !important;
-    background-color: #f0e6ed !important;
-    color: #714B67 !important;
+    background: #D6E0F0 !important;
+    background-color: #D6E0F0 !important;
+    color: #0B3D91 !important;
     font-weight: 500 !important;
 }
 .o_statusbar_status .o_arrow_button.disabled:not(.o_arrow_button_current)::before,
 .o_statusbar_status .o_arrow_button.disabled:not(.o_arrow_button_current)::after {
-    border-left-color: #f0e6ed !important;
+    border-left-color: #D6E0F0 !important;
 }
 
 /* Hover on clickable (future) steps */
 .o_statusbar_status .o_arrow_button:not(.disabled):hover {
-    background: #f5f0f4 !important;
-    background-color: #f5f0f4 !important;
-    color: #714B67 !important;
+    background: #E8EEF7 !important;
+    background-color: #E8EEF7 !important;
+    color: #0B3D91 !important;
     font-weight: 600 !important;
 }
 .o_statusbar_status .o_arrow_button:not(.disabled):hover::before,
 .o_statusbar_status .o_arrow_button:not(.disabled):hover::after {
-    border-left-color: #f5f0f4 !important;
+    border-left-color: #E8EEF7 !important;
 }
 
 /* Statusbar inside form header */
 .o_form_view .o_form_statusbar {
-    border-bottom: 1px solid #e8dce5 !important;
-    background: #faf8f9 !important;
+    border-bottom: 1px solid #C5D3E8 !important;
+    background: #F5F7FB !important;
 }
 
 /* ============================================================
@@ -542,7 +542,7 @@
 
 /* Form labels */
 .o_form_view .o_form_label {
-    color: #4a3344 !important;
+    color: #1A2940 !important;
     font-weight: 600 !important;
 }
 
@@ -553,23 +553,23 @@
 
 /* Notebook tabs */
 .o_form_view .o_notebook .nav-link {
-    color: #714B67 !important;
+    color: #0B3D91 !important;
     font-weight: 500 !important;
 }
 
 .o_form_view .o_notebook .nav-link.active {
-    color: #714B67 !important;
-    border-bottom: 3px solid #714B67 !important;
+    color: #0B3D91 !important;
+    border-bottom: 3px solid #0B3D91 !important;
     font-weight: 700 !important;
 }
 
 /* Stat buttons */
 .o_form_view .oe_stat_button {
-    border-color: #e8dce5 !important;
+    border-color: #C5D3E8 !important;
 }
 
 .o_form_view .oe_stat_button:hover {
-    background: #f5f0f4 !important;
+    background: #E8EEF7 !important;
 }
 
 /* ============================================================
@@ -578,39 +578,39 @@
 
 /* Table header */
 .o_list_view thead th {
-    color: #714B67 !important;
+    color: #0B3D91 !important;
     font-weight: 700 !important;
     font-size: 0.85rem !important;
     text-transform: uppercase !important;
     letter-spacing: 0.3px !important;
-    border-bottom: 2px solid #714B67 !important;
+    border-bottom: 2px solid #0B3D91 !important;
 }
 
 /* Row hover */
 .o_list_view tbody tr:hover {
-    background: #f9f5f8 !important;
+    background: #EDF1F8 !important;
 }
 
 /* Checkbox accent */
 .o_list_view .o_list_record_selector input[type="checkbox"]:checked {
-    accent-color: #714B67;
+    accent-color: #0B3D91;
 }
 
 /* ============================================================
    6. SEARCH BAR & CONTROL PANEL
    ============================================================ */
 .o_searchview .o_searchview_input {
-    color: #4a3344 !important;
+    color: #1A2940 !important;
 }
 
 .o_searchview .o_searchview_facet .o_searchview_facet_label {
-    background: #714B67 !important;
+    background: #0B3D91 !important;
     color: #fff !important;
 }
 
 /* Group by headers */
 .o_group_header {
-    color: #714B67 !important;
+    color: #0B3D91 !important;
     font-weight: 700 !important;
 }
 
@@ -637,7 +637,7 @@
    8. CHATTER / MESSAGING
    ============================================================ */
 .o_Chatter .o_Message_authorName {
-    color: #714B67 !important;
+    color: #0B3D91 !important;
     font-weight: 600 !important;
 }
 
@@ -645,12 +645,12 @@
    9. MODALS / DIALOGS
    ============================================================ */
 .modal .modal-header {
-    background: #f5f0f4 !important;
-    border-bottom: 2px solid #714B67 !important;
+    background: #E8EEF7 !important;
+    border-bottom: 2px solid #0B3D91 !important;
 }
 
 .modal .modal-title {
-    color: #714B67 !important;
+    color: #0B3D91 !important;
     font-weight: 700 !important;
 }
 
@@ -663,16 +663,16 @@
 }
 
 ::-webkit-scrollbar-track {
-    background: #f5f0f4;
+    background: #E8EEF7;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #c4a8bc;
+    background: #7B9CC7;
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #714B67;
+    background: #0B3D91;
 }
 
 /* ============================================================
@@ -681,8 +681,8 @@
 
 /* --- 11a. Breadcrumb styling for dashboards --- */
 .task_dashboard .o_control_panel {
-    background: #f5f0f4 !important;
-    border-bottom: 1px solid rgba(113, 75, 103, 0.15) !important;
+    background: #E8EEF7 !important;
+    border-bottom: 1px solid rgba(11, 61, 145, 0.15) !important;
     padding: 4px 16px !important;
     min-height: auto !important;
 }
@@ -693,24 +693,24 @@
     font-size: 0.9rem !important;
 }
 .task_dashboard .o_control_panel .breadcrumb-item a {
-    color: #714B67 !important;
+    color: #0B3D91 !important;
     text-decoration: none !important;
     font-weight: 500 !important;
 }
 .task_dashboard .o_control_panel .breadcrumb-item a:hover {
-    color: #5a3a52 !important;
+    color: #072A66 !important;
     text-decoration: underline !important;
 }
 .task_dashboard .o_control_panel .breadcrumb-item.active {
-    color: #8e6584 !important;
+    color: #1E5BBF !important;
     font-weight: 600 !important;
 }
 .task_dashboard .o_control_panel .breadcrumb-item + .breadcrumb-item::before {
-    color: #8e6584 !important;
+    color: #1E5BBF !important;
 }
 
 .task_dashboard {
-    background: linear-gradient(135deg, #f5f0f4 0%, #f8f9fa 100%);
+    background: linear-gradient(135deg, #E8EEF7 0%, #f8f9fa 100%);
     overflow-y: auto !important;
     overflow-x: hidden !important;
     height: 100% !important;
@@ -724,7 +724,7 @@
 
 /* Dashboard Header with Logo */
 .task_dashboard .dashboard-header {
-    background: linear-gradient(135deg, #714B67 0%, #8e6584 100%);
+    background: linear-gradient(135deg, #0B3D91 0%, #1E5BBF 100%);
     color: #fff;
     padding: 20px 25px;
     border-radius: 12px;
@@ -732,7 +732,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 4px 15px rgba(113, 75, 103, 0.3);
+    box-shadow: 0 4px 15px rgba(11, 61, 145, 0.3);
 }
 
 .task_dashboard .dashboard-header .header-left {
@@ -816,14 +816,14 @@
 
 .task_dashboard .card-header {
     background-color: #fff;
-    border-bottom: 2px solid #714B67;
+    border-bottom: 2px solid #0B3D91;
     font-weight: 600;
     border-radius: 12px 12px 0 0 !important;
 }
 
 /* Performance Cards */
 .task_dashboard .perf-card {
-    border-left: 4px solid #714B67;
+    border-left: 4px solid #0B3D91;
 }
 
 .task_dashboard .perf-card h6 {
@@ -841,7 +841,7 @@
 
 .task_dashboard .progress-bar {
     border-radius: 10px;
-    background: linear-gradient(90deg, #714B67, #8e6584);
+    background: linear-gradient(90deg, #0B3D91, #1E5BBF);
     font-size: 0.8rem;
     font-weight: 600;
 }
@@ -849,7 +849,7 @@
 /* Dashboard Tables */
 .task_dashboard .table th {
     border-top: none;
-    color: #714B67;
+    color: #0B3D91;
     font-weight: 700;
     font-size: 0.85rem;
     text-transform: uppercase;
@@ -869,22 +869,22 @@
 
 /* Project Cards in PM Dashboard */
 .task_dashboard .project-card .card-header {
-    background: linear-gradient(135deg, #f8f5f7 0%, #fff 100%);
+    background: linear-gradient(135deg, #EEF2F9 0%, #fff 100%);
 }
 
 .task_dashboard .project-card .card-header h5 {
-    color: #714B67;
+    color: #0B3D91;
     font-weight: 700;
 }
 
 /* Section Headers */
 .task_dashboard .section-title {
-    color: #714B67;
+    color: #0B3D91;
     font-weight: 700;
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border-bottom: 2px solid #714B67;
+    border-bottom: 2px solid #0B3D91;
     padding-bottom: 6px;
     margin-bottom: 12px;
 }
@@ -1010,7 +1010,7 @@ body.task-font-xlarge .o_list_view thead th {
 
 /* Section breadcrumb item (first item, non-clickable) */
 .breadcrumb-item.o_breadcrumb_section {
-    color: #8e6584 !important;
+    color: #1E5BBF !important;
     cursor: default !important;
     pointer-events: none !important;
     font-weight: 500 !important;
@@ -1019,24 +1019,24 @@ body.task-font-xlarge .o_list_view thead th {
 
 /* Separator arrow after section */
 .breadcrumb-item.o_breadcrumb_section + .breadcrumb-item::before {
-    color: #c4a8bc !important;
+    color: #7B9CC7 !important;
 }
 
 /* Clickable breadcrumb items (middle) */
 .o_control_panel .breadcrumb-item a {
-    color: #714B67 !important;
+    color: #0B3D91 !important;
     font-weight: 500 !important;
     text-decoration: none !important;
 }
 
 .o_control_panel .breadcrumb-item a:hover {
-    color: #5a3a52 !important;
+    color: #072A66 !important;
     text-decoration: underline !important;
 }
 
 /* Active breadcrumb item (current page, last) */
 .o_control_panel .breadcrumb-item.active {
-    color: #4a3344 !important;
+    color: #1A2940 !important;
     font-weight: 600 !important;
 }
 
@@ -1057,40 +1057,236 @@ body.task-font-xlarge .o_list_view thead th {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border-color: #714B67 !important;
-    color: #714B67 !important;
+    border-color: #0B3D91 !important;
+    color: #0B3D91 !important;
     border-radius: 6px !important;
     font-size: 0.7rem !important;
     transition: all 0.15s ease !important;
     flex-shrink: 0 !important;
 }
 .o_float_time_spinner .o_time_btn:hover {
-    background: #714B67 !important;
+    background: #0B3D91 !important;
     color: #fff !important;
 }
 .o_float_time_spinner .o_time_btn:active {
-    background: #5a3a52 !important;
+    background: #072A66 !important;
     color: #fff !important;
     transform: scale(0.95) !important;
 }
 .o_float_time_spinner .o_input {
     font-weight: 600 !important;
     font-size: 0.95rem !important;
-    border-color: #e8dce5 !important;
+    border-color: #C5D3E8 !important;
     border-radius: 6px !important;
 }
 
 /* Selection highlight */
 ::selection {
-    background: #d4b8cc;
+    background: #A3BDE0;
     color: #fff;
 }
 
 /* Links inside views */
 .o_form_view a:not(.btn) {
-    color: #714B67 !important;
+    color: #0B3D91 !important;
 }
 
 .o_form_view a:not(.btn):hover {
-    color: #5a3a52 !important;
+    color: #072A66 !important;
+}
+
+/* ============================================================
+   17. NO CONTENT HELPER — "Create new document" styling
+   ============================================================ */
+
+/* The circle/icon above the text */
+.o_view_nocontent .o_nocontent_help .o_view_nocontent_smiling_face:before,
+.o_view_nocontent .o_nocontent_help .o_view_nocontent_neutral_face:before,
+.o_view_nocontent .o_nocontent_help .o_view_nocontent_empty_folder:before {
+    filter: hue-rotate(240deg) saturate(1.5) brightness(0.8) !important;
+}
+
+/* The "Create new document" link / text */
+.o_view_nocontent .o_nocontent_help p a,
+.o_view_nocontent .o_nocontent_help a {
+    color: #0B3D91 !important;
+}
+
+.o_view_nocontent .o_nocontent_help p a:hover,
+.o_view_nocontent .o_nocontent_help a:hover {
+    color: #072A66 !important;
+}
+
+/* The circle background behind the icon */
+.o_view_nocontent .o_nocontent_help .o_empty_folder,
+.o_view_nocontent .o_nocontent_help p.o_view_nocontent_empty_folder {
+    color: #0B3D91 !important;
+}
+
+/* ============================================================
+   18. FILTER / SEARCH DROPDOWN — Icons & Colors
+   ============================================================ */
+
+/* Filter/Group By/Favorites dropdown menu icons */
+.o_search_bar_menu .o_dropdown_container .o_menu_item .oi,
+.o_search_bar_menu .o_dropdown_container .o_menu_item i,
+.o_search_bar_menu .o_menu_item i,
+.o_search_bar_menu i {
+    color: #0B3D91 !important;
+}
+
+/* Filter/Group By/Favorites section headers */
+.o_search_bar_menu .o_dropdown_container .o_dropdown_title,
+.o_search_bar_menu .dropdown-header,
+.o_search_bar_menu h5 {
+    color: #0B3D91 !important;
+    border-bottom-color: #0B3D91 !important;
+}
+
+/* Active/checked filter items */
+.o_search_bar_menu .o_menu_item.selected,
+.o_search_bar_menu .o_menu_item.o_item_selected,
+.o_search_bar_menu .o_menu_item a.selected,
+.o_search_bar_menu .dropdown-item.selected,
+.o_search_bar_menu .dropdown-item:active {
+    color: #0B3D91 !important;
+    background-color: #E8EEF7 !important;
+}
+
+/* Filter dropdown item hover */
+.o_search_bar_menu .o_menu_item:hover,
+.o_search_bar_menu .dropdown-item:hover,
+.o_search_bar_menu .dropdown-item:focus {
+    background-color: #E8EEF7 !important;
+    color: #0B3D91 !important;
+}
+
+/* Search facet tags */
+.o_searchview .o_searchview_facet .o_searchview_facet_label {
+    background: #0B3D91 !important;
+    color: #fff !important;
+}
+
+/* Toggle icons in filter (checkmarks, arrows) */
+.o_search_bar_menu .o_menu_item .o_toggle_fold i,
+.o_search_bar_menu .o_accordion .o_accordion_toggle i,
+.o_search_bar_menu .fa-check,
+.o_search_bar_menu .oi-check {
+    color: #0B3D91 !important;
+}
+
+/* Date filter buttons */
+.o_search_bar_menu .o_generator_menu button,
+.o_search_bar_menu .o_add_custom_filter button,
+.o_search_bar_menu button.o_apply_filter {
+    color: #0B3D91 !important;
+    border-color: #0B3D91 !important;
+}
+
+.o_search_bar_menu .o_generator_menu button:hover,
+.o_search_bar_menu .o_add_custom_filter button:hover,
+.o_search_bar_menu button.o_apply_filter:hover {
+    background: #0B3D91 !important;
+    color: #fff !important;
+}
+
+/* ============================================================
+   19. CONFIGURATION / SETTINGS PAGE — Override Odoo purple
+   ============================================================ */
+
+/* Settings page app name header */
+.o_base_settings .app_settings_header {
+    background-color: #0B3D91 !important;
+    color: #fff !important;
+}
+
+/* Settings page left sidebar app icons/names */
+.o_base_settings .o_base_settings_sidebar .nav-link.active,
+.o_base_settings .o_base_settings_sidebar .nav-link:hover {
+    color: #0B3D91 !important;
+    background-color: #E8EEF7 !important;
+}
+
+.o_base_settings .o_base_settings_sidebar .nav-link.active::before {
+    background-color: #0B3D91 !important;
+}
+
+/* Settings sidebar tabs (Odoo 17 structure) */
+.o_base_settings_view .settings_tab .tab.selected,
+.o_base_settings_view .settings_tab .tab:hover {
+    background-color: #E8EEF7 !important;
+    box-shadow: inset 2px 0 0 #0B3D91 !important;
+    color: #0B3D91 !important;
+}
+
+.o_base_settings_view .o_form_renderer {
+    --settings__tab-bg--active: #E8EEF7 !important;
+}
+
+/* Settings block titles */
+.o_base_settings .o_setting_box .o_form_label,
+.o_base_settings .app_settings_block .o_setting_box .o_form_label {
+    color: #0B3D91 !important;
+}
+
+/* Settings section headers (block titles) */
+.o_base_settings .app_settings_block .app_settings_header,
+.o_base_settings .o_settings_container .o_settings_header {
+    background-color: #0B3D91 !important;
+    color: #fff !important;
+}
+
+/* Settings toggle switches when active */
+.o_base_settings .o_field_boolean input:checked {
+    background-color: #0B3D91 !important;
+    border-color: #0B3D91 !important;
+}
+
+/* Settings links */
+.o_base_settings a {
+    color: #0B3D91 !important;
+}
+
+.o_base_settings a:hover {
+    color: #072A66 !important;
+}
+
+/* Settings Apply button */
+.o_base_settings .o_statusbar_buttons .btn-primary {
+    background: #0B3D91 !important;
+    border-color: #0B3D91 !important;
+}
+
+.o_base_settings .o_statusbar_buttons .btn-primary:hover {
+    background: #072A66 !important;
+}
+
+/* Settings search highlight */
+.o_base_settings .o_setting_box.o_searchable_setting .o_setting_right_pane span.highlighter {
+    background-color: #E8EEF7 !important;
+}
+
+/* Override Odoo's default --primary color for settings */
+.o_base_settings {
+    --primary: #0B3D91 !important;
+    --o-brand-odoo: #0B3D91 !important;
+    --o-brand-primary: #0B3D91 !important;
+}
+
+/* Global Odoo brand color overrides */
+:root {
+    --o-brand-odoo: #0B3D91 !important;
+    --o-brand-primary: #0B3D91 !important;
+}
+
+/* Generic checkbox/toggle override */
+.form-check-input:checked {
+    background-color: #0B3D91 !important;
+    border-color: #0B3D91 !important;
+}
+
+/* Generic switch toggle override */
+.form-switch .form-check-input:checked {
+    background-color: #0B3D91 !important;
+    border-color: #0B3D91 !important;
 }

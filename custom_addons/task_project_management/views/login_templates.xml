@@ -5,30 +5,23 @@
     <template id="login_layout_override" inherit_id="web.login_layout" name="Branded Login Layout">
         <!-- Replace the entire container -->
         <xpath expr="//div[hasclass('container')]" position="replace">
-            <div class="container-fluid p-0 d-flex align-items-center justify-content-center" style="min-height: 100vh; background: linear-gradient(135deg, #714B67 0%, #8e6584 50%, #f5f0f4 100%);">
+            <div class="container-fluid p-0 d-flex align-items-center justify-content-center" style="min-height: 100vh; background: linear-gradient(135deg, #0B3D91 0%, #1E5BBF 50%, #E8EEF7 100%);">
                 <div class="row w-100 g-0 justify-content-center align-items-center" style="min-height: 100vh;">
-                    <!-- Left branding panel (hidden on small screens) -->
-                    <div class="col-lg-5 d-none d-lg-flex flex-column align-items-center justify-content-center text-white text-center p-5">
-                        <img t-attf-src="/web/binary/company_logo{{ '?dbname='+db if db else '' }}" alt="Logo"
-                             style="max-height: 140px; max-width: 280px; width: auto; border-radius: 50%; border: 4px solid rgba(255,255,255,0.4); padding: 8px; background: rgba(255,255,255,0.15);"/>
-                        <h1 class="mt-4 fw-bold" style="font-size: 2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">Task &amp; Project Management</h1>
-                        <p class="mt-2" style="font-size: 1.1rem; opacity: 0.9;">Manage your projects, track tasks, and boost productivity</p>
-                    </div>
-                    <!-- Right login card -->
+                    <!-- Login card (centered) -->
                     <div class="col-lg-4 col-md-6 col-11 d-flex align-items-center justify-content-center py-4">
                         <div class="card border-0 shadow-lg w-100" style="max-width: 400px; border-radius: 16px; overflow: hidden;">
                             <div class="card-body p-4 p-md-5">
-                                <!-- Logo for mobile (hidden on large) -->
-                                <div class="text-center mb-4 d-lg-none">
+                                <!-- Logo above Welcome Back -->
+                                <div class="text-center mb-3">
                                     <img t-attf-src="/web/binary/company_logo{{ '?dbname='+db if db else '' }}" alt="Logo"
-                                         style="max-height: 80px; max-width: 160px; width: auto; border-radius: 50%; border: 3px solid #714B67; padding: 4px;"/>
+                                         style="max-height: 100px; max-width: 200px; width: auto; border-radius: 50%; border: 3px solid #0B3D91; padding: 6px;"/>
                                 </div>
-                                <h3 class="text-center fw-bold mb-1" style="color: #714B67;">Welcome Back</h3>
+                                <h3 class="text-center fw-bold mb-1" style="color: #0B3D91;">Welcome Back</h3>
                                 <p class="text-center text-muted mb-4" style="font-size: 0.9rem;">Sign in to your account</p>
                                 <t t-out="0"/>
                                 <div class="text-center small mt-4 pt-3 border-top text-muted" t-if="not disable_footer">
                                     <t t-if="not disable_database_manager">
-                                        <a class="border-end pe-2 me-1" href="/web/database/manager" style="color: #714B67;">Manage Databases</a>
+                                        <a class="border-end pe-2 me-1" href="/web/database/manager" style="color: #0B3D91;">Manage Databases</a>
                                     </t>
                                     <a href="https://www.odoo.com?utm_source=db&amp;utm_medium=auth" target="_blank" style="color: #999;">Powered by <span>Odoo</span></a>
                                 </div>
@@ -45,15 +38,15 @@
         <!-- Style the Log in button -->
         <xpath expr="//button[@type='submit'][1]" position="attributes">
             <attribute name="class">btn btn-lg w-100 fw-bold text-white</attribute>
-            <attribute name="style">background: linear-gradient(135deg, #714B67 0%, #8e6584 100%); border: none; border-radius: 10px; padding: 12px; font-size: 1.05rem; letter-spacing: 0.5px; transition: all 0.3s ease;</attribute>
+            <attribute name="style">background: linear-gradient(135deg, #0B3D91 0%, #1E5BBF 100%); border: none; border-radius: 10px; padding: 12px; font-size: 1.05rem; letter-spacing: 0.5px; transition: all 0.3s ease;</attribute>
         </xpath>
         <!-- Style Email label -->
         <xpath expr="//label[@for='login']" position="attributes">
-            <attribute name="style">color: #714B67; font-weight: 600;</attribute>
+            <attribute name="style">color: #0B3D91; font-weight: 600;</attribute>
         </xpath>
         <!-- Style Password label -->
         <xpath expr="//label[@for='password']" position="attributes">
-            <attribute name="style">color: #714B67; font-weight: 600;</attribute>
+            <attribute name="style">color: #0B3D91; font-weight: 600;</attribute>
         </xpath>
         <!-- Style Email input -->
         <xpath expr="//input[@name='login']" position="attributes">

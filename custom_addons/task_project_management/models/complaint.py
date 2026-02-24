@@ -53,10 +53,8 @@ class TaskManagementComplaint(models.Model):
             })
             # Change task status to approved
             task = complaint.task_id
-            new_status = ('assigned_approved'
-                          if task.assigned_by_id else 'approved')
             task.sudo().write({
-                'approval_status': new_status,
+                'approval_status': 'approved',
                 'manager_comment': _(
                     'Approved via complaint review by %s'
                 ) % self.env.user.name,

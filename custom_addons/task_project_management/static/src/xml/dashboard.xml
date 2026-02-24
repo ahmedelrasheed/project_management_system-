@@ -43,14 +43,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col" t-if="state.assignedPendingTasks > 0">
-                        <div class="card kpi-card bg-warning text-white" style="opacity: 0.8;">
-                            <div class="card-body text-center">
-                                <h5 class="card-title"><t t-esc="_t('Assigned Pending')"/></h5>
-                                <h2 class="kpi-value" t-esc="state.assignedPendingTasks"/>
-                            </div>
-                        </div>
-                    </div>
                     <div class="col">
                         <div class="card kpi-card bg-success text-white">
                             <div class="card-body text-center">
@@ -59,27 +51,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col" t-if="state.assignedApprovedTasks > 0">
-                        <div class="card kpi-card bg-success text-white" style="opacity: 0.8;">
-                            <div class="card-body text-center">
-                                <h5 class="card-title"><t t-esc="_t('Assigned Approved')"/></h5>
-                                <h2 class="kpi-value" t-esc="state.assignedApprovedTasks"/>
-                            </div>
-                        </div>
-                    </div>
                     <div class="col">
                         <div class="card kpi-card bg-danger text-white">
                             <div class="card-body text-center">
                                 <h5 class="card-title"><t t-esc="_t('Rejected')"/></h5>
                                 <h2 class="kpi-value" t-esc="state.rejectedTasks"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col" t-if="state.assignedRejectedTasks > 0">
-                        <div class="card kpi-card bg-danger text-white" style="opacity: 0.8;">
-                            <div class="card-body text-center">
-                                <h5 class="card-title"><t t-esc="_t('Assigned Rejected')"/></h5>
-                                <h2 class="kpi-value" t-esc="state.assignedRejectedTasks"/>
                             </div>
                         </div>
                     </div>
@@ -171,6 +147,7 @@
                                             <th><t t-esc="_t('Project')"/></th>
                                             <th><t t-esc="_t('Description')"/></th>
                                             <th><t t-esc="_t('Hours')"/></th>
+                                            <th><t t-esc="_t('Task Type')"/></th>
                                             <th><t t-esc="_t('Status')"/></th>
                                         </tr>
                                     </thead>
@@ -182,7 +159,11 @@
                                                 <td t-esc="task.description"/>
                                                 <td t-esc="task.hours"/>
                                                 <td>
-                                                    <span t-attf-class="badge #{task.status === 'approved' || task.status === 'assigned_approved' ? 'text-bg-success' : task.status === 'rejected' || task.status === 'assigned_rejected' ? 'text-bg-danger' : task.status === 'assigned' ? 'text-bg-info' : 'text-bg-warning'}"
+                                                    <span t-attf-class="badge #{task.task_type === 'assigned' ? 'text-bg-info' : 'text-bg-secondary'}"
+                                                          t-esc="task.task_type_display or task.task_type"/>
+                                                </td>
+                                                <td>
+                                                    <span t-attf-class="badge #{task.status === 'approved' ? 'text-bg-success' : task.status === 'rejected' ? 'text-bg-danger' : task.status === 'assigned' ? 'text-bg-info' : 'text-bg-warning'}"
                                                           t-esc="task.status_display or task.status"/>
                                                 </td>
                                             </tr>
@@ -266,20 +247,11 @@
                                     <span class="text-muted me-2">
                                         <t t-esc="_t('Pending:')"/> <strong class="text-warning" t-esc="project.pending_tasks"/>
                                     </span>
-                                    <span class="text-muted me-2" t-if="project.assigned_pending_tasks">
-                                        <t t-esc="_t('Asgn Pending:')"/> <strong class="text-warning" t-esc="project.assigned_pending_tasks"/>
-                                    </span>
                                     <span class="text-muted me-2">
                                         <t t-esc="_t('Approved:')"/> <strong class="text-success" t-esc="project.approved_tasks"/>
                                     </span>
-                                    <span class="text-muted me-2" t-if="project.assigned_approved_tasks">
-                                        <t t-esc="_t('Asgn Approved:')"/> <strong class="text-success" t-esc="project.assigned_approved_tasks"/>
-                                    </span>
-                                    <span class="text-muted me-2">
+                                    <span class="text-muted">
                                         <t t-esc="_t('Rejected:')"/> <strong class="text-danger" t-esc="project.rejected_tasks"/>
-                                    </span>
-                                    <span class="text-muted" t-if="project.assigned_rejected_tasks">
-                                        <t t-esc="_t('Asgn Rejected:')"/> <strong class="text-danger" t-esc="project.assigned_rejected_tasks"/>
                                     </span>
                                 </div>
                             </div>
@@ -437,11 +409,8 @@
                                             <th><t t-esc="_t('Progress')"/></th>
                                             <th><t t-esc="_t('Tasks')"/></th>
                                             <th><t t-esc="_t('Pending')"/></th>
-                                            <th><t t-esc="_t('Asgn Pending')"/></th>
                                             <th><t t-esc="_t('Approved')"/></th>
-                                            <th><t t-esc="_t('Asgn Approved')"/></th>
                                             <th><t t-esc="_t('Rejected')"/></th>
-                                            <th><t t-esc="_t('Asgn Rejected')"/></th>
                                             <th><t t-esc="_t('Members')"/></th>
                                             <th><t t-esc="_t('Late Entries')"/></th>
                                         </tr>
@@ -449,7 +418,7 @@
                                     <tbody>
                                         <t t-if="!state.projects.length">
                                             <tr>
-                                                <td colspan="12" class="text-center text-muted py-4">
+                                                <td colspan="9" class="text-center text-muted py-4">
                                                     <t t-esc="_t('No projects found. Create a project to see data here.')"/>
                                                 </td>
                                             </tr>
@@ -471,11 +440,8 @@
                                                 </td>
                                                 <td t-esc="project.task_count"/>
                                                 <td t-esc="project.pending_tasks"/>
-                                                <td t-esc="project.assigned_pending_tasks"/>
                                                 <td t-esc="project.approved_tasks"/>
-                                                <td t-esc="project.assigned_approved_tasks"/>
                                                 <td t-esc="project.rejected_tasks"/>
-                                                <td t-esc="project.assigned_rejected_tasks"/>
                                                 <td t-esc="project.member_count"/>
                                                 <td>
                                                     <span t-if="project.late_entries > 0"

@@ -67,9 +67,9 @@ class ExportReportWizard(models.TransientModel):
         writer.writerow([])
 
         # ── Summary by Status ──
-        approved = tasks.filtered(lambda t: t.approval_status in ('approved', 'assigned_approved'))
-        pending = tasks.filtered(lambda t: t.approval_status in ('pending', 'assigned_pending'))
-        rejected = tasks.filtered(lambda t: t.approval_status in ('rejected', 'assigned_rejected'))
+        approved = tasks.filtered(lambda t: t.approval_status == 'approved')
+        pending = tasks.filtered(lambda t: t.approval_status == 'pending')
+        rejected = tasks.filtered(lambda t: t.approval_status == 'rejected')
         assigned = tasks.filtered(lambda t: t.approval_status == 'assigned')
         late = tasks.filtered(lambda t: t.is_late_entry)
         writer.writerow(['STATUS SUMMARY'])
@@ -194,9 +194,6 @@ class ExportReportWizard(models.TransientModel):
                 'pending': '#f0ad4e',
                 'approved': '#5cb85c',
                 'rejected': '#d9534f',
-                'assigned_pending': '#f0ad4e',
-                'assigned_approved': '#5cb85c',
-                'assigned_rejected': '#d9534f',
             }.get(task.approval_status, '#999')
             rows += f'''
             <tr>
@@ -229,7 +226,7 @@ class ExportReportWizard(models.TransientModel):
     h1 {{ color: #333; }}
     .meta {{ color: #666; margin-bottom: 20px; }}
     table {{ width: 100%; border-collapse: collapse; margin-top: 10px; }}
-    th {{ background-color: #714B67; color: white; padding: 10px; text-align: left; }}
+    th {{ background-color: #0B3D91; color: white; padding: 10px; text-align: left; }}
     td {{ padding: 8px; border-bottom: 1px solid #ddd; }}
     tr:nth-child(even) {{ background-color: #f9f9f9; }}
     .total {{ font-weight: bold; margin-top: 15px; font-size: 16px; }}
