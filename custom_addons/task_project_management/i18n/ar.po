@@ -584,6 +584,7 @@ msgstr "هل أنت متأكد أنك تريد حذف هذه المرحلة؟"
 #: code:addons/task_project_management/models/member.py:0
 #: model:ir.actions.act_window,name:task_project_management.action_assign_task
 #: model:ir.ui.menu,name:task_project_management.menu_assign_task
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_member_form
 #, python-format
 msgid "Assign Task"
 msgstr "تعيين مهمة"
@@ -2353,6 +2354,7 @@ msgstr "الأداء"
 #. module: task_project_management
 #. odoo-python
 #: code:addons/task_project_management/models/member.py:0
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_member_form
 #, python-format
 msgid "Performance Report"
 msgstr "تقرير الأداء"
@@ -2611,6 +2613,7 @@ msgstr "مرحلة المشروع"
 #: code:addons/task_project_management/static/src/js/breadcrumb_enhancer.js:0
 #: code:addons/task_project_management/wizard/project_performance_report.py:0
 #: model:ir.ui.menu,name:task_project_management.menu_project_performance
+#: model_terms:ir.ui.view,arch_db:task_project_management.view_project_form
 #, python-format
 msgid "Project Report"
 msgstr "تقرير المشروع"

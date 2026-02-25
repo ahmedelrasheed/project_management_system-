@@ -48,7 +48,8 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Managed Projects" name="managed_projects">
+                        <page string="Managed Projects" name="managed_projects"
+                              invisible="role == 'member'">
                             <field name="managed_project_ids" mode="tree">
                                 <tree>
                                     <field name="name"/>
