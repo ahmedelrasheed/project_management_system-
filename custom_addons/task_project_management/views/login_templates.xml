@@ -14,7 +14,7 @@
                                 <!-- Logo above Task Management -->
                                 <div class="text-center mb-3">
                                     <img t-attf-src="/web/binary/company_logo{{ '?dbname='+db if db else '' }}" alt="Logo"
-                                         style="max-height: 100px; max-width: 200px; width: auto; border-radius: 50%; border: 3px solid #0B3D91; padding: 6px;"/>
+                                         style="max-height: 100px; max-width: 200px; width: auto;"/>
                                 </div>
                                 <h3 class="text-center fw-bold mb-1" style="color: #0B3D91;">Task Management</h3>
                                 <p class="text-center text-muted mb-4" style="font-size: 0.9rem;">Sign in to your account</p>
