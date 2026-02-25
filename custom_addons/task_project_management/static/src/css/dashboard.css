@@ -581,9 +581,26 @@
     font-weight: 600 !important;
 }
 
-/* Form sheet */
+/* Form sheet — full width */
 .o_form_view .o_form_sheet {
     border-radius: 8px;
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+/* Force full-width content area */
+.o_action_manager .o_content {
+    max-width: 100% !important;
+}
+
+.o_form_view .o_form_sheet_bg {
+    max-width: 100% !important;
+}
+
+/* List view full width */
+.o_list_view {
+    max-width: 100% !important;
+    width: 100% !important;
 }
 
 /* ── Form Input Fields — Bordered Style ── */
