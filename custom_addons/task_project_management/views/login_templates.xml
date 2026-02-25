@@ -11,12 +11,12 @@
                     <div class="col-lg-4 col-md-6 col-11 d-flex align-items-center justify-content-center py-4">
                         <div class="card border-0 shadow-lg w-100" style="max-width: 400px; border-radius: 16px; overflow: hidden;">
                             <div class="card-body p-4 p-md-5">
-                                <!-- Logo above Welcome Back -->
+                                <!-- Logo above Task Management -->
                                 <div class="text-center mb-3">
                                     <img t-attf-src="/web/binary/company_logo{{ '?dbname='+db if db else '' }}" alt="Logo"
                                          style="max-height: 100px; max-width: 200px; width: auto; border-radius: 50%; border: 3px solid #0B3D91; padding: 6px;"/>
                                 </div>
-                                <h3 class="text-center fw-bold mb-1" style="color: #0B3D91;">Welcome Back</h3>
+                                <h3 class="text-center fw-bold mb-1" style="color: #0B3D91;">Task Management</h3>
                                 <p class="text-center text-muted mb-4" style="font-size: 0.9rem;">Sign in to your account</p>
                                 <t t-out="0"/>
                                 <div class="text-center small mt-4 pt-3 border-top text-muted" t-if="not disable_footer">
