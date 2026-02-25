@@ -586,6 +586,89 @@
     border-radius: 8px;
 }
 
+/* ── Form Input Fields — Bordered Style ── */
+.o_form_view .o_field_widget input.o_input,
+.o_form_view .o_field_widget textarea.o_input,
+.o_form_view .o_field_widget .o_input,
+.o_form_view .o_field_many2one .o_input,
+.o_form_view .o_field_many2many_tags .o_input,
+.o_form_view select.o_input {
+    border: 1.5px solid #C5D3E8 !important;
+    border-radius: 8px !important;
+    background-color: #F8FAFC !important;
+    padding: 8px 12px !important;
+    transition: all 0.2s ease !important;
+}
+
+.o_form_view .o_field_widget input.o_input:focus,
+.o_form_view .o_field_widget textarea.o_input:focus,
+.o_form_view .o_field_widget .o_input:focus,
+.o_form_view .o_field_many2one .o_input:focus,
+.o_form_view select.o_input:focus {
+    border-color: #0B3D91 !important;
+    box-shadow: 0 0 0 3px rgba(11, 61, 145, 0.12) !important;
+    background-color: #fff !important;
+    outline: none !important;
+}
+
+/* Selection dropdowns */
+.o_form_view .o_field_widget select.o_input,
+.o_form_view .o_field_selection select {
+    border: 1.5px solid #C5D3E8 !important;
+    border-radius: 8px !important;
+    background-color: #F8FAFC !important;
+    padding: 8px 12px !important;
+}
+
+/* Many2one input container */
+.o_form_view .o_field_many2one .o_field_many2one_selection {
+    border: 1.5px solid #C5D3E8 !important;
+    border-radius: 8px !important;
+    background-color: #F8FAFC !important;
+    transition: all 0.2s ease !important;
+}
+
+.o_form_view .o_field_many2one .o_field_many2one_selection:focus-within {
+    border-color: #0B3D91 !important;
+    box-shadow: 0 0 0 3px rgba(11, 61, 145, 0.12) !important;
+    background-color: #fff !important;
+}
+
+.o_form_view .o_field_many2one .o_field_many2one_selection input {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+/* Many2many tags container */
+.o_form_view .o_field_many2many_tags .o_field_many2many_selection {
+    border: 1.5px solid #C5D3E8 !important;
+    border-radius: 8px !important;
+    background-color: #F8FAFC !important;
+}
+
+/* Date/datetime picker inputs */
+.o_form_view .o_field_date input,
+.o_form_view .o_field_datetime input {
+    border: 1.5px solid #C5D3E8 !important;
+    border-radius: 8px !important;
+    background-color: #F8FAFC !important;
+    padding: 8px 12px !important;
+}
+
+.o_form_view .o_field_date input:focus,
+.o_form_view .o_field_datetime input:focus {
+    border-color: #0B3D91 !important;
+    box-shadow: 0 0 0 3px rgba(11, 61, 145, 0.12) !important;
+    background-color: #fff !important;
+}
+
+/* Readonly fields — subtle distinction */
+.o_form_view .o_field_widget .o_readonly {
+    border: 1.5px solid transparent !important;
+    background-color: transparent !important;
+}
+
 /* Notebook tabs */
 .o_form_view .o_notebook .nav-link {
     color: #0B3D91 !important;
